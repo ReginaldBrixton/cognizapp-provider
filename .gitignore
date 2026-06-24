@@ -1,0 +1,45 @@
+# Generated via Next.js
+.next
+
+# Generated via Node.js
+node_modules
+
+# Generated via next-pwa
+**/public/workbox**
+**/public/sw**
+.vercel
+
+# Environment variables (DO NOT COMMIT)
+.env
+.env.local
+.env.production
+.env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# .kiro directory
+.kiro
+
+# NPM registry credentials (DO NOT COMMIT)
+.npmrc
+**/kiro/*
+.npmrc.*
+
+# IDE and development tools
+.agents
+.claude
+.codex
+.codex-logs
+.husky
+.swc
+.windsurf
+
+# TypeScript build cache
+tsconfig.tsbuildinfo
+
+# Package tarballs
+*.tgz
+
+# Local Codex development server logs
+.codex-*.log

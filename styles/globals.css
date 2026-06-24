@@ -1,0 +1,1759 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+	--background: 0 0% 100%;
+	--foreground: 222.2 84% 4.9%;
+	--card: 0 0% 100%;
+	--card-foreground: 222.2 84% 4.9%;
+	--popover: 0 0% 100%;
+	--popover-foreground: 222.2 84% 4.9%;
+	--primary: 221.2 83.2% 53.3%;
+	--primary-foreground: 210 40% 98%;
+	--secondary: 210 40% 96.1%;
+	--secondary-foreground: 222.2 47.4% 11.2%;
+	--muted: 210 40% 96.1%;
+	--muted-foreground: 215.4 16.3% 46.9%;
+	--accent: 210 40% 96.1%;
+	--accent-foreground: 222.2 47.4% 11.2%;
+	--destructive: 0 84.2% 60.2%;
+	--destructive-foreground: 210 40% 98%;
+	--border: 214.3 31.8% 91.4%;
+	--input: 214.3 31.8% 91.4%;
+	--ring: 221.2 83.2% 53.3%;
+	--radius: 0.5rem;
+	--chart-1: 221.2 83.2% 53.3%;
+	--chart-2: 160 84% 39%;
+	--chart-3: 38 92% 50%;
+	--chart-4: 280 65% 60%;
+	--chart-5: 0 84% 60%;
+	--sidebar-background: 0 0% 100%;
+	--sidebar-foreground: 222.2 84% 4.9%;
+	--sidebar-primary: 221.2 83.2% 53.3%;
+	--sidebar-primary-foreground: 210 40% 98%;
+	--sidebar-accent: 210 40% 96.1%;
+	--sidebar-accent-foreground: 222.2 47.4% 11.2%;
+	--sidebar-border: 214.3 31.8% 91.4%;
+	--sidebar-ring: 221.2 83.2% 53.3%;
+}
+
+.dark {
+	--background: 222.2 84% 4.9%;
+	--foreground: 210 40% 98%;
+	--card: 222.2 84% 4.9%;
+	--card-foreground: 210 40% 98%;
+	--popover: 222.2 84% 4.9%;
+	--popover-foreground: 210 40% 98%;
+	--primary: 217.2 91.2% 59.8%;
+	--primary-foreground: 222.2 47.4% 11.2%;
+	--secondary: 217.2 32.6% 17.5%;
+	--secondary-foreground: 210 40% 98%;
+	--muted: 217.2 32.6% 17.5%;
+	--muted-foreground: 215 20.2% 65.1%;
+	--accent: 217.2 32.6% 17.5%;
+	--accent-foreground: 210 40% 98%;
+	--destructive: 0 62.8% 30.6%;
+	--destructive-foreground: 210 40% 98%;
+	--border: 217.2 32.6% 17.5%;
+	--input: 217.2 32.6% 17.5%;
+	--ring: 224.3 76.3% 48%;
+	--chart-1: 217.2 91.2% 59.8%;
+	--chart-2: 160 84% 45%;
+	--chart-3: 38 92% 55%;
+	--chart-4: 280 65% 66%;
+	--chart-5: 0 84% 66%;
+	--sidebar-background: 222.2 84% 4.9%;
+	--sidebar-foreground: 210 40% 98%;
+	--sidebar-primary: 217.2 91.2% 59.8%;
+	--sidebar-primary-foreground: 222.2 47.4% 11.2%;
+	--sidebar-accent: 217.2 32.6% 17.5%;
+	--sidebar-accent-foreground: 210 40% 98%;
+	--sidebar-border: 217.2 32.6% 17.5%;
+	--sidebar-ring: 224.3 76.3% 48%;
+}
+
+@layer base {
+	* {
+		@apply border-border;
+	}
+}
+
+@media (max-width: 767px) {
+	input,
+	textarea,
+	select,
+	[contenteditable='true'] {
+		font-size: 16px !important;
+	}
+}
+
+/* ============================================
+   LIQUID GLASS UI — iOS 26 Silver Edition
+   CSS Variables and Keyframes
+   ============================================ */
+:root {
+	/* iOS System Grays — pure neutrals, no warm/cool cast */
+	--ios-gray-6: 250, 250, 252;
+	--ios-gray-5: 245, 245, 247;
+	--ios-gray-4: 229, 229, 234;
+	--ios-gray-3: 209, 209, 214;
+	--ios-gray-2: 199, 199, 204;
+	--ios-gray: 142, 142, 147;
+
+	/* iOS System Blue — primary accent ONLY (per user preference for blueish theme) */
+	--ios-blue: 0, 122, 255;
+	--ios-blue-light: 10, 132, 255;
+
+	/* Base */
+	--pure-white: 255, 255, 255;
+	--ios-label: 60, 60, 67;
+
+	/* Dark-mode grays */
+	--ios-dark-6: 28, 28, 30;
+	--ios-dark-5: 44, 44, 46;
+	--ios-dark-4: 58, 58, 60;
+	--ios-dark-3: 72, 72, 74;
+	--ios-dark-2: 99, 99, 102;
+
+	/* Glass semantic tokens */
+	--glass-bg: rgba(var(--ios-gray-6), 0.85);
+	--glass-border: rgba(var(--pure-white), 0.5);
+	--glass-blur: blur(25px) saturate(200%);
+	--glass-heavy-blur: blur(35px) saturate(220%);
+	--glass-shadow:
+		0 1px 0 rgba(var(--pure-white), 0.6) inset, 0 0 0 0.5px rgba(0, 0, 0, 0.04),
+		0 2px 12px rgba(0, 0, 0, 0.08);
+	--glass-radius-card: 22px;
+	--glass-radius-pill: 9999px;
+	--glass-radius-input: 12px;
+	--glass-radius-sheet: 28px;
+}
+
+/* Liquid Glass Background — Required for glass effect */
+.liquid-glass-bg {
+	background:
+		radial-gradient(
+			ellipse 70% 60% at 20% 20%,
+			rgba(180, 200, 255, 0.28) 0%,
+			transparent 60%
+		),
+		radial-gradient(
+			ellipse 60% 55% at 80% 80%,
+			rgba(200, 180, 255, 0.22) 0%,
+			transparent 55%
+		),
+		linear-gradient(160deg, #e8eaf0 0%, #dde2ec 40%, #e4e0f0 100%);
+}
+
+.dark .liquid-glass-bg {
+	background:
+		radial-gradient(
+			ellipse 70% 60% at 20% 20%,
+			rgba(40, 50, 120, 0.5) 0%,
+			transparent 60%
+		),
+		linear-gradient(160deg, #0a0a12 0%, #100a1a 100%);
+}
+
+/* Glass Card Component */
+.glass-card {
+	background: linear-gradient(
+		180deg,
+		rgba(var(--ios-gray-6), 0.88) 0%,
+		rgba(var(--ios-gray-6), 0.75) 100%
+	);
+	backdrop-filter: var(--glass-blur);
+	-webkit-backdrop-filter: var(--glass-blur);
+	border: 0.5px solid var(--glass-border);
+	box-shadow: var(--glass-shadow);
+	border-radius: var(--glass-radius-card);
+	position: relative;
+	overflow: hidden;
+}
+
+.glass-card::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(
+		180deg,
+		rgba(var(--pure-white), 0.22) 0%,
+		transparent 40%
+	);
+	pointer-events: none;
+	z-index: 0;
+}
+
+.glass-card > * {
+	position: relative;
+	z-index: 1;
+}
+
+.dark .glass-card {
+	background: linear-gradient(
+		180deg,
+		rgba(var(--ios-dark-6), 0.88) 0%,
+		rgba(var(--ios-dark-6), 0.75) 100%
+	);
+	border-color: rgba(var(--pure-white), 0.1);
+	box-shadow:
+		0 1px 0 rgba(var(--pure-white), 0.1) inset,
+		0 0 0 0.5px rgba(0, 0, 0, 0.2),
+		0 2px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* Glass Sidebar */
+.glass-sidebar {
+	background: rgba(var(--ios-gray-6), 0.72);
+	backdrop-filter: var(--glass-heavy-blur);
+	-webkit-backdrop-filter: var(--glass-heavy-blur);
+	border-right: 0.5px solid rgba(0, 0, 0, 0.06);
+}
+
+.dark .glass-sidebar {
+	background: rgba(var(--ios-dark-6), 0.72);
+	border-right-color: rgba(var(--pure-white), 0.06);
+}
+
+/* Glass Button */
+.glass-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	height: 40px;
+	padding: 0 20px;
+	border-radius: var(--glass-radius-pill);
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
+	border: none;
+	outline: none;
+	transition: all 0.2s ease;
+	background: rgba(var(--ios-gray-6), 0.8);
+	border: 0.5px solid rgba(var(--ios-gray-4), 0.6);
+	color: rgb(var(--ios-blue));
+	backdrop-filter: blur(20px);
+	-webkit-backdrop-filter: blur(20px);
+}
+
+.glass-btn:hover {
+	background: rgba(var(--ios-gray-6), 0.95);
+	transform: scale(1.02);
+}
+
+.glass-btn:active {
+	background: rgba(var(--ios-gray-4), 0.9);
+	transform: scale(0.97);
+}
+
+.glass-btn-primary {
+	background: rgb(var(--ios-blue));
+	color: #fff;
+	border: none;
+	box-shadow: 0 2px 12px rgba(var(--ios-blue), 0.3);
+}
+
+.glass-btn-primary:hover {
+	background: rgb(var(--ios-blue-light));
+}
+
+.dark .glass-btn {
+	background: rgba(var(--ios-dark-5), 0.8);
+	border-color: rgba(var(--pure-white), 0.08);
+	color: rgb(var(--ios-blue-light));
+}
+
+.dark .glass-btn:hover {
+	background: rgba(var(--ios-dark-4), 0.9);
+}
+
+/* Chrome highlight for glass elements */
+.chrome-highlight {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 1px;
+	background: linear-gradient(
+		90deg,
+		transparent 0%,
+		rgba(var(--pure-white), 0.8) 30%,
+		rgba(var(--pure-white), 0.9) 50%,
+		rgba(var(--pure-white), 0.8) 70%,
+		transparent 100%
+	);
+}
+
+/* Glass animations */
+@keyframes glass-appear {
+	from {
+		opacity: 0;
+		transform: translateY(10px) scale(0.98);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+}
+
+@keyframes glass-fade {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes glass-shimmer {
+	0% {
+		background-position: -200% 0;
+	}
+	100% {
+		background-position: 200% 0;
+	}
+}
+
+@keyframes float {
+	0%,
+	100% {
+		transform: translateY(0px);
+	}
+	50% {
+		transform: translateY(-10px);
+	}
+}
+
+@keyframes pulse-glow {
+	0%,
+	100% {
+		opacity: 0.4;
+		transform: scale(1);
+	}
+	50% {
+		opacity: 0.6;
+		transform: scale(1.05);
+	}
+}
+
+.animate-glass-appear {
+	animation: glass-appear 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.animate-glass-fade {
+	animation: glass-fade 0.25s ease both;
+}
+
+.animate-float {
+	animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+	animation: pulse-glow 4s ease-in-out infinite;
+}
+
+/* Staggered animation delays */
+.glass-delay-1 {
+	animation-delay: 0.05s;
+}
+.glass-delay-2 {
+	animation-delay: 0.1s;
+}
+.glass-delay-3 {
+	animation-delay: 0.15s;
+}
+.glass-delay-4 {
+	animation-delay: 0.2s;
+}
+.glass-delay-5 {
+	animation-delay: 0.25s;
+}
+
+/* ============================================
+   APPEARANCE SYSTEM CSS VARIABLES
+   Fallback values for the Consistent Interface System
+   These are overridden by AppearanceProvider at runtime
+   Requirements: 1.1 - Single source of truth for styling
+   ============================================ */
+:root {
+	/* Font variables with fallbacks */
+	--font-family: 'Inter', sans-serif;
+	--font-size-base: 16px;
+	--font-size-sm: 14px;
+	--font-size-lg: 18px;
+	--font-size-xl: 24px;
+
+	/* Spacing derived from font size */
+	--spacing-unit: 4px;
+
+	/* Color variables - light theme fallbacks */
+	--color-background: #ffffff;
+	--color-foreground: #0f172a;
+	--color-primary: #0f172a;
+	--color-primary-foreground: #ffffff;
+	--color-muted: #f1f5f9;
+	--color-muted-foreground: #64748b;
+	--color-accent: #3b82f6;
+	--color-accent-foreground: #ffffff;
+	--color-border: #e2e8f0;
+}
+
+.dark {
+	/* Color variables - dark theme fallbacks */
+	--color-background: #0f172a;
+	--color-foreground: #f8fafc;
+	--color-primary: #f8fafc;
+	--color-primary-foreground: #0f172a;
+	--color-muted: #1e293b;
+	--color-muted-foreground: #94a3b8;
+	--color-accent: #60a5fa;
+	--color-accent-foreground: #0f172a;
+	--color-border: #334155;
+}
+
+/* ============================================
+   CSS CUSTOM PROPERTIES FOR THEME COLORS
+   Provides semantic color tokens that respond to theme
+   ============================================ */
+:root {
+	/* Light theme colors (default) */
+	--color-bg-primary: 250 250 250; /* zinc-50 */
+	--color-bg-secondary: 244 244 245; /* zinc-100 */
+	--color-bg-tertiary: 228 228 231; /* zinc-200 */
+	--color-bg-card: 255 255 255; /* white */
+
+	--color-text-primary: 24 24 27; /* zinc-900 */
+	--color-text-secondary: 63 63 70; /* zinc-700 */
+	--color-text-tertiary: 113 113 122; /* zinc-500 */
+	--color-text-muted: 161 161 170; /* zinc-400 */
+
+	--color-border-default: 228 228 231; /* zinc-200 */
+	--color-border-subtle: 244 244 245; /* zinc-100 */
+
+	color-scheme: light;
+}
+
+.dark {
+	/* Dark theme colors */
+	--color-bg-primary: 2 6 23; /* slate-950 */
+	--color-bg-secondary: 15 23 42; /* slate-900 */
+	--color-bg-tertiary: 30 41 59; /* slate-800 */
+	--color-bg-card: 15 23 42; /* slate-900 */
+
+	--color-text-primary: 248 250 252; /* slate-50 */
+	--color-text-secondary: 203 213 225; /* slate-300 */
+	--color-text-tertiary: 148 163 184; /* slate-400 */
+	--color-text-muted: 100 116 139; /* slate-500 */
+
+	--color-border-default: 51 65 85; /* slate-700 */
+	--color-border-subtle: 30 41 59; /* slate-800 */
+
+	color-scheme: dark;
+}
+
+/* ============================================
+   FONT CONFIGURATION
+   CSS variables for universal font access
+   Uses appearance system variables with fallbacks
+   ============================================ */
+:root {
+	/* Primary fonts - use appearance system variable with fallback */
+	--font-sans: var(
+		--font-family,
+		var(
+			--font-inter,
+			ui-sans-serif,
+			system-ui,
+			-apple-system,
+			BlinkMacSystemFont,
+			sans-serif
+		)
+	);
+	--font-heading: var(--font-montserrat), var(--font-sans);
+	--font-display: var(--font-raleway), var(--font-sans);
+	--font-body: var(--font-lato), var(--font-sans);
+	--font-ui: var(--font-roboto-flex), var(--font-sans);
+}
+
+/* ============================================
+   BASE STYLES
+   Uses appearance system CSS variables
+   ============================================ */
+html {
+	background-color: var(--color-background, rgb(var(--color-bg-primary)));
+	color: var(--color-foreground, rgb(var(--color-text-primary)));
+	font-size: var(--font-size-base, 16px);
+	transition:
+		background-color 0.3s ease,
+		color 0.3s ease;
+	height: 100%;
+	width: 100%;
+}
+
+body {
+	font-family: var(--font-family, var(--font-sans));
+	font-size: var(--font-size-base, 16px);
+	height: 100%;
+	width: 100%;
+	background-color: var(--color-background, rgb(var(--color-bg-primary)));
+	color: var(--color-foreground, rgb(var(--color-text-primary)));
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	transition:
+		background-color 0.3s ease,
+		color 0.3s ease;
+
+	/* PWA enhancements */
+	-webkit-overflow-scrolling: touch;
+	-webkit-tap-highlight-color: transparent;
+	-webkit-touch-callout: none;
+}
+
+/* Enable text selection for content areas */
+body {
+	user-select: text;
+}
+
+/* Disable text selection for UI elements */
+button,
+[role='button'],
+nav,
+header {
+	user-select: none;
+}
+
+/* ============================================
+   SCROLLBAR STYLING
+   Custom scrollbars that respond to theme
+   ============================================ */
+* {
+	scrollbar-width: thin;
+	scrollbar-color: rgb(var(--color-border-default)) transparent;
+}
+
+*::-webkit-scrollbar {
+	width: 8px;
+	height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+	background-color: rgb(var(--color-border-default));
+	border-radius: 4px;
+	border: 2px solid transparent;
+	background-clip: content-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+	background-color: rgb(var(--color-text-muted));
+}
+
+/* ============================================
+   TYPOGRAPHY UTILITIES
+   ============================================ */
+.font-heading {
+	font-family: var(--font-heading);
+}
+
+.font-display {
+	font-family: var(--font-display);
+}
+
+.font-body {
+	font-family: var(--font-body);
+}
+
+.font-ui {
+	font-family: var(--font-ui);
+}
+
+/* ============================================
+   THEME UTILITY CLASSES
+   Semantic color classes that auto-switch
+   ============================================ */
+.bg-theme-primary {
+	background-color: rgb(var(--color-bg-primary));
+}
+
+.bg-theme-secondary {
+	background-color: rgb(var(--color-bg-secondary));
+}
+
+.bg-theme-card {
+	background-color: rgb(var(--color-bg-card));
+}
+
+.text-theme-primary {
+	color: rgb(var(--color-text-primary));
+}
+
+.text-theme-secondary {
+	color: rgb(var(--color-text-secondary));
+}
+
+.text-theme-tertiary {
+	color: rgb(var(--color-text-tertiary));
+}
+
+.text-theme-muted {
+	color: rgb(var(--color-text-muted));
+}
+
+.border-theme {
+	border-color: rgb(var(--color-border-default));
+}
+
+.border-theme-subtle {
+	border-color: rgb(var(--color-border-subtle));
+}
+
+/* ============================================
+   APPEARANCE SYSTEM ACCENT COLOR UTILITIES
+   Uses the accent color from AppearanceProvider
+   ============================================ */
+.bg-accent {
+	background-color: var(--color-accent);
+}
+
+.text-accent {
+	color: var(--color-accent);
+}
+
+.border-accent {
+	border-color: var(--color-accent);
+}
+
+.ring-accent {
+	--tw-ring-color: var(--color-accent);
+}
+
+/* Accent color with opacity variants */
+.bg-accent\/10 {
+	background-color: color-mix(in srgb, var(--color-accent) 10%, transparent);
+}
+
+.bg-accent\/20 {
+	background-color: color-mix(in srgb, var(--color-accent) 20%, transparent);
+}
+
+.bg-accent\/50 {
+	background-color: color-mix(in srgb, var(--color-accent) 50%, transparent);
+}
+
+.hover\:bg-accent:hover {
+	background-color: var(--color-accent);
+}
+
+.hover\:bg-accent\/10:hover {
+	background-color: color-mix(in srgb, var(--color-accent) 10%, transparent);
+}
+
+.hover\:bg-accent\/20:hover {
+	background-color: color-mix(in srgb, var(--color-accent) 20%, transparent);
+}
+
+.hover\:bg-accent\/50:hover {
+	background-color: color-mix(in srgb, var(--color-accent) 50%, transparent);
+}
+
+.hover\:text-accent:hover {
+	color: var(--color-accent);
+}
+
+.hover\:border-accent:hover {
+	border-color: var(--color-accent);
+}
+
+.focus\:ring-accent:focus {
+	--tw-ring-color: var(--color-accent);
+}
+
+.focus-within\:ring-accent:focus-within {
+	--tw-ring-color: var(--color-accent);
+}
+
+.group:hover .group-hover\:bg-accent\/20 {
+	background-color: color-mix(in srgb, var(--color-accent) 20%, transparent);
+}
+
+/* Legacy blue/indigo compatibility: older pages still use Tailwind's blue/indigo utilities. */
+.bg-blue-400,
+.bg-blue-500,
+.bg-blue-600,
+.bg-blue-700,
+.bg-indigo-400,
+.bg-indigo-500,
+.bg-indigo-600,
+.bg-indigo-700 {
+	background-color: var(--color-accent) !important;
+	color: var(--color-accent-foreground);
+}
+
+.hover\:bg-blue-50:hover,
+.hover\:bg-blue-100:hover,
+.hover\:bg-blue-500\/10:hover,
+.hover\:bg-indigo-50:hover,
+.hover\:bg-indigo-900\/20:hover,
+.bg-blue-50,
+.bg-blue-100,
+.bg-blue-500\/10,
+.bg-blue-900\/20,
+.bg-indigo-50,
+.bg-indigo-100,
+.bg-indigo-500\/10,
+.bg-indigo-900\/20 {
+	background-color: color-mix(in srgb, var(--color-accent) 10%, transparent) !important;
+}
+
+.dark .dark\:bg-blue-400,
+.dark .dark\:bg-blue-500,
+.dark .dark\:bg-blue-600,
+.dark .dark\:bg-indigo-400,
+.dark .dark\:bg-indigo-500,
+.dark .dark\:bg-indigo-600 {
+	background-color: var(--color-accent) !important;
+	color: var(--color-accent-foreground);
+}
+
+.dark .dark\:bg-blue-500\/10,
+.dark .dark\:bg-blue-500\/15,
+.dark .dark\:bg-blue-500\/20,
+.dark .dark\:bg-blue-900\/20,
+.dark .dark\:bg-blue-900\/30,
+.dark .dark\:bg-indigo-500\/10,
+.dark .dark\:bg-indigo-500\/20,
+.dark .dark\:bg-indigo-900\/20,
+.dark .dark\:bg-indigo-900\/30,
+.dark .dark\:hover\:bg-blue-500\/10:hover,
+.dark .dark\:hover\:bg-indigo-500\/20:hover {
+	background-color: color-mix(in srgb, var(--color-accent) 14%, transparent) !important;
+}
+
+.text-blue-400,
+.text-blue-500,
+.text-blue-600,
+.text-blue-700,
+.text-blue-800,
+.text-indigo-400,
+.text-indigo-500,
+.text-indigo-600,
+.text-indigo-700,
+.text-indigo-800,
+.text-violet-400,
+.text-violet-500,
+.text-violet-600,
+.text-violet-700,
+.text-violet-800,
+.hover\:text-blue-700:hover,
+.hover\:text-indigo-500:hover,
+.hover\:text-indigo-600:hover,
+.hover\:text-violet-700:hover {
+	color: var(--color-accent) !important;
+}
+
+.dark .dark\:text-blue-300,
+.dark .dark\:text-blue-400,
+.dark .dark\:text-indigo-300,
+.dark .dark\:text-indigo-400,
+.dark .dark\:hover\:text-blue-300:hover,
+.dark .dark\:hover\:text-indigo-300:hover {
+	color: var(--color-accent) !important;
+}
+
+.border-blue-100,
+.border-blue-200,
+.border-blue-300,
+.border-blue-500,
+.border-indigo-200,
+.border-indigo-300,
+.border-indigo-500,
+.border-indigo-600,
+.border-violet-200,
+.border-violet-300,
+.border-violet-500,
+.border-violet-600,
+.hover\:border-blue-200:hover,
+.focus\:border-blue-400:focus,
+.focus\:border-blue-500:focus,
+.hover\:border-indigo-300:hover,
+.hover\:border-indigo-500:hover,
+.hover\:border-violet-500:hover {
+	border-color: color-mix(in srgb, var(--color-accent) 42%, transparent) !important;
+}
+
+.dark .dark\:border-blue-500\/30,
+.dark .dark\:border-blue-600,
+.dark .dark\:border-blue-800,
+.dark .dark\:border-indigo-500\/20,
+.dark .dark\:border-indigo-700,
+.dark .dark\:border-indigo-800,
+.dark .dark\:hover\:border-blue-500\/30:hover,
+.dark .dark\:hover\:border-blue-500\/50:hover,
+.dark .dark\:hover\:border-indigo-700:hover {
+	border-color: color-mix(in srgb, var(--color-accent) 42%, transparent) !important;
+}
+
+.ring-blue-200,
+.ring-blue-500,
+.ring-blue-100,
+.ring-indigo-500,
+.ring-violet-500,
+.focus\:ring-blue-500:focus,
+.focus\:ring-blue-100:focus,
+.focus\:ring-indigo-500:focus,
+.focus\:ring-indigo-500\/20:focus,
+.focus\:ring-indigo-500\/50:focus,
+.focus\:ring-violet-500:focus {
+	--tw-ring-color: color-mix(in srgb, var(--color-accent) 40%, transparent) !important;
+}
+
+.dark .dark\:ring-blue-500\/20,
+.dark .dark\:ring-indigo-500\/20,
+.dark .dark\:focus\:ring-blue-500\/10:focus,
+.dark .dark\:focus\:ring-blue-500\/30:focus {
+	--tw-ring-color: color-mix(in srgb, var(--color-accent) 35%, transparent) !important;
+}
+
+.from-blue-500,
+.from-blue-600,
+.from-indigo-500,
+.from-indigo-600 {
+	--tw-gradient-from: var(--color-accent) var(--tw-gradient-from-position) !important;
+	--tw-gradient-to: color-mix(in srgb, var(--color-accent) 0%, transparent) var(--tw-gradient-to-position) !important;
+	--tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+
+.to-blue-500,
+.to-blue-600,
+.to-indigo-500,
+.to-indigo-600,
+.to-purple-600 {
+	--tw-gradient-to: color-mix(in srgb, var(--color-accent) 76%, #111827) var(--tw-gradient-to-position) !important;
+}
+
+/* Accent foreground for text on accent backgrounds */
+.text-accent-foreground {
+	color: var(--color-accent-foreground);
+}
+
+/* ============================================
+   APPEARANCE SYSTEM FONT SIZE UTILITIES
+   Uses font sizes from AppearanceProvider
+   ============================================ */
+.text-app-sm {
+	font-size: var(--font-size-sm);
+}
+
+.text-app-base {
+	font-size: var(--font-size-base);
+}
+
+.text-app-lg {
+	font-size: var(--font-size-lg);
+}
+
+.text-app-xl {
+	font-size: var(--font-size-xl);
+}
+
+/* ============================================
+   FOCUS STYLES
+   Accessible focus indicators
+   ============================================ */
+/* :focus-visible {
+	outline: none;
+} */
+
+/* ============================================
+   FORM ELEMENT IMPROVEMENTS
+   Better default styles for inputs
+   ============================================ */
+input,
+textarea,
+select {
+	background-color: rgb(var(--color-bg-card));
+	color: rgb(var(--color-text-primary));
+	border-color: rgb(var(--color-border-default));
+}
+
+input::placeholder,
+textarea::placeholder {
+	color: rgb(var(--color-text-muted));
+}
+
+@media (max-width: 768px) {
+	input,
+	textarea,
+	select,
+	button,
+	[contenteditable='true'] {
+		font-size: max(16px, var(--font-size-base, 16px));
+	}
+}
+
+/* ============================================
+   ANIMATION UTILITIES
+   Smooth transitions for theme changes
+   ============================================ */
+.theme-transition {
+	transition:
+		background-color 0.3s ease,
+		color 0.3s ease,
+		border-color 0.3s ease,
+		box-shadow 0.3s ease;
+}
+
+/* ============================================
+   RESPONSIVE BREAKPOINT HELPERS
+   Utility classes for common responsive patterns
+   ============================================ */
+@layer utilities {
+	/* Hide on mobile, show on tablet+ */
+	.hide-mobile {
+		@apply hidden sm:block;
+	}
+
+	/* Show on mobile, hide on tablet+ */
+	.show-mobile {
+		@apply block sm:hidden;
+	}
+
+	/* Responsive padding */
+	.px-responsive {
+		@apply px-4 sm:px-6 lg:px-8;
+	}
+
+	.py-responsive {
+		@apply py-4 sm:py-6 lg:py-8;
+	}
+
+	/* Responsive text sizes */
+	.text-responsive-sm {
+		@apply text-xs sm:text-sm;
+	}
+
+	.text-responsive-base {
+		@apply text-sm sm:text-base;
+	}
+
+	.text-responsive-lg {
+		@apply text-base sm:text-lg lg:text-xl;
+	}
+
+	.text-responsive-xl {
+		@apply text-lg sm:text-xl lg:text-2xl;
+	}
+
+	.text-responsive-2xl {
+		@apply text-xl sm:text-2xl lg:text-3xl;
+	}
+
+	.text-responsive-3xl {
+		@apply text-2xl sm:text-3xl lg:text-4xl;
+	}
+
+	/* Responsive gaps */
+	.gap-responsive {
+		@apply gap-4 sm:gap-6 lg:gap-8;
+	}
+
+	/* Safe area padding for mobile devices */
+	.pb-safe {
+		padding-bottom: env(safe-area-inset-bottom);
+	}
+
+	.pt-safe {
+		padding-top: env(safe-area-inset-top);
+	}
+
+	/* Glass morphism effect that works in both themes */
+	.glass {
+		@apply bg-white/55 dark:bg-white/10 backdrop-blur-md backdrop-saturate-150 border border-white/60 dark:border-white/15 shadow-2xl;
+	}
+
+	.glass-subtle {
+		@apply bg-white/40 dark:bg-white/5 backdrop-blur-sm backdrop-saturate-150 border border-white/40 dark:border-white/10 shadow-xl;
+	}
+
+	.glass-dark {
+		@apply bg-slate-900/60 dark:bg-black/40 backdrop-blur-lg backdrop-saturate-150 border border-white/10 dark:border-white/5 shadow-2xl;
+	}
+}
+
+/* ============================================
+   CARD COMPONENT STYLES
+   Reusable card patterns
+   ============================================ */
+@layer components {
+	.card {
+		@apply rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm;
+	}
+
+	.card-interactive {
+		@apply card transition-all duration-200 hover:shadow-md hover:border-slate-300 dark:hover:border-slate-700;
+	}
+
+	.card-elevated {
+		@apply card shadow-lg shadow-slate-200/50 dark:shadow-slate-900/50;
+	}
+}
+
+/* ============================================
+   BUTTON COMPONENT STYLES
+   Consistent button patterns
+   ============================================ */
+@layer components {
+	.btn {
+		@apply inline-flex items-center justify-center rounded-lg font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+	}
+
+	.btn-primary {
+		@apply btn bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:scale-[1.02] focus-visible:ring-indigo-500;
+	}
+
+	.btn-secondary {
+		@apply btn bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 focus-visible:ring-slate-500;
+	}
+
+	.btn-ghost {
+		@apply btn text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100;
+	}
+
+	.btn-outline {
+		@apply btn border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 focus-visible:ring-slate-500;
+	}
+}
+
+/* ============================================
+   INPUT COMPONENT STYLES
+   Consistent form input patterns
+   ============================================ */
+@layer components {
+	.input {
+		@apply w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-2.5 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all duration-200;
+	}
+
+	.input-error {
+		@apply input border-red-500 focus:border-red-500 focus:ring-red-500/20;
+	}
+}
+
+/* ============================================
+   LINK STYLES
+   Consistent link patterns
+   ============================================ */
+@layer components {
+	.link {
+		@apply text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 transition-colors;
+	}
+
+	.link-subtle {
+		@apply text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors;
+	}
+}
+
+/* ============================================
+   CANONICAL LIQUID GLASS SYSTEM
+   Single-source glass surfaces used across app shell and primitives
+   ============================================ */
+
+:root {
+	--glass-surface-soft: linear-gradient(
+		180deg,
+		rgba(var(--pure-white), 0.88) 0%,
+		rgba(var(--pure-white), 0.72) 100%
+	);
+	--glass-surface: linear-gradient(
+		180deg,
+		rgba(var(--pure-white), 0.95) 0%,
+		rgba(var(--pure-white), 0.84) 100%
+	);
+	--glass-surface-strong: linear-gradient(
+		180deg,
+		rgba(var(--pure-white), 0.98) 0%,
+		rgba(var(--pure-white), 0.92) 100%
+	);
+	--glass-shell-surface: linear-gradient(
+		180deg,
+		rgba(var(--pure-white), 0.64) 0%,
+		rgba(248, 251, 255, 0.44) 100%
+	);
+	--glass-toolbar-surface: linear-gradient(
+		180deg,
+		rgba(var(--pure-white), 0.84) 0%,
+		rgba(var(--pure-white), 0.74) 100%
+	);
+	--glass-field-surface: linear-gradient(
+		180deg,
+		rgba(var(--pure-white), 0.92) 0%,
+		rgba(248, 251, 255, 0.84) 100%
+	);
+	--glass-primary-surface: linear-gradient(
+		180deg,
+		rgba(var(--ios-blue-light), 0.96) 0%,
+		rgba(var(--ios-blue), 0.88) 100%
+	);
+	--glass-border-soft: rgba(var(--pure-white), 0.42);
+	--glass-border: rgba(var(--pure-white), 0.62);
+	--glass-border-strong: rgba(var(--pure-white), 0.78);
+	--glass-hairline: rgba(15, 23, 42, 0.08);
+	--glass-highlight: linear-gradient(
+		180deg,
+		rgba(var(--pure-white), 0.62) 0%,
+		rgba(var(--pure-white), 0.18) 32%,
+		transparent 58%
+	);
+	--glass-shadow-soft:
+		0 1px 0 rgba(var(--pure-white), 0.82) inset,
+		0 0 0 1px rgba(15, 23, 42, 0.04), 0 14px 40px rgba(148, 163, 184, 0.16);
+	--glass-shadow:
+		0 1px 0 rgba(var(--pure-white), 0.92) inset,
+		0 0 0 1px rgba(15, 23, 42, 0.05), 0 22px 60px rgba(148, 163, 184, 0.22);
+	--glass-shadow-strong:
+		0 1px 0 rgba(var(--pure-white), 0.96) inset,
+		0 0 0 1px rgba(15, 23, 42, 0.08), 0 30px 90px rgba(100, 116, 139, 0.28);
+	--glass-shadow-accent:
+		0 1px 0 rgba(var(--pure-white), 0.28) inset,
+		0 18px 38px rgba(var(--ios-blue), 0.32);
+	--glass-blur-md: blur(22px) saturate(180%);
+	--glass-blur-lg: blur(28px) saturate(190%);
+	--glass-blur-xl: blur(36px) saturate(200%);
+	--glass-focus-ring: 0 0 0 3px rgba(var(--ios-blue), 0.16);
+	--glass-app-background:
+		radial-gradient(
+			circle at top left,
+			rgba(170, 205, 255, 0.22) 0%,
+			transparent 32%
+		),
+		radial-gradient(
+			circle at top right,
+			rgba(255, 255, 255, 0.86) 0%,
+			transparent 28%
+		),
+		radial-gradient(
+			circle at 50% 118%,
+			rgba(201, 228, 255, 0.2) 0%,
+			transparent 40%
+		),
+		linear-gradient(180deg, #ffffff 0%, #fbfcff 48%, #f5f8ff 100%);
+}
+
+.dark {
+	--glass-surface-soft: linear-gradient(
+		180deg,
+		rgba(var(--ios-dark-5), 0.62) 0%,
+		rgba(var(--ios-dark-6), 0.46) 100%
+	);
+	--glass-surface: linear-gradient(
+		180deg,
+		rgba(var(--ios-dark-5), 0.76) 0%,
+		rgba(var(--ios-dark-6), 0.56) 100%
+	);
+	--glass-surface-strong: linear-gradient(
+		180deg,
+		rgba(var(--ios-dark-5), 0.86) 0%,
+		rgba(var(--ios-dark-6), 0.7) 100%
+	);
+	--glass-shell-surface: linear-gradient(
+		180deg,
+		rgba(var(--ios-dark-5), 0.74) 0%,
+		rgba(var(--ios-dark-6), 0.58) 100%
+	);
+	--glass-toolbar-surface: linear-gradient(
+		180deg,
+		rgba(var(--ios-dark-4), 0.56) 0%,
+		rgba(var(--ios-dark-6), 0.4) 100%
+	);
+	--glass-field-surface: linear-gradient(
+		180deg,
+		rgba(var(--ios-dark-4), 0.5) 0%,
+		rgba(var(--ios-dark-6), 0.34) 100%
+	);
+	--glass-primary-surface: linear-gradient(
+		180deg,
+		rgba(var(--ios-blue-light), 0.92) 0%,
+		rgba(var(--ios-blue), 0.8) 100%
+	);
+	--glass-border-soft: rgba(var(--pure-white), 0.08);
+	--glass-border: rgba(var(--pure-white), 0.14);
+	--glass-border-strong: rgba(var(--pure-white), 0.2);
+	--glass-hairline: rgba(var(--pure-white), 0.08);
+	--glass-highlight: linear-gradient(
+		180deg,
+		rgba(var(--pure-white), 0.16) 0%,
+		transparent 52%
+	);
+	--glass-shadow-soft:
+		0 1px 0 rgba(var(--pure-white), 0.12) inset, 0 0 0 1px rgba(0, 0, 0, 0.24),
+		0 18px 36px rgba(0, 0, 0, 0.32);
+	--glass-shadow:
+		0 1px 0 rgba(var(--pure-white), 0.16) inset, 0 0 0 1px rgba(0, 0, 0, 0.28),
+		0 24px 56px rgba(0, 0, 0, 0.42);
+	--glass-shadow-strong:
+		0 1px 0 rgba(var(--pure-white), 0.18) inset, 0 0 0 1px rgba(0, 0, 0, 0.34),
+		0 28px 80px rgba(0, 0, 0, 0.52);
+	--glass-shadow-accent:
+		0 1px 0 rgba(var(--pure-white), 0.12) inset,
+		0 18px 42px rgba(var(--ios-blue), 0.32);
+	--glass-app-background:
+		radial-gradient(
+			circle at top left,
+			rgba(24, 74, 160, 0.42) 0%,
+			transparent 30%
+		),
+		radial-gradient(
+			circle at top right,
+			rgba(14, 28, 64, 0.46) 0%,
+			transparent 28%
+		),
+		radial-gradient(
+			circle at 50% 110%,
+			rgba(32, 54, 96, 0.44) 0%,
+			transparent 38%
+		),
+		linear-gradient(180deg, #09101d 0%, #0c1424 45%, #101a2b 100%);
+}
+
+body {
+	background-image: var(--glass-app-background);
+	background-attachment: fixed;
+}
+
+::selection {
+	background: rgba(var(--ios-blue), 0.18);
+	color: inherit;
+}
+
+.glass,
+.glass-panel {
+	position: relative;
+	isolation: isolate;
+	overflow: hidden;
+	background: var(--glass-surface);
+	border: 1px solid var(--glass-border);
+	box-shadow: var(--glass-shadow);
+	backdrop-filter: var(--glass-blur-lg);
+	-webkit-backdrop-filter: var(--glass-blur-lg);
+}
+
+.glass::before,
+.glass-panel::before,
+.glass-subtle::before,
+.glass-overlay::before,
+.glass-toolbar::before,
+.glass-field::before,
+.glass-shell::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: var(--glass-highlight);
+	pointer-events: none;
+	z-index: 0;
+}
+
+.glass > *,
+.glass-panel > *,
+.glass-subtle > *,
+.glass-overlay > *,
+.glass-toolbar > *,
+.glass-field > *,
+.glass-shell > * {
+	position: relative;
+	z-index: 1;
+}
+
+.glass-subtle {
+	position: relative;
+	isolation: isolate;
+	overflow: hidden;
+	background: var(--glass-surface-soft);
+	border: 1px solid var(--glass-border-soft);
+	box-shadow: var(--glass-shadow-soft);
+	backdrop-filter: var(--glass-blur-md);
+	-webkit-backdrop-filter: var(--glass-blur-md);
+}
+
+.glass-overlay {
+	position: relative;
+	isolation: isolate;
+	overflow: hidden;
+	background: var(--glass-surface-strong);
+	border: 1px solid var(--glass-border-strong);
+	box-shadow: var(--glass-shadow-strong);
+	backdrop-filter: var(--glass-blur-xl);
+	-webkit-backdrop-filter: var(--glass-blur-xl);
+}
+
+.glass-toolbar {
+	position: relative;
+	isolation: isolate;
+	overflow: hidden;
+	background: var(--glass-toolbar-surface);
+	border: 1px solid var(--glass-border);
+	box-shadow: var(--glass-shadow-soft);
+	backdrop-filter: var(--glass-blur-md);
+	-webkit-backdrop-filter: var(--glass-blur-md);
+}
+
+.glass-field {
+	position: relative;
+	isolation: isolate;
+	overflow: hidden;
+	background: var(--glass-field-surface);
+	border: 1px solid var(--glass-border-soft);
+	box-shadow:
+		0 1px 0 rgba(var(--pure-white), 0.5) inset,
+		0 10px 24px rgba(148, 163, 184, 0.12);
+	backdrop-filter: var(--glass-blur-md);
+	-webkit-backdrop-filter: var(--glass-blur-md);
+}
+
+.glass-primary {
+	position: relative;
+	isolation: isolate;
+	overflow: hidden;
+	background: var(--glass-primary-surface);
+	border: 1px solid rgba(var(--ios-blue-light), 0.28);
+	box-shadow: var(--glass-shadow-accent);
+	color: white;
+}
+
+.glass-shell {
+	position: relative;
+	isolation: isolate;
+	overflow: hidden;
+	background: var(--glass-shell-surface);
+	border: 1px solid rgba(var(--pure-white), 0.48);
+	box-shadow:
+		0 1px 0 rgba(var(--pure-white), 0.78) inset,
+		0 0 0 1px rgba(148, 163, 184, 0.06),
+		0 16px 42px rgba(148, 163, 184, 0.14);
+	backdrop-filter: var(--glass-blur-xl);
+	-webkit-backdrop-filter: var(--glass-blur-xl);
+}
+
+.glass-toolbar,
+.glass-field,
+.glass-primary,
+.glass-subtle,
+.glass,
+.glass-panel,
+.glass-overlay,
+.glass-shell {
+	transition:
+		background 220ms ease,
+		border-color 220ms ease,
+		box-shadow 220ms ease,
+		transform 220ms ease,
+		color 220ms ease;
+}
+
+.glass-hover:hover,
+.glass-panel:hover,
+.glass-toolbar:hover,
+.glass-field:hover {
+	transform: translateY(-1px);
+	box-shadow: var(--glass-shadow-strong);
+}
+
+.glass-focus-ring:focus-visible,
+.glass-field:focus-visible,
+.glass-toolbar:focus-visible {
+	outline: none;
+	box-shadow: var(--glass-focus-ring), var(--glass-shadow);
+}
+
+.glass-separator {
+	border-color: var(--glass-hairline);
+}
+
+.glass-ink {
+	color: rgb(var(--ios-label));
+}
+
+.dark .glass-ink {
+	color: rgba(var(--pure-white), 0.92);
+}
+
+.glass-muted-ink {
+	color: rgba(var(--ios-label), 0.68);
+}
+
+.dark .glass-muted-ink {
+	color: rgba(var(--pure-white), 0.62);
+}
+
+.liquid-glass-bg {
+	background-image: var(--glass-app-background);
+}
+
+/* ============================================
+   EDITOR OVERRIDES & TIPTAP FIXES
+   ============================================ */
+
+/* The Editor "Desk" Surface */
+.cz-editor-surface {
+	@apply bg-zinc-100/50 dark:bg-zinc-900/50 transition-colors duration-300;
+}
+
+/* The Paper Sheet Container - now just a transparent centering wrapper */
+.tiptap-page-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: fit-content;
+	margin: 0 auto;
+	min-width: 21cm; /* Ensure it doesn't collapse below page width */
+	box-sizing: border-box;
+}
+
+/* Individual Page Styling (rendered by Tiptap Pages extension) */
+/* Note: The extension handles the width/height of the page element itself */
+.tiptap-page {
+	@apply bg-white dark:bg-slate-900 relative overflow-hidden;
+	width: 21cm;
+	/* Explicit A4 Portrait Width */
+	min-height: 29.7cm;
+	/* Explicit A4 Portrait Height */
+	box-shadow:
+		0 0 0 1px rgba(0, 0, 0, 0.05),
+		0 10px 15px -3px rgba(0, 0, 0, 0.04),
+		0 4px 6px -2px rgba(0, 0, 0, 0.02);
+	margin-bottom: 2rem;
+	/* The extension sets width/height, we just ensure it looks like a sheet */
+}
+
+.dark .tiptap-page {
+	box-shadow:
+		0 0 0 1px rgba(255, 255, 255, 0.05),
+		0 10px 30px -10px rgba(0, 0, 0, 0.7);
+}
+
+/* Pagination Gap / Spacer between pages */
+.tiptap-pagination-gap {
+	@apply bg-zinc-100 dark:bg-zinc-800 transition-colors duration-200;
+	border-y: 1px solid rgba(0, 0, 0, 0.05);
+	margin: 1rem 0;
+}
+
+/* Header & Footer Styling */
+.tiptap-page-header,
+.tiptap-page-footer {
+	@apply flex items-center px-[2cm] text-zinc-400 dark:text-zinc-500 font-medium overflow-hidden;
+	user-select: none;
+	pointer-events: none; /* Keep them non-editable for now */
+	height: 50px;
+	/* Must match JS config */
+	box-sizing: border-box;
+}
+
+.tiptap-page-header {
+	border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.tiptap-page-footer {
+	border-top: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+/* Tiptap Core Styles (ProseMirror overrides) */
+.tiptap {
+	@apply prose prose-slate dark:prose-invert max-w-none focus:outline-none;
+	@apply prose-headings:font-bold prose-h1:text-zinc-900 dark:prose-h1:text-zinc-50;
+	@apply prose-p:text-zinc-700 dark:prose-p:text-zinc-300 prose-p:leading-relaxed;
+}
+
+/* Fix for Tiptap/ProseMirror lists where text drops to next line */
+/* Use high specificity and direct targets to override any inherited block styles */
+.tiptap.ProseMirror li > p,
+.tiptap .ProseMirror li > p,
+.tiptap li p {
+	display: inline !important;
+	margin: 0 !important;
+}
+
+/* Base list styling */
+.tiptap ul,
+.tiptap ol {
+	padding-left: 2rem !important;
+	margin: 1rem 0 !important;
+}
+
+.tiptap ul {
+	list-style-type: disc !important;
+}
+
+.tiptap ol {
+	list-style-type: decimal !important;
+}
+
+/* Task List Specifics - Extreme Overrides */
+.tiptap ul[data-type='taskList'],
+ul[data-type='taskList'],
+.cz-task-list {
+	list-style: none !important;
+	padding-left: 0 !important;
+	margin: 1.5rem 0 !important;
+}
+
+.tiptap li.cz-task-item,
+.tiptap li[data-type='taskItem'],
+li[data-type='taskItem'],
+li.cz-task-item {
+	display: flex !important;
+	flex-direction: row !important;
+	align-items: flex-start !important;
+	gap: 0.75rem !important;
+	margin: 0 0 0.75rem 0 !important;
+	padding: 0 !important;
+	width: 100% !important;
+	list-style: none !important;
+}
+
+/* Clear any Tailwind Typography markers and block behavior */
+.prose .cz-task-item::before,
+.prose li[data-type='taskItem']::before,
+.cz-task-item::before,
+[data-type='taskItem']::before {
+	content: none !important;
+	display: none !important;
+}
+
+/* The checkbox label container */
+.tiptap .cz-task-item > label,
+.cz-task-item > label {
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	flex: 0 0 auto !important;
+	margin: 0.35rem 0 0 0 !important;
+	padding: 0 !important;
+	user-select: none !important;
+	line-height: 0 !important;
+}
+
+/* The content container */
+.tiptap .cz-task-item > div,
+.cz-task-item > div {
+	flex: 1 1 auto !important;
+	min-width: 0 !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	display: block !important;
+}
+
+/* Force all children inside a task item div to be inline */
+.cz-task-item > div > *,
+.cz-task-item > div p {
+	display: inline !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	line-height: inherit !important;
+}
+
+/* Custom checkbox styling */
+.cz-task-item input[type='checkbox'] {
+	width: 1.1rem !important;
+	height: 1.1rem !important;
+	cursor: pointer !important;
+	margin: 0 !important;
+	vertical-align: middle !important;
+}
+
+/* Nested list margins */
+.tiptap li > ul,
+.tiptap li > ol {
+	margin: 0.5rem 0 0 0 !important;
+}
+
+/* ============================================
+   TABLES STYLING - COMPLETE IMPLEMENTATION
+   ============================================ */
+.tiptap table {
+	border-collapse: collapse !important;
+	table-layout: fixed;
+	width: 100%;
+	margin: 16px 0;
+	overflow: hidden;
+}
+
+.tiptap table td,
+.tiptap table th {
+	border: 1px solid #d1d5db !important;
+	padding: 8px 12px;
+	position: relative;
+	vertical-align: top;
+	box-sizing: border-box;
+	min-width: 100px;
+}
+
+.tiptap table td > *,
+.tiptap table th > * {
+	margin-bottom: 0;
+}
+
+.tiptap table th {
+	background-color: #f3f4f6 !important;
+	font-weight: 600;
+	text-align: left;
+}
+
+.dark .tiptap table th {
+	background-color: #1e293b !important;
+	border-color: #475569 !important;
+}
+
+.dark .tiptap table td {
+	border-color: #475569 !important;
+}
+
+/* Selected cell highlight */
+.tiptap table .selectedCell:after {
+	background: rgba(59, 130, 246, 0.15);
+	content: '';
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	pointer-events: none;
+	position: absolute;
+	z-index: 2;
+}
+
+/* Column resize handle */
+.tiptap .column-resize-handle {
+	background-color: #3b82f6;
+	bottom: -2px;
+	pointer-events: none;
+	position: absolute;
+	right: -2px;
+	top: 0;
+	width: 4px;
+}
+
+/* Resize cursor */
+.tiptap.resize-cursor {
+	cursor: col-resize;
+}
+
+/* Table wrapper for horizontal scroll */
+.tiptap .tableWrapper {
+	margin: 16px 0;
+	overflow-x: auto;
+}
+
+/* Typography - CONSISTENT sizing (headings are bold only, same size) */
+.tiptap h1,
+.tiptap h2,
+.tiptap h3,
+.tiptap h4,
+.tiptap h5,
+.tiptap h6,
+.tiptap p {
+	@apply text-sm leading-normal;
+	margin-bottom: 14px !important;
+	margin-top: 0 !important;
+}
+
+.tiptap h1,
+.tiptap h2,
+.tiptap h3,
+.tiptap h4,
+.tiptap h5,
+.tiptap h6 {
+	@apply font-bold;
+}
+
+/* Placeholder */
+.tiptap .is-empty::before {
+	@apply text-zinc-400 dark:text-zinc-600 float-left h-0 pointer-events-none;
+	content: attr(data-placeholder);
+}
+
+/* Responsive Zoom Container */
+.cz-editor-content-container {
+	@apply flex justify-center w-full;
+}
+
+/* Remove default focus ring from editor */
+.ProseMirror:focus {
+	outline: none;
+}
+/* Page Break Extension Styling */
+.page-break {
+	@apply my-8 flex items-center justify-center relative py-4;
+	page-break-after: always;
+	break-after: page;
+}
+
+.page-break::before {
+	content: '';
+	@apply absolute left-0 right-0 h-px border-t border-dashed border-slate-300 dark:border-slate-700;
+}
+
+.page-break-label {
+	@apply relative bg-white dark:bg-slate-950 px-4 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] pointer-events-none;
+}
+
+/* User-friendly indicator during hover/selection */
+.page-break.ProseMirror-selectednode {
+	@apply outline-none;
+}
+
+.page-break.ProseMirror-selectednode::before {
+	@apply border-indigo-500 dark:border-indigo-400;
+}
+
+.page-break.ProseMirror-selectednode .page-break-label {
+	@apply text-indigo-500 dark:text-indigo-400;
+}
+
+/* Admin/provider shell override: plain light surfaces, no glass compression. */
+html,
+body {
+	background: hsl(var(--background));
+	color: hsl(var(--foreground));
+	min-height: 100%;
+}
+
+body {
+	background-image: none !important;
+	background-attachment: scroll;
+	overflow-y: auto;
+}
+
+details > summary {
+	list-style: none;
+}
+
+details > summary::-webkit-details-marker {
+	display: none;
+}
+
+.glass,
+.glass-panel,
+.glass-subtle,
+.glass-overlay,
+.glass-toolbar,
+.glass-field,
+.glass-shell,
+.glass-card,
+.glass-sidebar {
+	background: hsl(var(--card) / 0.8);
+	border: 1px solid hsl(var(--border));
+	box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+}
+
+.glass-hover:hover,
+.glass-panel:hover,
+.glass-toolbar:hover,
+.glass-field:hover {
+	transform: none;
+	box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+}

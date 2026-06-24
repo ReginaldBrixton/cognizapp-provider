@@ -1,0 +1,19 @@
+#!/bin/sh
+set -eu
+
+git diff --check --cached
+
+staged_files="$(git diff --cached --name-only)"
+for file in $staged_files; do
+  case "$file" in
+    app/*|components/*|hooks/*|lib/*|next.config.js)
+      if git show ":$file" 2>/dev/null | grep -q 'app\.cognizap\.com'; then
+        echo "$file" >&2
+        echo "Do not add app.cognizap.com to runtime/email paths. Use https://cognizap.com." >&2
+        exit 1
+      fi
+      ;;
+  esac
+done
+
+exit 0

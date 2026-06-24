@@ -1,0 +1,1 @@
+export { ProtectedRoleLayout } from './ProtectedRoleLayout'
