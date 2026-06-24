@@ -26,7 +26,7 @@ cp .env.example .env.local
 The default configuration points to:
 
 - Backend API: `http://localhost:4040`
-- Production API: `https://cognizap-users.vercel.app`
+- Production API: `https://api.cognizapp.com`
 
 ### 3. Start the Backend API
 

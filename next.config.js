@@ -22,9 +22,9 @@ function resolveBackendUrl() {
 	const configuredBackendUrl =
 		process.env.NODE_ENV === 'production'
 			? privateBackendUrl ||
-				usersServiceUrl ||
-				publicBackendProductionUrl ||
-				deploymentUsersUrl
+			usersServiceUrl ||
+			publicBackendProductionUrl ||
+			deploymentUsersUrl
 			: privateBackendUrl || usersServiceUrl || publicBackendUrl
 
 	const isLocalBackendUrl = Boolean(
@@ -38,9 +38,9 @@ function resolveBackendUrl() {
 		? configuredBackendUrl
 		: process.env.NODE_ENV === 'production'
 			? publicBackendProductionUrl ||
-				deploymentUsersUrl ||
-				usersServiceUrl ||
-				FALLBACK_DEVELOPMENT_BACKEND_URL
+			deploymentUsersUrl ||
+			usersServiceUrl ||
+			FALLBACK_DEVELOPMENT_BACKEND_URL
 			: FALLBACK_DEVELOPMENT_BACKEND_URL
 }
 
@@ -87,11 +87,11 @@ const securityHeaders = [
 		key: 'Content-Security-Policy',
 		value: [
 			"default-src 'self'",
-			"script-src 'self' 'unsafe-inline' https://cognizapp.xyz https://www.cognizapp.xyz https://cognizap-users.vercel.app https://js.paystack.co",
+			"script-src 'self' 'unsafe-inline' https://cognizapp.xyz https://www.cognizapp.xyz https://api.cognizapp.com https://js.paystack.co",
 			"style-src 'self' 'unsafe-inline' https:",
 			"img-src 'self' data: blob: https:",
 			"font-src 'self' data:",
-			"connect-src 'self' https://cognizap-users.vercel.app https://api.paystack.co https://*.paystack.co https://*.paystack.com wss:",
+			"connect-src 'self' https://api.cognizapp.com https://api.paystack.co https://*.paystack.co https://*.paystack.com wss:",
 			"frame-src https://checkout.paystack.com https://*.paystack.co https://*.paystack.com",
 			"media-src 'self' blob:",
 			"frame-ancestors 'none'",
