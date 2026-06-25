@@ -15,7 +15,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import {
 	getSessionManager,
 	type SessionManager,
-} from '@/app/(auth)/_lib/security/session-manager'
+} from '@/lib/auth/session-manager'
 import { useAuthStore } from '@/lib/store/auth'
 import type { Session, SessionContextValue } from './types'
 import { clearLoginSessionData, getStoredLoginSessionId } from './storage'

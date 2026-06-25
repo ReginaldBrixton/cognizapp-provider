@@ -8,12 +8,14 @@ interface DiscountRedemptionsListProps {
 	redemptions: NonNullable<DiscountCodeRow['redemptions']>
 }
 
-export function DiscountRedemptionsList({ redemptions }: DiscountRedemptionsListProps) {
+export function DiscountRedemptionsList({
+	redemptions,
+}: DiscountRedemptionsListProps) {
 	if (redemptions.length === 0) return null
 
 	return (
-		<div className='border-t border-slate-100 px-3 pb-3 pt-2'>
-			<p className='mb-1.5 flex items-center gap-1.5 text-[11px] font-semibold text-slate-600'>
+		<div className='border-t border-slate-100 dark:border-border px-3 pb-3 pt-2'>
+			<p className='mb-1.5 flex items-center gap-1.5 text-[11px] font-semibold text-slate-600 dark:text-muted-foreground'>
 				<Users className='h-3 w-3' />
 				{redemptions.length} redemption{redemptions.length !== 1 ? 's' : ''}
 			</p>
@@ -21,9 +23,9 @@ export function DiscountRedemptionsList({ redemptions }: DiscountRedemptionsList
 				{redemptions.map((r) => (
 					<div
 						key={r.id}
-						className='flex items-center justify-between gap-2 rounded-lg bg-slate-50 px-2.5 py-1.5 text-[12px]'
+						className='flex items-center justify-between gap-2 rounded-lg bg-slate-50 dark:bg-muted px-2.5 py-1.5 text-[12px]'
 					>
-						<span className='truncate font-medium text-slate-700'>
+						<span className='truncate font-medium text-slate-700 dark:text-foreground'>
 							{r.fullName || r.email || 'Client'}
 						</span>
 						<div className='flex shrink-0 items-center gap-2'>
@@ -31,7 +33,9 @@ export function DiscountRedemptionsList({ redemptions }: DiscountRedemptionsList
 								-GHS {Number(r.discountAmount ?? 0).toLocaleString()}
 							</span>
 							{r.redeemedAt && (
-								<span className='text-[10px] text-slate-400'>{formatDate(r.redeemedAt)}</span>
+								<span className='text-[10px] text-slate-400 dark:text-muted-foreground/70'>
+									{formatDate(r.redeemedAt)}
+								</span>
 							)}
 						</div>
 					</div>

@@ -12,15 +12,24 @@ function genTempId() {
 	return `temp_${Date.now()}_${Math.random().toString(36).slice(2)}`
 }
 
-export function DiscountCodesPage({ initialCodes }: { initialCodes: DiscountCodeRow[] }) {
+export function DiscountCodesPage({
+	initialCodes,
+}: {
+	initialCodes: DiscountCodeRow[]
+}) {
 	const [codes, setCodes] = useState<DiscountCodeRow[]>(initialCodes)
 	const [editingId, setEditingId] = useState<string | null>(null)
 	const [expandedId, setExpandedId] = useState<string | null>(null)
 	const [busyId, setBusyId] = useState<string | null>(null)
 
-	const updateCode = useCallback((id: string, patch: Partial<DiscountCodeRow>) => {
-		setCodes((c) => c.map((row) => row.id === id ? { ...row, ...patch } : row))
-	}, [])
+	const updateCode = useCallback(
+		(id: string, patch: Partial<DiscountCodeRow>) => {
+			setCodes((c) =>
+				c.map((row) => (row.id === id ? { ...row, ...patch } : row)),
+			)
+		},
+		[],
+	)
 
 	// ── create (optimistic) ───────────────────────────────────────────────────
 
@@ -40,7 +49,7 @@ export function DiscountCodesPage({ initialCodes }: { initialCodes: DiscountCode
 		setCodes((c) => [optimistic, ...c])
 
 		try {
-			const res = await fetch('/api/support/provider/discount-codes', {
+			const res = await fetch('/api/provider/discount-codes', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(payload),
@@ -50,7 +59,11 @@ export function DiscountCodesPage({ initialCodes }: { initialCodes: DiscountCode
 
 			const real = data?.data as DiscountCodeRow | undefined
 			if (real?.id) {
-				setCodes((c) => c.map((row) => row.id === tempId ? { ...real, redemptions: [] } : row))
+				setCodes((c) =>
+					c.map((row) =>
+						row.id === tempId ? { ...real, redemptions: [] } : row,
+					),
+				)
 				toast.success(`Code ${real.code} created`)
 			} else {
 				setCodes((c) => c.filter((row) => row.id !== tempId))
@@ -67,7 +80,7 @@ export function DiscountCodesPage({ initialCodes }: { initialCodes: DiscountCode
 	const handleSave = async (code: DiscountCodeRow) => {
 		setBusyId(code.id)
 		try {
-			const res = await fetch(`/api/support/provider/discount-codes/${code.id}`, {
+			const res = await fetch(`/api/provider/discount-codes/${code.id}`, {
 				method: 'PUT',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
@@ -96,7 +109,9 @@ export function DiscountCodesPage({ initialCodes }: { initialCodes: DiscountCode
 		setCodes((c) => c.filter((row) => row.id !== id))
 		setBusyId(id)
 		try {
-			const res = await fetch(`/api/support/provider/discount-codes/${id}`, { method: 'DELETE' })
+			const res = await fetch(`/api/provider/discount-codes/${id}`, {
+				method: 'DELETE',
+			})
 			const data = await res.json().catch(() => ({}))
 			if (!res.ok) throw new Error(data?.error || 'Could not delete code')
 			toast.success('Code removed')
@@ -117,10 +132,14 @@ export function DiscountCodesPage({ initialCodes }: { initialCodes: DiscountCode
 				<DiscountCodeForm onCreate={handleCreate} />
 
 				{codes.length === 0 ? (
-					<div className='flex flex-col items-center justify-center rounded-xl border border-dashed border-slate-200 bg-white py-14 text-center'>
-						<BadgePercent className='mb-2.5 h-9 w-9 text-slate-300' />
-						<p className='text-[13px] font-semibold text-slate-700'>No discount codes yet</p>
-						<p className='mt-1 text-[12px] text-slate-400'>Create your first promo code above</p>
+					<div className='flex flex-col items-center justify-center rounded-xl border border-dashed border-slate-200 dark:border-border bg-white dark:bg-card py-14 text-center'>
+						<BadgePercent className='mb-2.5 h-9 w-9 text-slate-300 dark:text-muted-foreground/50' />
+						<p className='text-[13px] font-semibold text-slate-700 dark:text-foreground'>
+							No discount codes yet
+						</p>
+						<p className='mt-1 text-[12px] text-slate-400 dark:text-muted-foreground/70'>
+							Create your first promo code above
+						</p>
 					</div>
 				) : (
 					<div className='space-y-2 pb-3 lg:pb-4'>
@@ -135,7 +154,9 @@ export function DiscountCodesPage({ initialCodes }: { initialCodes: DiscountCode
 								onSave={handleSave}
 								onCancelEdit={() => setEditingId(null)}
 								onDelete={() => void handleDelete(code.id)}
-								onToggleExpand={() => setExpandedId(expandedId === code.id ? null : code.id)}
+								onToggleExpand={() =>
+									setExpandedId(expandedId === code.id ? null : code.id)
+								}
 								onUpdate={updateCode}
 							/>
 						))}

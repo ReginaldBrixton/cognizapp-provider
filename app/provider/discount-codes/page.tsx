@@ -1,5 +1,5 @@
 import { DiscountCodesPage } from './DiscountCodesPage'
-import { fetchProviderData } from '../_lib/server-data'
+import { fetchProviderData } from '@/lib/server/provider-data'
 import type { DiscountCodeRow } from './types'
 
 export default async function ProviderDiscountCodesPageRoute() {

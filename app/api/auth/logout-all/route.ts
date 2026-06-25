@@ -6,11 +6,11 @@
  */
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
-import { BACKEND_URL } from '@/app/api/_lib/backend-url'
+import { BACKEND_URL } from '@/lib/server/backend-url'
 import {
 	ACCESS_TOKEN_COOKIE,
 	clearAuthCookies,
-} from '@/app/api/_lib/auth-session'
+} from '@/lib/server/auth-session'
 
 export async function POST(request: NextRequest) {
 	const cookieStore = await cookies()

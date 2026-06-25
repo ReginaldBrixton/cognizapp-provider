@@ -11,17 +11,52 @@ interface QuickAction {
 }
 
 const actions: QuickAction[] = [
-	{ label: 'Inbox', href: '/provider/inbox', icon: Inbox, color: 'text-blue-600', bg: 'bg-blue-50', desc: 'New requests' },
-	{ label: 'Clients', href: '/provider/clients', icon: Users, color: 'text-violet-600', bg: 'bg-violet-50', desc: 'Manage clients' },
-	{ label: 'Discounts', href: '/provider/discount-codes', icon: BadgePercent, color: 'text-emerald-600', bg: 'bg-emerald-50', desc: 'Promo codes' },
-	{ label: 'Referrals', href: '/provider/referrals', icon: Gift, color: 'text-amber-600', bg: 'bg-amber-50', desc: 'Track referrals' },
-	{ label: 'Settings', href: '/provider/settings', icon: Settings, color: 'text-slate-600', bg: 'bg-slate-100', desc: 'Preferences' },
+	{
+		label: 'Inbox',
+		href: '/provider/inbox',
+		icon: Inbox,
+		color: 'text-blue-600',
+		bg: 'bg-blue-50',
+		desc: 'New requests',
+	},
+	{
+		label: 'Clients',
+		href: '/provider/clients',
+		icon: Users,
+		color: 'text-violet-600',
+		bg: 'bg-violet-50',
+		desc: 'Manage clients',
+	},
+	{
+		label: 'Discounts',
+		href: '/provider/discount-codes',
+		icon: BadgePercent,
+		color: 'text-emerald-600',
+		bg: 'bg-emerald-50',
+		desc: 'Promo codes',
+	},
+	{
+		label: 'Referrals',
+		href: '/provider/referrals',
+		icon: Gift,
+		color: 'text-amber-600',
+		bg: 'bg-amber-50',
+		desc: 'Track referrals',
+	},
+	{
+		label: 'Settings',
+		href: '/provider/settings',
+		icon: Settings,
+		color: 'text-slate-600 dark:text-muted-foreground',
+		bg: 'bg-slate-100 dark:bg-muted',
+		desc: 'Preferences',
+	},
 ]
 
 export function QuickActions() {
 	return (
-		<div className='hidden rounded-xl border border-slate-200 bg-white p-3 shadow-sm lg:block lg:p-5'>
-			<p className='mb-2.5 text-[11px] font-semibold uppercase tracking-wide text-slate-400 lg:text-xs'>
+		<div className='hidden rounded-xl border border-slate-200 dark:border-border bg-white dark:bg-card p-3 shadow-sm lg:block lg:p-5'>
+			<p className='mb-2.5 text-[11px] font-semibold uppercase tracking-wide text-slate-400 dark:text-muted-foreground/70 lg:text-xs'>
 				Quick actions
 			</p>
 			<div className='grid grid-cols-3 gap-2 sm:grid-cols-5 lg:gap-3'>
@@ -31,12 +66,14 @@ export function QuickActions() {
 						<Link
 							key={action.label}
 							href={action.href}
-							className='flex min-h-20 flex-col items-center justify-center gap-1.5 rounded-xl border border-slate-100 p-2.5 text-center transition hover:bg-slate-50 hover:shadow-sm lg:min-h-24'
+							className='flex min-h-20 flex-col items-center justify-center gap-1.5 rounded-xl border border-slate-100 dark:border-border p-2.5 text-center transition hover:bg-slate-50 dark:hover:bg-muted hover:shadow-sm lg:min-h-24'
 						>
-							<div className={`flex h-8 w-8 items-center justify-center rounded-lg ${action.bg}`}>
+							<div
+								className={`flex h-8 w-8 items-center justify-center rounded-lg ${action.bg}`}
+							>
 								<Icon className={`h-4 w-4 ${action.color}`} />
 							</div>
-							<p className='text-[11px] font-medium leading-tight text-slate-700 lg:text-sm'>
+							<p className='text-[11px] font-medium leading-tight text-slate-700 dark:text-foreground lg:text-sm'>
 								{action.label}
 							</p>
 						</Link>

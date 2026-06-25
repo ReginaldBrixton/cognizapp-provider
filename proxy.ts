@@ -4,7 +4,7 @@ import {
 	REFRESH_TOKEN_COOKIE,
 	refreshBackendSession,
 	setAuthCookies,
-} from '@/app/api/_lib/auth-session'
+} from '@/lib/server/auth-session'
 
 const PUBLIC_EXACT_PATHS = new Set([
 	'/',
@@ -12,10 +12,10 @@ const PUBLIC_EXACT_PATHS = new Set([
 	'/register',
 ])
 
-const PUBLIC_PREFIXES = ['/auth']
+const PUBLIC_PREFIXES: string[] = []
 const SKIP_PREFIXES = ['/api/', '/_next/', '/static/', '/favicon.ico']
 
-const PROVIDER_ROLES = new Set(['SUPPORT_PROVIDER_USER'])
+const PROVIDER_ROLES = new Set(['SUPPORT_PROVIDER_USER', 'DEV_USER'])
 
 const PROVIDER_PREFIXES = ['/provider']
 

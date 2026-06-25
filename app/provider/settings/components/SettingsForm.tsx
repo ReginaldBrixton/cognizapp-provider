@@ -45,15 +45,24 @@ export const defaultSettings: ProviderSettings = {
 	availabilityStatus: 'available',
 	weeklyCapacity: 20,
 	responseTargetHours: 24,
-	notificationPreferences: { email: true, newRequests: true, messages: true, deadlineReminders: true },
-	workloadPreferences: { preferredServices: [], maxActiveRequests: 10, autoAssign: false },
+	notificationPreferences: {
+		email: true,
+		newRequests: true,
+		messages: true,
+		deadlineReminders: true,
+	},
+	workloadPreferences: {
+		preferredServices: [],
+		maxActiveRequests: 10,
+		autoAssign: false,
+	},
 }
 
 const availabilityColors: Record<string, string> = {
 	available: 'bg-emerald-500',
 	busy: 'bg-amber-500',
 	away: 'bg-orange-400',
-	offline: 'bg-slate-400',
+	offline: 'bg-slate-400 dark:bg-muted-foreground',
 }
 
 export function ProviderSettingsForm() {
@@ -72,18 +81,28 @@ export function ProviderSettingsForm() {
 					setSettings({
 						...defaultSettings,
 						...(payload.data || {}),
-						notificationPreferences: { ...defaultSettings.notificationPreferences, ...(payload.data?.notificationPreferences || {}) },
-						workloadPreferences: { ...defaultSettings.workloadPreferences, ...(payload.data?.workloadPreferences || {}) },
+						notificationPreferences: {
+							...defaultSettings.notificationPreferences,
+							...(payload.data?.notificationPreferences || {}),
+						},
+						workloadPreferences: {
+							...defaultSettings.workloadPreferences,
+							...(payload.data?.workloadPreferences || {}),
+						},
 					})
 				}
 			} catch (err) {
-				toast.error(err instanceof Error ? err.message : 'Failed to load settings')
+				toast.error(
+					err instanceof Error ? err.message : 'Failed to load settings',
+				)
 			} finally {
 				if (!cancelled) setLoading(false)
 			}
 		}
 		void load()
-		return () => { cancelled = true }
+		return () => {
+			cancelled = true
+		}
 	}, [])
 
 	const save = async () => {
@@ -99,12 +118,22 @@ export function ProviderSettingsForm() {
 			setSettings({
 				...defaultSettings,
 				...(payload.data || settings),
-				notificationPreferences: { ...defaultSettings.notificationPreferences, ...(payload.data?.notificationPreferences || settings.notificationPreferences) },
-				workloadPreferences: { ...defaultSettings.workloadPreferences, ...(payload.data?.workloadPreferences || settings.workloadPreferences) },
+				notificationPreferences: {
+					...defaultSettings.notificationPreferences,
+					...(payload.data?.notificationPreferences ||
+						settings.notificationPreferences),
+				},
+				workloadPreferences: {
+					...defaultSettings.workloadPreferences,
+					...(payload.data?.workloadPreferences ||
+						settings.workloadPreferences),
+				},
 			})
 			toast.success('Settings saved')
 		} catch (err) {
-			toast.error(err instanceof Error ? err.message : 'Could not save settings')
+			toast.error(
+				err instanceof Error ? err.message : 'Could not save settings',
+			)
 		} finally {
 			setSaving(false)
 		}
@@ -112,8 +141,8 @@ export function ProviderSettingsForm() {
 
 	if (loading) {
 		return (
-			<div className='flex min-h-[200px] items-center justify-center rounded-xl border border-slate-200 bg-white'>
-				<Loader2 className='h-5 w-5 animate-spin text-slate-400' />
+			<div className='flex min-h-[200px] items-center justify-center rounded-xl border border-slate-200 dark:border-border bg-white dark:bg-card'>
+				<Loader2 className='h-5 w-5 animate-spin text-slate-400 dark:text-muted-foreground/70' />
 			</div>
 		)
 	}
@@ -123,21 +152,46 @@ export function ProviderSettingsForm() {
 			<SettingsSection icon={User} title='Profile & Availability'>
 				<div className='space-y-2.5'>
 					<FormRow>
-						<Label htmlFor='displayName' className='text-[12px]'>Display name</Label>
-						<Input id='displayName' value={settings.displayName} onChange={(e) => setSettings({ ...settings, displayName: e.target.value })} placeholder='Your name' className='h-8 text-[13px]' />
+						<Label htmlFor='displayName' className='text-[12px]'>
+							Display name
+						</Label>
+						<Input
+							id='displayName'
+							value={settings.displayName}
+							onChange={(e) =>
+								setSettings({ ...settings, displayName: e.target.value })
+							}
+							placeholder='Your name'
+							className='h-8 text-[13px]'
+						/>
 					</FormRow>
 					<FormRow>
-						<Label htmlFor='bio' className='text-[12px]'>Bio</Label>
-						<Textarea id='bio' value={settings.bio} onChange={(e) => setSettings({ ...settings, bio: e.target.value })} placeholder='Short note for internal context…' rows={3} className='resize-none text-[13px]' />
+						<Label htmlFor='bio' className='text-[12px]'>
+							Bio
+						</Label>
+						<Textarea
+							id='bio'
+							value={settings.bio}
+							onChange={(e) =>
+								setSettings({ ...settings, bio: e.target.value })
+							}
+							placeholder='Short note for internal context…'
+							rows={3}
+							className='resize-none text-[13px]'
+						/>
 					</FormRow>
 					<div className='grid gap-2.5 sm:grid-cols-2'>
 						<FormRow>
 							<Label className='text-[12px]'>Availability</Label>
 							<div className='flex items-center gap-2'>
-								<span className={`h-2.5 w-2.5 rounded-full ${availabilityColors[settings.availabilityStatus]}`} />
+								<span
+									className={`h-2.5 w-2.5 rounded-full ${availabilityColors[settings.availabilityStatus]}`}
+								/>
 								<Select
 									value={settings.availabilityStatus}
-									onValueChange={(v: ProviderSettings['availabilityStatus']) => setSettings({ ...settings, availabilityStatus: v })}
+									onValueChange={(v: ProviderSettings['availabilityStatus']) =>
+										setSettings({ ...settings, availabilityStatus: v })
+									}
 								>
 									<SelectTrigger className='h-8 flex-1 text-[13px]'>
 										<SelectValue />
@@ -152,16 +206,55 @@ export function ProviderSettingsForm() {
 							</div>
 						</FormRow>
 						<FormRow>
-							<Label htmlFor='timezone' className='text-[12px]'>Timezone</Label>
-							<Input id='timezone' value={settings.timezone} onChange={(e) => setSettings({ ...settings, timezone: e.target.value })} className='h-8 text-[13px]' />
+							<Label htmlFor='timezone' className='text-[12px]'>
+								Timezone
+							</Label>
+							<Input
+								id='timezone'
+								value={settings.timezone}
+								onChange={(e) =>
+									setSettings({ ...settings, timezone: e.target.value })
+								}
+								className='h-8 text-[13px]'
+							/>
 						</FormRow>
 						<FormRow>
-							<Label htmlFor='weeklyCapacity' className='text-[12px]'>Weekly capacity (hrs)</Label>
-							<Input id='weeklyCapacity' type='number' min={0} max={168} value={settings.weeklyCapacity} onChange={(e) => setSettings({ ...settings, weeklyCapacity: Number(e.target.value) })} className='h-8 text-[13px]' />
+							<Label htmlFor='weeklyCapacity' className='text-[12px]'>
+								Weekly capacity (hrs)
+							</Label>
+							<Input
+								id='weeklyCapacity'
+								type='number'
+								min={0}
+								max={168}
+								value={settings.weeklyCapacity}
+								onChange={(e) =>
+									setSettings({
+										...settings,
+										weeklyCapacity: Number(e.target.value),
+									})
+								}
+								className='h-8 text-[13px]'
+							/>
 						</FormRow>
 						<FormRow>
-							<Label htmlFor='responseTarget' className='text-[12px]'>Response target (hrs)</Label>
-							<Input id='responseTarget' type='number' min={1} max={168} value={settings.responseTargetHours} onChange={(e) => setSettings({ ...settings, responseTargetHours: Number(e.target.value) })} className='h-8 text-[13px]' />
+							<Label htmlFor='responseTarget' className='text-[12px]'>
+								Response target (hrs)
+							</Label>
+							<Input
+								id='responseTarget'
+								type='number'
+								min={1}
+								max={168}
+								value={settings.responseTargetHours}
+								onChange={(e) =>
+									setSettings({
+										...settings,
+										responseTargetHours: Number(e.target.value),
+									})
+								}
+								className='h-8 text-[13px]'
+							/>
 						</FormRow>
 					</div>
 				</div>
@@ -170,26 +263,112 @@ export function ProviderSettingsForm() {
 			<div className='grid gap-3 md:grid-cols-2'>
 				<SettingsSection icon={Bell} title='Notifications'>
 					<div className='space-y-2'>
-						<SwitchRow label='Email notifications' checked={settings.notificationPreferences.email} onCheckedChange={(v) => setSettings({ ...settings, notificationPreferences: { ...settings.notificationPreferences, email: v } })} />
-						<SwitchRow label='New requests' checked={settings.notificationPreferences.newRequests} onCheckedChange={(v) => setSettings({ ...settings, notificationPreferences: { ...settings.notificationPreferences, newRequests: v } })} />
-						<SwitchRow label='Messages' checked={settings.notificationPreferences.messages} onCheckedChange={(v) => setSettings({ ...settings, notificationPreferences: { ...settings.notificationPreferences, messages: v } })} />
-						<SwitchRow label='Deadline reminders' checked={settings.notificationPreferences.deadlineReminders} onCheckedChange={(v) => setSettings({ ...settings, notificationPreferences: { ...settings.notificationPreferences, deadlineReminders: v } })} />
+						<SwitchRow
+							label='Email notifications'
+							checked={settings.notificationPreferences.email}
+							onCheckedChange={(v) =>
+								setSettings({
+									...settings,
+									notificationPreferences: {
+										...settings.notificationPreferences,
+										email: v,
+									},
+								})
+							}
+						/>
+						<SwitchRow
+							label='New requests'
+							checked={settings.notificationPreferences.newRequests}
+							onCheckedChange={(v) =>
+								setSettings({
+									...settings,
+									notificationPreferences: {
+										...settings.notificationPreferences,
+										newRequests: v,
+									},
+								})
+							}
+						/>
+						<SwitchRow
+							label='Messages'
+							checked={settings.notificationPreferences.messages}
+							onCheckedChange={(v) =>
+								setSettings({
+									...settings,
+									notificationPreferences: {
+										...settings.notificationPreferences,
+										messages: v,
+									},
+								})
+							}
+						/>
+						<SwitchRow
+							label='Deadline reminders'
+							checked={settings.notificationPreferences.deadlineReminders}
+							onCheckedChange={(v) =>
+								setSettings({
+									...settings,
+									notificationPreferences: {
+										...settings.notificationPreferences,
+										deadlineReminders: v,
+									},
+								})
+							}
+						/>
 					</div>
 				</SettingsSection>
 
 				<SettingsSection icon={Briefcase} title='Workload'>
 					<div className='space-y-2.5'>
 						<FormRow>
-							<Label htmlFor='maxRequests' className='text-[12px]'>Max active requests</Label>
-							<Input id='maxRequests' type='number' min={1} max={200} value={settings.workloadPreferences.maxActiveRequests} onChange={(e) => setSettings({ ...settings, workloadPreferences: { ...settings.workloadPreferences, maxActiveRequests: Number(e.target.value) } })} className='h-8 text-[13px]' />
+							<Label htmlFor='maxRequests' className='text-[12px]'>
+								Max active requests
+							</Label>
+							<Input
+								id='maxRequests'
+								type='number'
+								min={1}
+								max={200}
+								value={settings.workloadPreferences.maxActiveRequests}
+								onChange={(e) =>
+									setSettings({
+										...settings,
+										workloadPreferences: {
+											...settings.workloadPreferences,
+											maxActiveRequests: Number(e.target.value),
+										},
+									})
+								}
+								className='h-8 text-[13px]'
+							/>
 						</FormRow>
-						<SwitchRow label='Auto-assign requests' checked={settings.workloadPreferences.autoAssign} onCheckedChange={(v) => setSettings({ ...settings, workloadPreferences: { ...settings.workloadPreferences, autoAssign: v } })} />
+						<SwitchRow
+							label='Auto-assign requests'
+							checked={settings.workloadPreferences.autoAssign}
+							onCheckedChange={(v) =>
+								setSettings({
+									...settings,
+									workloadPreferences: {
+										...settings.workloadPreferences,
+										autoAssign: v,
+									},
+								})
+							}
+						/>
 					</div>
 				</SettingsSection>
 			</div>
 
-			<Button onClick={save} disabled={saving} className='w-full gap-2 bg-emerald-600 hover:bg-emerald-700'>
-				{saving ? <Loader2 className='h-4 w-4 animate-spin' /> : <Save className='h-4 w-4' />}
+			<Button
+				onClick={save}
+				disabled={saving}
+				className='w-full gap-2 bg-emerald-600 hover:bg-emerald-700'
+			>
+				{saving ? (
+					<Loader2 className='h-4 w-4 animate-spin' />
+				) : (
+					<Save className='h-4 w-4' />
+				)}
 				Save settings
 			</Button>
 		</div>

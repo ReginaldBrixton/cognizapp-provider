@@ -8,7 +8,7 @@ import { Toaster } from 'sonner'
 import { SessionProvider } from '@/components/providers/SessionProvider'
 import { AppearanceProvider } from '@/components/providers/AppearanceProvider'
 import { ThemeProvider } from '@/components/providers/ThemeProvider'
-import { UrlCleanup } from '@/app/(auth)/components/UrlCleanup'
+import { UrlCleanup } from '@/components/auth/UrlCleanup'
 
 // Error boundary to catch ChunkLoadError and similar runtime errors
 class AppErrorBoundary extends React.Component<

@@ -1,6 +1,6 @@
 import { PageContainer } from '@/components/shared'
 import { RequestInbox } from './_components/RequestInbox'
-import { fetchProviderData, type ProviderRequest } from '../_lib/server-data'
+import { fetchProviderData, type ProviderRequest } from '@/lib/server/provider-data'
 
 type InboxSearchParams =
 	| Record<string, string | string[] | undefined>

@@ -30,6 +30,6 @@ export interface SessionContextValue {
 	extendSession: () => void
 	/** Get the session manager instance */
 	sessionManager:
-		| import('@/app/(auth)/_lib/security/session-manager').SessionManager
+		| import('@/lib/auth/session-manager').SessionManager
 		| null
 }

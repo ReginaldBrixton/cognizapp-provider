@@ -25,8 +25,15 @@ function FilterSelectControls({
 }: RequestFiltersProps & { compact?: boolean }) {
 	return (
 		<>
-			<Select value={filters.status || 'all'} onValueChange={(v) => onFiltersChange({ ...filters, status: v === 'all' ? '' : v })}>
-				<SelectTrigger className={`${compact ? 'h-10' : 'h-9 lg:h-10'} w-full text-[13px] lg:w-[150px]`}>
+			<Select
+				value={filters.status || 'all'}
+				onValueChange={(v) =>
+					onFiltersChange({ ...filters, status: v === 'all' ? '' : v })
+				}
+			>
+				<SelectTrigger
+					className={`${compact ? 'h-10' : 'h-9 lg:h-10'} w-full text-[13px] lg:w-[150px]`}
+				>
 					<SelectValue placeholder='Status' />
 				</SelectTrigger>
 				<SelectContent>
@@ -41,8 +48,15 @@ function FilterSelectControls({
 				</SelectContent>
 			</Select>
 
-			<Select value={filters.paymentStatus || 'all'} onValueChange={(v) => onFiltersChange({ ...filters, paymentStatus: v === 'all' ? '' : v })}>
-				<SelectTrigger className={`${compact ? 'h-10' : 'h-9 lg:h-10'} w-full text-[13px] lg:w-[160px]`}>
+			<Select
+				value={filters.paymentStatus || 'all'}
+				onValueChange={(v) =>
+					onFiltersChange({ ...filters, paymentStatus: v === 'all' ? '' : v })
+				}
+			>
+				<SelectTrigger
+					className={`${compact ? 'h-10' : 'h-9 lg:h-10'} w-full text-[13px] lg:w-[160px]`}
+				>
 					<SelectValue placeholder='Payment' />
 				</SelectTrigger>
 				<SelectContent>
@@ -54,8 +68,15 @@ function FilterSelectControls({
 				</SelectContent>
 			</Select>
 
-			<Select value={filters.deadline || 'all'} onValueChange={(v) => onFiltersChange({ ...filters, deadline: v === 'all' ? '' : v })}>
-				<SelectTrigger className={`${compact ? 'h-10' : 'h-9 lg:h-10'} w-full text-[13px] lg:w-[150px]`}>
+			<Select
+				value={filters.deadline || 'all'}
+				onValueChange={(v) =>
+					onFiltersChange({ ...filters, deadline: v === 'all' ? '' : v })
+				}
+			>
+				<SelectTrigger
+					className={`${compact ? 'h-10' : 'h-9 lg:h-10'} w-full text-[13px] lg:w-[150px]`}
+				>
 					<SelectValue placeholder='Deadline' />
 				</SelectTrigger>
 				<SelectContent>
@@ -67,8 +88,15 @@ function FilterSelectControls({
 				</SelectContent>
 			</Select>
 
-			<Select value={filters.priority || 'all'} onValueChange={(v) => onFiltersChange({ ...filters, priority: v === 'all' ? '' : v })}>
-				<SelectTrigger className={`${compact ? 'h-10' : 'h-9 lg:h-10'} w-full text-[13px] lg:w-[150px]`}>
+			<Select
+				value={filters.priority || 'all'}
+				onValueChange={(v) =>
+					onFiltersChange({ ...filters, priority: v === 'all' ? '' : v })
+				}
+			>
+				<SelectTrigger
+					className={`${compact ? 'h-10' : 'h-9 lg:h-10'} w-full text-[13px] lg:w-[150px]`}
+				>
 					<SelectValue placeholder='Priority' />
 				</SelectTrigger>
 				<SelectContent>
@@ -81,7 +109,10 @@ function FilterSelectControls({
 	)
 }
 
-export function RequestFilters({ filters, onFiltersChange }: RequestFiltersProps) {
+export function RequestFilters({
+	filters,
+	onFiltersChange,
+}: RequestFiltersProps) {
 	const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
 	const hasActiveFilters =
 		filters.status ||
@@ -117,18 +148,20 @@ export function RequestFilters({ filters, onFiltersChange }: RequestFiltersProps
 			<div className='lg:hidden'>
 				<div className='flex gap-2'>
 					<div className='relative min-w-0 flex-1'>
-						<Search className='absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400' />
+						<Search className='absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400 dark:text-muted-foreground/70' />
 						<Input
 							placeholder='Search requests...'
 							value={filters.search}
-							onChange={(e) => onFiltersChange({ ...filters, search: e.target.value })}
+							onChange={(e) =>
+								onFiltersChange({ ...filters, search: e.target.value })
+							}
 							className='h-10 pl-8 text-[13px]'
 						/>
 					</div>
 					<button
 						type='button'
 						onClick={() => setMobileFiltersOpen(true)}
-						className='relative flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 shadow-sm'
+						className='relative flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-slate-200 dark:border-border bg-white dark:bg-card text-slate-600 dark:text-muted-foreground shadow-sm'
 						aria-label='Open filters'
 					>
 						<SlidersHorizontal className='h-4 w-4' />
@@ -147,37 +180,73 @@ export function RequestFilters({ filters, onFiltersChange }: RequestFiltersProps
 							filters.paymentStatus,
 							filters.deadline,
 							filters.priority,
-						].filter(Boolean).slice(0, 3).map((filter) => (
-							<span key={filter} className='shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-600'>
-								{formatLabel(filter)}
-							</span>
-						))}
-						<button type='button' onClick={clearAll} className='shrink-0 text-[10px] font-semibold text-slate-500'>
+						]
+							.filter(Boolean)
+							.slice(0, 3)
+							.map((filter) => (
+								<span
+									key={filter}
+									className='shrink-0 rounded-full bg-slate-100 dark:bg-muted px-2 py-0.5 text-[10px] font-medium text-slate-600 dark:text-muted-foreground'
+								>
+									{formatLabel(filter)}
+								</span>
+							))}
+						<button
+							type='button'
+							onClick={clearAll}
+							className='shrink-0 text-[10px] font-semibold text-slate-500 dark:text-muted-foreground'
+						>
 							Clear
 						</button>
 					</div>
 				)}
 
 				{mobileFiltersOpen && (
-					<div className='fixed inset-0 z-modal flex items-end bg-slate-950/40 p-mobile-sheet-gutter pb-mobile-nav-safe' onClick={() => setMobileFiltersOpen(false)}>
-						<div className='max-h-mobile-sheet w-full overflow-hidden rounded-provider-sheet border border-slate-200 bg-white shadow-mobile-sheet' onClick={(e) => e.stopPropagation()}>
-							<div className='flex items-center justify-between border-b border-slate-100 px-4 py-3'>
+					<div
+						className='fixed inset-0 z-modal flex items-end bg-slate-950 dark:bg-foreground/40 p-mobile-sheet-gutter pb-mobile-nav-safe'
+						onClick={() => setMobileFiltersOpen(false)}
+					>
+						<div
+							className='max-h-mobile-sheet w-full overflow-hidden rounded-provider-sheet border border-slate-200 dark:border-border bg-white dark:bg-card shadow-mobile-sheet'
+							onClick={(e) => e.stopPropagation()}
+						>
+							<div className='flex items-center justify-between border-b border-slate-100 dark:border-border px-4 py-3'>
 								<div>
-									<p className='text-[13px] font-semibold text-slate-900'>Filters</p>
-									<p className='text-[11px] text-slate-400'>Narrow the request list</p>
+									<p className='text-[13px] font-semibold text-slate-900 dark:text-foreground'>
+										Filters
+									</p>
+									<p className='text-[11px] text-slate-400 dark:text-muted-foreground/70'>
+										Narrow the request list
+									</p>
 								</div>
-								<button type='button' onClick={() => setMobileFiltersOpen(false)} className='flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100'>
+								<button
+									type='button'
+									onClick={() => setMobileFiltersOpen(false)}
+									className='flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 dark:text-muted-foreground/70 hover:bg-slate-100 dark:hover:bg-muted'
+								>
 									<X className='h-4 w-4' />
 								</button>
 							</div>
 							<div className='space-y-2 overflow-y-auto p-3'>
-								<FilterSelectControls filters={filters} onFiltersChange={onFiltersChange} compact />
+								<FilterSelectControls
+									filters={filters}
+									onFiltersChange={onFiltersChange}
+									compact
+								/>
 							</div>
-							<div className='grid grid-cols-2 gap-2 border-t border-slate-100 p-3'>
-								<button type='button' onClick={clearAll} className='h-9 rounded-lg border border-slate-200 text-[12px] font-medium text-slate-600'>
+							<div className='grid grid-cols-2 gap-2 border-t border-slate-100 dark:border-border p-3'>
+								<button
+									type='button'
+									onClick={clearAll}
+									className='h-9 rounded-lg border border-slate-200 dark:border-border text-[12px] font-medium text-slate-600 dark:text-muted-foreground'
+								>
 									Clear
 								</button>
-								<button type='button' onClick={() => setMobileFiltersOpen(false)} className='h-9 rounded-lg bg-emerald-600 text-[12px] font-semibold text-white'>
+								<button
+									type='button'
+									onClick={() => setMobileFiltersOpen(false)}
+									className='h-9 rounded-lg bg-emerald-600 text-[12px] font-semibold text-white'
+								>
 									Done
 								</button>
 							</div>
@@ -188,22 +257,27 @@ export function RequestFilters({ filters, onFiltersChange }: RequestFiltersProps
 
 			<div className='hidden grid-cols-1 gap-2 sm:grid-cols-2 lg:flex lg:flex-wrap lg:items-center'>
 				<div className='relative min-w-[180px] flex-1 sm:col-span-2 lg:min-w-[280px]'>
-					<Search className='absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400' />
+					<Search className='absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400 dark:text-muted-foreground/70' />
 					<Input
 						placeholder='Search requests...'
 						value={filters.search}
-						onChange={(e) => onFiltersChange({ ...filters, search: e.target.value })}
+						onChange={(e) =>
+							onFiltersChange({ ...filters, search: e.target.value })
+						}
 						className='h-9 pl-8 text-[13px] lg:h-10 lg:text-sm'
 					/>
 				</div>
 
-				<FilterSelectControls filters={filters} onFiltersChange={onFiltersChange} />
+				<FilterSelectControls
+					filters={filters}
+					onFiltersChange={onFiltersChange}
+				/>
 
 				{hasActiveFilters && (
 					<button
 						type='button'
 						onClick={clearAll}
-						className='flex h-8 items-center gap-1 rounded-md px-2 text-[12px] font-medium text-slate-500 hover:bg-slate-100 hover:text-slate-700'
+						className='flex h-8 items-center gap-1 rounded-md px-2 text-[12px] font-medium text-slate-500 dark:text-muted-foreground hover:bg-slate-100 dark:hover:bg-muted hover:text-slate-700 dark:text-foreground'
 					>
 						<X className='h-3.5 w-3.5' />
 						Clear

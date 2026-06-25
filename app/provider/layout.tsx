@@ -1,7 +1,7 @@
 'use client'
 
 import React, { Suspense } from 'react'
-import { ProviderSupportSidebar } from './_components/ProviderSupportSidebar'
+import { ProviderSupportSidebar } from '@/components/provider/ProviderSupportSidebar'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ProtectedRoleLayout } from '@/components/layout'
 

@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
-import { normalizeRefreshResponse } from '@/lib/auth-contract'
-import { BACKEND_URL } from '@/app/api/_lib/backend-url'
+import { normalizeRefreshResponse } from '@/lib/auth/contract'
+import { BACKEND_URL } from '@/lib/server/backend-url'
 import {
 	clearAuthCookies,
 	forwardedAuthHeaders,
 	REFRESH_TOKEN_COOKIE,
 	setAuthCookies,
-} from '@/app/api/_lib/auth-session'
+} from '@/lib/server/auth-session'
 
 export async function POST(request: NextRequest) {
 	const cookieStore = await cookies()

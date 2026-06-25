@@ -5,7 +5,7 @@
  */
 
 import { create } from 'zustand'
-import type { UserResponse } from '@/lib/auth-contract'
+import type { UserResponse } from '@/lib/auth/contract'
 
 export interface AuthUser {
 	id: string

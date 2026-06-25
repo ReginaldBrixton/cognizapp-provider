@@ -9,7 +9,7 @@ import {
 	type ProviderDeadline,
 	type ProviderActivity,
 	type ProviderRequest,
-} from '../../_lib/server-data'
+} from '@/lib/server/provider-data'
 
 /**
  * Server component that fetches all dashboard data in parallel

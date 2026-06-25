@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { BACKEND_URL } from '@/app/api/_lib/backend-url'
+import { BACKEND_URL } from '@/lib/server/backend-url'
 import {
 	clearAuthCookies,
 	getBestAccessToken,
 	refreshBackendSession,
-} from '@/app/api/_lib/auth-session'
+} from '@/lib/server/auth-session'
 
 export async function POST(request: NextRequest) {
 	const accessToken = await getBestAccessToken(request)

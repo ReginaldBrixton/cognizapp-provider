@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { BACKEND_URL } from '@/app/api/_lib/backend-url'
+import { BACKEND_URL } from '@/lib/server/backend-url'
 import {
 	forwardedAuthHeaders,
 	getBestAccessToken,
 	refreshBackendSession,
 	setAuthCookies,
-} from '@/app/api/_lib/auth-session'
-import { normalizeUserResponse } from '@/lib/auth-contract'
+} from '@/lib/server/auth-session'
+import { normalizeUserResponse } from '@/lib/auth/contract'
 
 export async function GET(request: NextRequest) {
 	const accessToken = await getBestAccessToken(request)

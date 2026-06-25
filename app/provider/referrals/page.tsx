@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Empty, ErrorState, PageContainer } from '@/components/shared'
 import { formatDate, formatMoney } from '@/lib/format'
-import { fetchProviderData } from '../_lib/server-data'
+import { fetchProviderData } from '@/lib/server/provider-data'
 
 type ReferralRow = {
 	id: string

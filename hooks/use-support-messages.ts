@@ -31,7 +31,7 @@ export function useSupportThreads() {
 	return useQuery({
 		queryKey: ['support', 'messages', 'threads'],
 		queryFn: async () => {
-			const response = await fetch('/api/support/messages/threads')
+			const response = await fetch('/api/messages/threads')
 			if (!response.ok) throw new Error('Failed to load threads')
 			const json = await response.json()
 			return (json.data || []) as SupportThread[]
@@ -57,7 +57,7 @@ export function useSupportThreadMessages(threadId?: string) {
 		enabled: Boolean(threadId),
 		queryFn: async () => {
 			const response = await fetch(
-				`/api/support/messages/threads/${threadId}/messages`,
+				`/api/messages/threads/${threadId}/messages`,
 			)
 			if (!response.ok) throw new Error('Failed to load messages')
 			const json = await response.json()
@@ -160,7 +160,7 @@ export function useSupportThreadRealtime(
 				setStatus('connecting')
 				const connectedAfter = new Date().toISOString()
 				const response = await fetch(
-					`/api/support/messages/ws-url?threadId=${encodeURIComponent(threadId)}&after=${encodeURIComponent(connectedAfter)}`,
+					`/api/messages/ws-url?threadId=${encodeURIComponent(threadId)}&after=${encodeURIComponent(connectedAfter)}`,
 				)
 				if (!response.ok) throw new Error('Realtime authorization failed')
 				const json = await response.json()
@@ -230,7 +230,7 @@ export function useSupportMessageReferences() {
 	return useQuery({
 		queryKey: ['support', 'messages', 'references'],
 		queryFn: async () => {
-			const response = await fetch('/api/support/messages/references')
+			const response = await fetch('/api/messages/references')
 			if (!response.ok) throw new Error('Failed to load references')
 			const json = await response.json()
 			const requests = (json.data?.requests || []) as SupportRequest[]
@@ -264,7 +264,7 @@ export function useCreateSupportThread() {
 
 	return useMutation({
 		mutationFn: async (input: { type?: 'request'; requestId: string }) => {
-			const response = await fetch('/api/support/messages/threads', {
+			const response = await fetch('/api/messages/threads', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
@@ -292,7 +292,7 @@ export function useSendSupportMessage(thread: SupportThread | null) {
 			if (!thread) throw new Error('Thread is required')
 
 			const response = await fetch(
-				`/api/support/messages/threads/${thread.id}/messages`,
+				`/api/messages/threads/${thread.id}/messages`,
 				{
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
@@ -327,7 +327,7 @@ export function useEditSupportMessage(threadId: string) {
 			content: string
 		}) => {
 			const response = await fetch(
-				`/api/support/messages/threads/${threadId}/messages/${messageId}`,
+				`/api/messages/threads/${threadId}/messages/${messageId}`,
 				{
 					method: 'PATCH',
 					headers: { 'Content-Type': 'application/json' },
@@ -378,7 +378,7 @@ export function useDeleteSupportMessage(threadId: string) {
 	return useMutation({
 		mutationFn: async (messageId: string) => {
 			const response = await fetch(
-				`/api/support/messages/threads/${threadId}/messages/${messageId}`,
+				`/api/messages/threads/${threadId}/messages/${messageId}`,
 				{ method: 'DELETE' },
 			)
 			if (!response.ok) throw new Error('Failed to delete message')

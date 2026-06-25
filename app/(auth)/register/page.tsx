@@ -6,8 +6,8 @@ import Link from 'next/link'
 import { AlertCircle, Loader2, Mail, ShieldCheck, Sparkles } from 'lucide-react'
 import { motion } from 'framer-motion'
 
-import { useAuth } from '@/app/(auth)/_lib/hooks/use-auth'
-import { AuthCardModern } from '@/app/(auth)/components'
+import { useAuth } from '@/lib/auth/hooks/use-auth'
+import { AuthCardModern } from '@/components/auth'
 
 export default function RegisterPage() {
 	const {

@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-import { setAuthCookies } from '@/app/api/_lib/auth-session'
-import { BACKEND_URL } from '@/app/api/_lib/backend-url'
-import { normalizeExchangeResponse } from '@/lib/auth-contract'
+import { setAuthCookies } from '@/lib/server/auth-session'
+import { BACKEND_URL } from '@/lib/server/backend-url'
+import { normalizeExchangeResponse } from '@/lib/auth/contract'
 
 export async function POST(request: NextRequest) {
 	const body = await request.json().catch(() => ({}))

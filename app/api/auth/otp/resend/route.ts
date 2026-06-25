@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-import { BACKEND_URL } from '@/app/api/_lib/backend-url'
+import { BACKEND_URL } from '@/lib/server/backend-url'
 
 export async function POST(request: NextRequest) {
 	const body = await request.json().catch(() => ({}))

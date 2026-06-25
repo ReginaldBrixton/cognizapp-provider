@@ -5,7 +5,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import {
 	getSessionManager,
 	type SessionManager,
-} from '@/app/(auth)/_lib/security/session-manager'
+} from '@/lib/auth/session-manager'
 import { clearLoginSessionData } from '../storage'
 import type { SessionStatus } from '../types'
 

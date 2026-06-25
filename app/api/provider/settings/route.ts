@@ -1,50 +1,36 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import {
-	fetchBackend,
-	getAuthHeaders,
-	handleBackendResponse,
-} from '@/lib/api/support-helpers'
-import { BACKEND_URL } from '@/app/api/_lib/backend-url'
+	handleApiError,
+	proxyBackendWithCookieAuth,
+} from '@/lib/server/api-proxy'
+import { BACKEND_URL } from '@/lib/server/backend-url'
 
-export async function GET() {
-	const headers = await getAuthHeaders()
-	if (!headers.Authorization) {
-		return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-	}
-
+// Note: The backend exposes provider settings at /api/provider/settings
+// (via providerSettingsRoutes) separately from the /api/support/provider/*
+// routes. This is intentional — not a path mismatch.
+export async function GET(request: NextRequest) {
 	try {
-		const response = await fetchBackend(`${BACKEND_URL}/api/provider/settings`, {
-			headers,
-		})
-		return handleBackendResponse(response)
-	} catch (error) {
-		console.error('Failed to fetch provider settings:', error)
-		return NextResponse.json(
-			{ error: 'Failed to fetch provider settings' },
-			{ status: 500 },
+		return proxyBackendWithCookieAuth(
+			request,
+			`${BACKEND_URL}/api/provider/settings`,
 		)
+	} catch (error) {
+		return handleApiError(error, 'provider:settings:GET')
 	}
 }
 
 export async function PATCH(request: NextRequest) {
-	const headers = await getAuthHeaders()
-	if (!headers.Authorization) {
-		return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-	}
-
 	try {
-		const body = await request.text()
-		const response = await fetchBackend(`${BACKEND_URL}/api/provider/settings`, {
-			method: 'PATCH',
-			headers,
-			body,
-		})
-		return handleBackendResponse(response)
-	} catch (error) {
-		console.error('Failed to update provider settings:', error)
-		return NextResponse.json(
-			{ error: 'Failed to update provider settings' },
-			{ status: 500 },
+		return proxyBackendWithCookieAuth(
+			request,
+			`${BACKEND_URL}/api/provider/settings`,
+			{
+				method: 'PATCH',
+				body: await request.text(),
+				headers: { 'Content-Type': 'application/json' },
+			},
 		)
+	} catch (error) {
+		return handleApiError(error, 'provider:settings:PATCH')
 	}
 }

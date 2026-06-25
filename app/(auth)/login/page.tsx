@@ -4,8 +4,8 @@ import React, { Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { Mail, ShieldCheck, Sparkles } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
-import { useAuth } from '@/app/(auth)/_lib/hooks/use-auth'
-import { useSession } from '@/app/(auth)/_lib/providers/SessionProvider'
+import { useAuth } from '@/lib/auth/hooks/use-auth'
+import { useSession } from '@/components/providers/session'
 import { useAuthStore } from '@/lib/store/auth'
 import { ROLE_DASHBOARDS, normalizeUserRole } from '@/types/roles'
 

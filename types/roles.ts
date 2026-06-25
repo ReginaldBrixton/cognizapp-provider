@@ -18,13 +18,6 @@ export const CANONICAL_ROLE_TO_UI_ROLE: Record<CanonicalUserRole, UserRole> = {
 	DEV_USER: 'support_provider',
 }
 
-/** Maps UI role names to canonical backend roles */
-export const UI_ROLE_TO_CANONICAL_ROLE: Record<UserRole, CanonicalUserRole> = {
-	provider: 'SUPPORT_PROVIDER_USER',
-	support_provider: 'SUPPORT_PROVIDER_USER',
-	unauthorized: 'SUPPORT_PROVIDER_USER',
-}
-
 export const ROLE_DASHBOARDS: Record<UserRole, string> = {
 	provider: '/provider/dashboard',
 	support_provider: '/provider/dashboard',
@@ -63,12 +56,3 @@ export const ROLE_LABELS: Record<UserRole, string> = {
 	unauthorized: 'Unauthorized',
 }
 
-export const VALID_ROLES: UserRole[] = ['provider', 'support_provider', 'unauthorized']
-
-export function getDashboard(role: UserRole): string {
-	return ROLE_DASHBOARDS[role]
-}
-
-export function getRoleLabel(role: UserRole): string {
-	return ROLE_LABELS[role]
-}

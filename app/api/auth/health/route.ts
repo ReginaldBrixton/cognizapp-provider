@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 
-import { BACKEND_URL } from '@/app/api/_lib/backend-url'
+import { BACKEND_URL } from '@/lib/server/backend-url'
 
 export async function GET() {
 	const startedAt = Date.now()
