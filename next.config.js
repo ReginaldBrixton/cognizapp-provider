@@ -136,13 +136,9 @@ module.exports = withPWA({
 	async rewrites() {
 		return [
 			{
-				// Proxy backend API routes (starts with /api/user/ or /api/v1/)
+				// Proxy backend API routes (starts with /api/user/)
 				source: '/api/user/:path*',
 				destination: `${backendUrl}/api/user/:path*`,
-			},
-			{
-				source: '/api/v1/:path*',
-				destination: `${backendUrl}/api/v1/:path*`,
 			},
 			...(shouldProxyUsersApi
 				? [

@@ -209,13 +209,13 @@ export type DeliveryStatus =
 export type AiRequestReview = {
 	ok: boolean
 	requestType:
-		| 'assignment'
-		| 'research_paper'
-		| 'data_analysis'
-		| 'presentation'
-		| 'web_app'
-		| 'document_editing'
-		| 'other'
+	| 'assignment'
+	| 'research_paper'
+	| 'data_analysis'
+	| 'presentation'
+	| 'web_app'
+	| 'document_editing'
+	| 'other'
 	complexity: 'low' | 'medium' | 'high' | 'very_high'
 	budgetReview: {
 		submittedBudget: number
@@ -227,12 +227,12 @@ export type AiRequestReview = {
 	}
 	deadlineReview: {
 		rating:
-			| 'comfortable'
-			| 'tight'
-			| 'risky'
-			| 'impossible'
-			| 'unknown'
-			| 'needs_admin_review'
+		| 'comfortable'
+		| 'tight'
+		| 'risky'
+		| 'impossible'
+		| 'unknown'
+		| 'needs_admin_review'
 		reason: string
 	}
 	paymentRecommendation: {
@@ -250,12 +250,12 @@ export type AiRequestReview = {
 	}
 	adminRecommendation: {
 		action:
-			| 'accept'
-			| 'request_more_info'
-			| 'send_quote'
-			| 'require_deposit'
-			| 'reject'
-			| 'mark_as_new_ticket_required'
+		| 'accept'
+		| 'request_more_info'
+		| 'send_quote'
+		| 'require_deposit'
+		| 'reject'
+		| 'mark_as_new_ticket_required'
 		priority: 'low' | 'normal' | 'high' | 'urgent'
 		messageToAdmin: string
 	}
@@ -396,7 +396,7 @@ export interface ThreadParticipant {
 	userId: string
 	name: string
 	avatar?: string
-	role: 'client' | 'provider' | 'admin'
+	role: 'client' | 'provider'
 }
 
 export interface ThreadMessage {
@@ -405,7 +405,7 @@ export interface ThreadMessage {
 	senderId?: string
 	senderKeyId?: string
 	senderName: string
-	senderRole: 'client' | 'provider' | 'admin' | 'ai'
+	senderRole: 'client' | 'provider' | 'ai'
 	content: string
 	attachments?: Attachment[]
 	mentions?: Array<Record<string, unknown>>

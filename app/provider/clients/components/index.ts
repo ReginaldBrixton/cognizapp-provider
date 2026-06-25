@@ -1,2 +1,6 @@
 export { ClientList } from './ClientList'
 export { ClientRow } from './ClientRow'
+export { ClientMetric } from './ClientMetric'
+export { ClientDetailModal } from './ClientDetailModal'
+export { normalizeClient } from './normalize-client'
+export type { ClientSummary } from './types'

@@ -3,8 +3,8 @@ import { cookies } from 'next/headers'
 import { normalizeRefreshResponse } from '@/lib/auth-contract'
 import { BACKEND_URL } from './backend-url'
 
-export const ACCESS_TOKEN_COOKIE = 'cognizap_admin_access_token'
-export const REFRESH_TOKEN_COOKIE = 'cognizap_admin_refresh_token'
+export const ACCESS_TOKEN_COOKIE = 'cognizap_provider_access_token'
+export const REFRESH_TOKEN_COOKIE = 'cognizap_provider_refresh_token'
 
 function getBearerToken(value?: string | null) {
 	if (!value) {

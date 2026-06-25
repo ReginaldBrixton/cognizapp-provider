@@ -18,7 +18,7 @@ export default function DashboardRedirectPage() {
 	useEffect(() => {
 		if (loading) return
 
-		if (role === 'provider' || role === 'support_provider' || role === 'developer') {
+		if (role === 'provider' || role === 'support_provider') {
 			router.replace('/provider/dashboard')
 		} else {
 			router.replace('/login')

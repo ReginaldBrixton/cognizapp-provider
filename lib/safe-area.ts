@@ -1,9 +1,9 @@
 /**
  * Safe area utilities for handling device notches and home indicators.
  *
- * These utilities provide consistent safe area handling across the admin
- * and provider portals, ensuring content doesn't overlap with system UI
- * elements on mobile devices.
+ * These utilities provide consistent safe area handling for the provider
+ * portal, ensuring content doesn't overlap with system UI elements on
+ * mobile devices.
  */
 
 /**

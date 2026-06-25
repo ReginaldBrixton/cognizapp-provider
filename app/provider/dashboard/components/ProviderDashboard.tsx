@@ -11,6 +11,13 @@ import {
 	type ProviderRequest,
 } from '../../_lib/server-data'
 
+/**
+ * Server component that fetches all dashboard data in parallel
+ * and renders the dashboard widgets.
+ *
+ * Each widget receives its data as props and handles its own
+ * loading/empty states.
+ */
 export async function ProviderDashboard() {
 	const [stats, deadlines, activities, requests] = await Promise.all([
 		fetchProviderData<ProviderDashboardStats>(
@@ -35,7 +42,7 @@ export async function ProviderDashboard() {
 
 	return (
 		<div className='grid min-w-0 gap-3 overflow-x-hidden lg:gap-6'>
-			<DashboardStats stats={stats} />
+			<DashboardStats stats={stats ?? null} />
 			<QuickActions />
 			<div className='grid min-w-0 gap-3 lg:gap-6 xl:grid-cols-[minmax(0,1.25fr)_minmax(320px,0.75fr)]'>
 				<UpcomingDeadlines deadlines={deadlines ?? []} />

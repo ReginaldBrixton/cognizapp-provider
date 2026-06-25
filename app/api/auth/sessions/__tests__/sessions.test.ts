@@ -37,7 +37,7 @@ describe('Session Management API Routes', () => {
 		// Default cookie mock
 		cookies.mockResolvedValue({
 			get: jest.fn((name: string) => {
-				if (name === 'cognizap_access_token') {
+				if (name === 'cognizap_provider_access_token') {
 					return { value: mockAccessToken }
 				}
 				return undefined
@@ -316,7 +316,7 @@ describe('Session Management API Routes', () => {
 		it('should revoke all sessions and clear cookies', async () => {
 			const mockCookieStore = {
 				get: jest.fn((name: string) => {
-					if (name === 'cognizap_access_token') {
+					if (name === 'cognizap_provider_access_token') {
 						return { value: mockAccessToken }
 					}
 					return undefined
@@ -373,7 +373,7 @@ describe('Session Management API Routes', () => {
 		it('should clear cookies even when backend fails', async () => {
 			const mockCookieStore = {
 				get: jest.fn((name: string) => {
-					if (name === 'cognizap_access_token') {
+					if (name === 'cognizap_provider_access_token') {
 						return { value: mockAccessToken }
 					}
 					return undefined
@@ -430,7 +430,7 @@ describe('Session Management API Routes', () => {
 		it('should handle network errors and still clear cookies', async () => {
 			const mockCookieStore = {
 				get: jest.fn((name: string) => {
-					if (name === 'cognizap_access_token') {
+					if (name === 'cognizap_provider_access_token') {
 						return { value: mockAccessToken }
 					}
 					return undefined
@@ -465,7 +465,7 @@ describe('Session Management API Routes', () => {
 			// Mock cookie with revoked token
 			cookies.mockResolvedValueOnce({
 				get: jest.fn((name: string) => {
-					if (name === 'cognizap_access_token') {
+					if (name === 'cognizap_provider_access_token') {
 						return { value: revokedToken }
 					}
 					return undefined

@@ -5,17 +5,17 @@ import { useRouter } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
 
 import { useUserRole } from '@/hooks/useUserRole'
-import type { UserRole } from '@/types/roles'
+import { isProvider, type UserRole } from '@/types/roles'
 
 interface ProtectedRoleLayoutProps {
 	children: ReactNode
-	allow: (role: UserRole) => boolean
+	allow?: (role: UserRole) => boolean
 	redirectTo?: string | ((role: UserRole) => string)
 }
 
 export function ProtectedRoleLayout({
 	children,
-	allow,
+	allow = isProvider,
 	redirectTo = '/login',
 }: ProtectedRoleLayoutProps) {
 	const { role, loading } = useUserRole()

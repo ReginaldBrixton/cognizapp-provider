@@ -80,6 +80,7 @@
 }
 
 @media (max-width: 767px) {
+
 	input,
 	textarea,
 	select,
@@ -133,36 +134,28 @@
 /* Liquid Glass Background — Required for glass effect */
 .liquid-glass-bg {
 	background:
-		radial-gradient(
-			ellipse 70% 60% at 20% 20%,
+		radial-gradient(ellipse 70% 60% at 20% 20%,
 			rgba(180, 200, 255, 0.28) 0%,
-			transparent 60%
-		),
-		radial-gradient(
-			ellipse 60% 55% at 80% 80%,
+			transparent 60%),
+		radial-gradient(ellipse 60% 55% at 80% 80%,
 			rgba(200, 180, 255, 0.22) 0%,
-			transparent 55%
-		),
+			transparent 55%),
 		linear-gradient(160deg, #e8eaf0 0%, #dde2ec 40%, #e4e0f0 100%);
 }
 
 .dark .liquid-glass-bg {
 	background:
-		radial-gradient(
-			ellipse 70% 60% at 20% 20%,
+		radial-gradient(ellipse 70% 60% at 20% 20%,
 			rgba(40, 50, 120, 0.5) 0%,
-			transparent 60%
-		),
+			transparent 60%),
 		linear-gradient(160deg, #0a0a12 0%, #100a1a 100%);
 }
 
 /* Glass Card Component */
 .glass-card {
-	background: linear-gradient(
-		180deg,
-		rgba(var(--ios-gray-6), 0.88) 0%,
-		rgba(var(--ios-gray-6), 0.75) 100%
-	);
+	background: linear-gradient(180deg,
+			rgba(var(--ios-gray-6), 0.88) 0%,
+			rgba(var(--ios-gray-6), 0.75) 100%);
 	backdrop-filter: var(--glass-blur);
 	-webkit-backdrop-filter: var(--glass-blur);
 	border: 0.5px solid var(--glass-border);
@@ -176,26 +169,22 @@
 	content: '';
 	position: absolute;
 	inset: 0;
-	background: linear-gradient(
-		180deg,
-		rgba(var(--pure-white), 0.22) 0%,
-		transparent 40%
-	);
+	background: linear-gradient(180deg,
+			rgba(var(--pure-white), 0.22) 0%,
+			transparent 40%);
 	pointer-events: none;
 	z-index: 0;
 }
 
-.glass-card > * {
+.glass-card>* {
 	position: relative;
 	z-index: 1;
 }
 
 .dark .glass-card {
-	background: linear-gradient(
-		180deg,
-		rgba(var(--ios-dark-6), 0.88) 0%,
-		rgba(var(--ios-dark-6), 0.75) 100%
-	);
+	background: linear-gradient(180deg,
+			rgba(var(--ios-dark-6), 0.88) 0%,
+			rgba(var(--ios-dark-6), 0.75) 100%);
 	border-color: rgba(var(--pure-white), 0.1);
 	box-shadow:
 		0 1px 0 rgba(var(--pure-white), 0.1) inset,
@@ -276,14 +265,12 @@
 	left: 0;
 	right: 0;
 	height: 1px;
-	background: linear-gradient(
-		90deg,
-		transparent 0%,
-		rgba(var(--pure-white), 0.8) 30%,
-		rgba(var(--pure-white), 0.9) 50%,
-		rgba(var(--pure-white), 0.8) 70%,
-		transparent 100%
-	);
+	background: linear-gradient(90deg,
+			transparent 0%,
+			rgba(var(--pure-white), 0.8) 30%,
+			rgba(var(--pure-white), 0.9) 50%,
+			rgba(var(--pure-white), 0.8) 70%,
+			transparent 100%);
 }
 
 /* Glass animations */
@@ -292,6 +279,7 @@
 		opacity: 0;
 		transform: translateY(10px) scale(0.98);
 	}
+
 	to {
 		opacity: 1;
 		transform: translateY(0) scale(1);
@@ -302,6 +290,7 @@
 	from {
 		opacity: 0;
 	}
+
 	to {
 		opacity: 1;
 	}
@@ -311,27 +300,32 @@
 	0% {
 		background-position: -200% 0;
 	}
+
 	100% {
 		background-position: 200% 0;
 	}
 }
 
 @keyframes float {
+
 	0%,
 	100% {
 		transform: translateY(0px);
 	}
+
 	50% {
 		transform: translateY(-10px);
 	}
 }
 
 @keyframes pulse-glow {
+
 	0%,
 	100% {
 		opacity: 0.4;
 		transform: scale(1);
 	}
+
 	50% {
 		opacity: 0.6;
 		transform: scale(1.05);
@@ -358,15 +352,19 @@
 .glass-delay-1 {
 	animation-delay: 0.05s;
 }
+
 .glass-delay-2 {
 	animation-delay: 0.1s;
 }
+
 .glass-delay-3 {
 	animation-delay: 0.15s;
 }
+
 .glass-delay-4 {
 	animation-delay: 0.2s;
 }
+
 .glass-delay-5 {
 	animation-delay: 0.25s;
 }
@@ -419,36 +417,56 @@
    ============================================ */
 :root {
 	/* Light theme colors (default) */
-	--color-bg-primary: 250 250 250; /* zinc-50 */
-	--color-bg-secondary: 244 244 245; /* zinc-100 */
-	--color-bg-tertiary: 228 228 231; /* zinc-200 */
-	--color-bg-card: 255 255 255; /* white */
+	--color-bg-primary: 250 250 250;
+	/* zinc-50 */
+	--color-bg-secondary: 244 244 245;
+	/* zinc-100 */
+	--color-bg-tertiary: 228 228 231;
+	/* zinc-200 */
+	--color-bg-card: 255 255 255;
+	/* white */
 
-	--color-text-primary: 24 24 27; /* zinc-900 */
-	--color-text-secondary: 63 63 70; /* zinc-700 */
-	--color-text-tertiary: 113 113 122; /* zinc-500 */
-	--color-text-muted: 161 161 170; /* zinc-400 */
+	--color-text-primary: 24 24 27;
+	/* zinc-900 */
+	--color-text-secondary: 63 63 70;
+	/* zinc-700 */
+	--color-text-tertiary: 113 113 122;
+	/* zinc-500 */
+	--color-text-muted: 161 161 170;
+	/* zinc-400 */
 
-	--color-border-default: 228 228 231; /* zinc-200 */
-	--color-border-subtle: 244 244 245; /* zinc-100 */
+	--color-border-default: 228 228 231;
+	/* zinc-200 */
+	--color-border-subtle: 244 244 245;
+	/* zinc-100 */
 
 	color-scheme: light;
 }
 
 .dark {
 	/* Dark theme colors */
-	--color-bg-primary: 2 6 23; /* slate-950 */
-	--color-bg-secondary: 15 23 42; /* slate-900 */
-	--color-bg-tertiary: 30 41 59; /* slate-800 */
-	--color-bg-card: 15 23 42; /* slate-900 */
+	--color-bg-primary: 2 6 23;
+	/* slate-950 */
+	--color-bg-secondary: 15 23 42;
+	/* slate-900 */
+	--color-bg-tertiary: 30 41 59;
+	/* slate-800 */
+	--color-bg-card: 15 23 42;
+	/* slate-900 */
 
-	--color-text-primary: 248 250 252; /* slate-50 */
-	--color-text-secondary: 203 213 225; /* slate-300 */
-	--color-text-tertiary: 148 163 184; /* slate-400 */
-	--color-text-muted: 100 116 139; /* slate-500 */
+	--color-text-primary: 248 250 252;
+	/* slate-50 */
+	--color-text-secondary: 203 213 225;
+	/* slate-300 */
+	--color-text-tertiary: 148 163 184;
+	/* slate-400 */
+	--color-text-muted: 100 116 139;
+	/* slate-500 */
 
-	--color-border-default: 51 65 85; /* slate-700 */
-	--color-border-subtle: 30 41 59; /* slate-800 */
+	--color-border-default: 51 65 85;
+	/* slate-700 */
+	--color-border-subtle: 30 41 59;
+	/* slate-800 */
 
 	color-scheme: dark;
 }
@@ -460,17 +478,13 @@
    ============================================ */
 :root {
 	/* Primary fonts - use appearance system variable with fallback */
-	--font-sans: var(
-		--font-family,
-		var(
-			--font-inter,
-			ui-sans-serif,
-			system-ui,
-			-apple-system,
-			BlinkMacSystemFont,
-			sans-serif
-		)
-	);
+	--font-sans: var(--font-family,
+			var(--font-inter,
+				ui-sans-serif,
+				system-ui,
+				-apple-system,
+				BlinkMacSystemFont,
+				sans-serif));
 	--font-heading: var(--font-montserrat), var(--font-sans);
 	--font-display: var(--font-raleway), var(--font-sans);
 	--font-body: var(--font-lato), var(--font-sans);
@@ -887,6 +901,7 @@ textarea::placeholder {
 }
 
 @media (max-width: 768px) {
+
 	input,
 	textarea,
 	select,
@@ -913,6 +928,7 @@ textarea::placeholder {
    Utility classes for common responsive patterns
    ============================================ */
 @layer utilities {
+
 	/* Hide on mobile, show on tablet+ */
 	.hide-mobile {
 		@apply hidden sm:block;
@@ -1063,51 +1079,35 @@ textarea::placeholder {
    ============================================ */
 
 :root {
-	--glass-surface-soft: linear-gradient(
-		180deg,
-		rgba(var(--pure-white), 0.88) 0%,
-		rgba(var(--pure-white), 0.72) 100%
-	);
-	--glass-surface: linear-gradient(
-		180deg,
-		rgba(var(--pure-white), 0.95) 0%,
-		rgba(var(--pure-white), 0.84) 100%
-	);
-	--glass-surface-strong: linear-gradient(
-		180deg,
-		rgba(var(--pure-white), 0.98) 0%,
-		rgba(var(--pure-white), 0.92) 100%
-	);
-	--glass-shell-surface: linear-gradient(
-		180deg,
-		rgba(var(--pure-white), 0.64) 0%,
-		rgba(248, 251, 255, 0.44) 100%
-	);
-	--glass-toolbar-surface: linear-gradient(
-		180deg,
-		rgba(var(--pure-white), 0.84) 0%,
-		rgba(var(--pure-white), 0.74) 100%
-	);
-	--glass-field-surface: linear-gradient(
-		180deg,
-		rgba(var(--pure-white), 0.92) 0%,
-		rgba(248, 251, 255, 0.84) 100%
-	);
-	--glass-primary-surface: linear-gradient(
-		180deg,
-		rgba(var(--ios-blue-light), 0.96) 0%,
-		rgba(var(--ios-blue), 0.88) 100%
-	);
+	--glass-surface-soft: linear-gradient(180deg,
+			rgba(var(--pure-white), 0.88) 0%,
+			rgba(var(--pure-white), 0.72) 100%);
+	--glass-surface: linear-gradient(180deg,
+			rgba(var(--pure-white), 0.95) 0%,
+			rgba(var(--pure-white), 0.84) 100%);
+	--glass-surface-strong: linear-gradient(180deg,
+			rgba(var(--pure-white), 0.98) 0%,
+			rgba(var(--pure-white), 0.92) 100%);
+	--glass-shell-surface: linear-gradient(180deg,
+			rgba(var(--pure-white), 0.64) 0%,
+			rgba(248, 251, 255, 0.44) 100%);
+	--glass-toolbar-surface: linear-gradient(180deg,
+			rgba(var(--pure-white), 0.84) 0%,
+			rgba(var(--pure-white), 0.74) 100%);
+	--glass-field-surface: linear-gradient(180deg,
+			rgba(var(--pure-white), 0.92) 0%,
+			rgba(248, 251, 255, 0.84) 100%);
+	--glass-primary-surface: linear-gradient(180deg,
+			rgba(var(--ios-blue-light), 0.96) 0%,
+			rgba(var(--ios-blue), 0.88) 100%);
 	--glass-border-soft: rgba(var(--pure-white), 0.42);
 	--glass-border: rgba(var(--pure-white), 0.62);
 	--glass-border-strong: rgba(var(--pure-white), 0.78);
 	--glass-hairline: rgba(15, 23, 42, 0.08);
-	--glass-highlight: linear-gradient(
-		180deg,
-		rgba(var(--pure-white), 0.62) 0%,
-		rgba(var(--pure-white), 0.18) 32%,
-		transparent 58%
-	);
+	--glass-highlight: linear-gradient(180deg,
+			rgba(var(--pure-white), 0.62) 0%,
+			rgba(var(--pure-white), 0.18) 32%,
+			transparent 58%);
 	--glass-shadow-soft:
 		0 1px 0 rgba(var(--pure-white), 0.82) inset,
 		0 0 0 1px rgba(15, 23, 42, 0.04), 0 14px 40px rgba(148, 163, 184, 0.16);
@@ -1125,69 +1125,47 @@ textarea::placeholder {
 	--glass-blur-xl: blur(36px) saturate(200%);
 	--glass-focus-ring: 0 0 0 3px rgba(var(--ios-blue), 0.16);
 	--glass-app-background:
-		radial-gradient(
-			circle at top left,
+		radial-gradient(circle at top left,
 			rgba(170, 205, 255, 0.22) 0%,
-			transparent 32%
-		),
-		radial-gradient(
-			circle at top right,
+			transparent 32%),
+		radial-gradient(circle at top right,
 			rgba(255, 255, 255, 0.86) 0%,
-			transparent 28%
-		),
-		radial-gradient(
-			circle at 50% 118%,
+			transparent 28%),
+		radial-gradient(circle at 50% 118%,
 			rgba(201, 228, 255, 0.2) 0%,
-			transparent 40%
-		),
+			transparent 40%),
 		linear-gradient(180deg, #ffffff 0%, #fbfcff 48%, #f5f8ff 100%);
 }
 
 .dark {
-	--glass-surface-soft: linear-gradient(
-		180deg,
-		rgba(var(--ios-dark-5), 0.62) 0%,
-		rgba(var(--ios-dark-6), 0.46) 100%
-	);
-	--glass-surface: linear-gradient(
-		180deg,
-		rgba(var(--ios-dark-5), 0.76) 0%,
-		rgba(var(--ios-dark-6), 0.56) 100%
-	);
-	--glass-surface-strong: linear-gradient(
-		180deg,
-		rgba(var(--ios-dark-5), 0.86) 0%,
-		rgba(var(--ios-dark-6), 0.7) 100%
-	);
-	--glass-shell-surface: linear-gradient(
-		180deg,
-		rgba(var(--ios-dark-5), 0.74) 0%,
-		rgba(var(--ios-dark-6), 0.58) 100%
-	);
-	--glass-toolbar-surface: linear-gradient(
-		180deg,
-		rgba(var(--ios-dark-4), 0.56) 0%,
-		rgba(var(--ios-dark-6), 0.4) 100%
-	);
-	--glass-field-surface: linear-gradient(
-		180deg,
-		rgba(var(--ios-dark-4), 0.5) 0%,
-		rgba(var(--ios-dark-6), 0.34) 100%
-	);
-	--glass-primary-surface: linear-gradient(
-		180deg,
-		rgba(var(--ios-blue-light), 0.92) 0%,
-		rgba(var(--ios-blue), 0.8) 100%
-	);
+	--glass-surface-soft: linear-gradient(180deg,
+			rgba(var(--ios-dark-5), 0.62) 0%,
+			rgba(var(--ios-dark-6), 0.46) 100%);
+	--glass-surface: linear-gradient(180deg,
+			rgba(var(--ios-dark-5), 0.76) 0%,
+			rgba(var(--ios-dark-6), 0.56) 100%);
+	--glass-surface-strong: linear-gradient(180deg,
+			rgba(var(--ios-dark-5), 0.86) 0%,
+			rgba(var(--ios-dark-6), 0.7) 100%);
+	--glass-shell-surface: linear-gradient(180deg,
+			rgba(var(--ios-dark-5), 0.74) 0%,
+			rgba(var(--ios-dark-6), 0.58) 100%);
+	--glass-toolbar-surface: linear-gradient(180deg,
+			rgba(var(--ios-dark-4), 0.56) 0%,
+			rgba(var(--ios-dark-6), 0.4) 100%);
+	--glass-field-surface: linear-gradient(180deg,
+			rgba(var(--ios-dark-4), 0.5) 0%,
+			rgba(var(--ios-dark-6), 0.34) 100%);
+	--glass-primary-surface: linear-gradient(180deg,
+			rgba(var(--ios-blue-light), 0.92) 0%,
+			rgba(var(--ios-blue), 0.8) 100%);
 	--glass-border-soft: rgba(var(--pure-white), 0.08);
 	--glass-border: rgba(var(--pure-white), 0.14);
 	--glass-border-strong: rgba(var(--pure-white), 0.2);
 	--glass-hairline: rgba(var(--pure-white), 0.08);
-	--glass-highlight: linear-gradient(
-		180deg,
-		rgba(var(--pure-white), 0.16) 0%,
-		transparent 52%
-	);
+	--glass-highlight: linear-gradient(180deg,
+			rgba(var(--pure-white), 0.16) 0%,
+			transparent 52%);
 	--glass-shadow-soft:
 		0 1px 0 rgba(var(--pure-white), 0.12) inset, 0 0 0 1px rgba(0, 0, 0, 0.24),
 		0 18px 36px rgba(0, 0, 0, 0.32);
@@ -1201,21 +1179,15 @@ textarea::placeholder {
 		0 1px 0 rgba(var(--pure-white), 0.12) inset,
 		0 18px 42px rgba(var(--ios-blue), 0.32);
 	--glass-app-background:
-		radial-gradient(
-			circle at top left,
+		radial-gradient(circle at top left,
 			rgba(24, 74, 160, 0.42) 0%,
-			transparent 30%
-		),
-		radial-gradient(
-			circle at top right,
+			transparent 30%),
+		radial-gradient(circle at top right,
 			rgba(14, 28, 64, 0.46) 0%,
-			transparent 28%
-		),
-		radial-gradient(
-			circle at 50% 110%,
+			transparent 28%),
+		radial-gradient(circle at 50% 110%,
 			rgba(32, 54, 96, 0.44) 0%,
-			transparent 38%
-		),
+			transparent 38%),
 		linear-gradient(180deg, #09101d 0%, #0c1424 45%, #101a2b 100%);
 }
 
@@ -1256,13 +1228,13 @@ body {
 	z-index: 0;
 }
 
-.glass > *,
-.glass-panel > *,
-.glass-subtle > *,
-.glass-overlay > *,
-.glass-toolbar > *,
-.glass-field > *,
-.glass-shell > * {
+.glass>*,
+.glass-panel>*,
+.glass-subtle>*,
+.glass-overlay>*,
+.glass-toolbar>*,
+.glass-field>*,
+.glass-shell>* {
 	position: relative;
 	z-index: 1;
 }
@@ -1408,7 +1380,8 @@ body {
 	align-items: center;
 	width: fit-content;
 	margin: 0 auto;
-	min-width: 21cm; /* Ensure it doesn't collapse below page width */
+	min-width: 21cm;
+	/* Ensure it doesn't collapse below page width */
 	box-sizing: border-box;
 }
 
@@ -1446,7 +1419,8 @@ body {
 .tiptap-page-footer {
 	@apply flex items-center px-[2cm] text-zinc-400 dark:text-zinc-500 font-medium overflow-hidden;
 	user-select: none;
-	pointer-events: none; /* Keep them non-editable for now */
+	pointer-events: none;
+	/* Keep them non-editable for now */
 	height: 50px;
 	/* Must match JS config */
 	box-sizing: border-box;
@@ -1469,8 +1443,8 @@ body {
 
 /* Fix for Tiptap/ProseMirror lists where text drops to next line */
 /* Use high specificity and direct targets to override any inherited block styles */
-.tiptap.ProseMirror li > p,
-.tiptap .ProseMirror li > p,
+.tiptap.ProseMirror li>p,
+.tiptap .ProseMirror li>p,
 .tiptap li p {
 	display: inline !important;
 	margin: 0 !important;
@@ -1524,8 +1498,8 @@ li.cz-task-item {
 }
 
 /* The checkbox label container */
-.tiptap .cz-task-item > label,
-.cz-task-item > label {
+.tiptap .cz-task-item>label,
+.cz-task-item>label {
 	display: inline-flex !important;
 	align-items: center !important;
 	justify-content: center !important;
@@ -1537,8 +1511,8 @@ li.cz-task-item {
 }
 
 /* The content container */
-.tiptap .cz-task-item > div,
-.cz-task-item > div {
+.tiptap .cz-task-item>div,
+.cz-task-item>div {
 	flex: 1 1 auto !important;
 	min-width: 0 !important;
 	margin: 0 !important;
@@ -1547,8 +1521,8 @@ li.cz-task-item {
 }
 
 /* Force all children inside a task item div to be inline */
-.cz-task-item > div > *,
-.cz-task-item > div p {
+.cz-task-item>div>*,
+.cz-task-item>div p {
 	display: inline !important;
 	margin: 0 !important;
 	padding: 0 !important;
@@ -1565,8 +1539,8 @@ li.cz-task-item {
 }
 
 /* Nested list margins */
-.tiptap li > ul,
-.tiptap li > ol {
+.tiptap li>ul,
+.tiptap li>ol {
 	margin: 0.5rem 0 0 0 !important;
 }
 
@@ -1591,8 +1565,8 @@ li.cz-task-item {
 	min-width: 100px;
 }
 
-.tiptap table td > *,
-.tiptap table th > * {
+.tiptap table td>*,
+.tiptap table th>* {
 	margin-bottom: 0;
 }
 
@@ -1683,6 +1657,7 @@ li.cz-task-item {
 .ProseMirror:focus {
 	outline: none;
 }
+
 /* Page Break Extension Styling */
 .page-break {
 	@apply my-8 flex items-center justify-center relative py-4;
@@ -1712,7 +1687,7 @@ li.cz-task-item {
 	@apply text-indigo-500 dark:text-indigo-400;
 }
 
-/* Admin/provider shell override: plain light surfaces, no glass compression. */
+/* Provider shell override: plain light surfaces, no glass compression. */
 html,
 body {
 	background: hsl(var(--background));
@@ -1726,11 +1701,11 @@ body {
 	overflow-y: auto;
 }
 
-details > summary {
+details>summary {
 	list-style: none;
 }
 
-details > summary::-webkit-details-marker {
+details>summary::-webkit-details-marker {
 	display: none;
 }
 

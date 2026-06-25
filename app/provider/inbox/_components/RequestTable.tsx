@@ -2,30 +2,10 @@
 
 import { FileText, RefreshCw } from 'lucide-react'
 import { RequestRow } from './RequestRow'
-
-interface SupportRequest {
-	id: string
-	title: string
-	status: string
-	serviceTags: string[]
-	academicLevel: string
-	deadline?: string
-	deadlineAt?: string
-	createdAt: string
-	clientUid: string
-	email?: string
-	fullName?: string
-	paymentStatus?: string
-	subscriptionPlanId?: string
-	subscriptionPlanName?: string
-	subscriptionPriorityLevel?: number
-	fileCount?: number
-	messageCount?: number
-	messageThreadId?: string
-}
+import type { ProviderRequest } from '../../_lib/server-data'
 
 interface RequestTableProps {
-	requests: SupportRequest[]
+	requests: ProviderRequest[]
 	loading: boolean
 	selectedId?: string | null
 	onRefresh: () => void

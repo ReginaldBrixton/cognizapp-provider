@@ -15,7 +15,7 @@ const PUBLIC_EXACT_PATHS = new Set([
 const PUBLIC_PREFIXES = ['/auth']
 const SKIP_PREFIXES = ['/api/', '/_next/', '/static/', '/favicon.ico']
 
-const PROVIDER_ROLES = new Set(['SUPPORT_PROVIDER_USER', 'DEV_USER'])
+const PROVIDER_ROLES = new Set(['SUPPORT_PROVIDER_USER'])
 
 const PROVIDER_PREFIXES = ['/provider']
 

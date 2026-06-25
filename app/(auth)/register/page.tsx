@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import Link from 'next/link'
-import { AlertCircle, Loader2, Mail, ShieldCheck, Sparkles, UsersRound } from 'lucide-react'
+import { AlertCircle, Loader2, Mail, ShieldCheck, Sparkles } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 import { useAuth } from '@/app/(auth)/_lib/hooks/use-auth'
@@ -23,7 +23,6 @@ export default function RegisterPage() {
 	const [codeSent, setCodeSent] = useState(false)
 	const [cooldown, setCooldown] = useState(0)
 	const [shake, setShake] = useState(false)
-	const [selectedPortal, setSelectedPortal] = useState<'admin' | 'provider' | null>(null)
 	const codeInputRef = useRef<HTMLInputElement>(null)
 	const normalizedCode = useMemo(() => code.replace(/\D/g, '').slice(0, 6), [code])
 
@@ -39,9 +38,6 @@ export default function RegisterPage() {
 
 	async function submitEmail(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault()
-		if (!selectedPortal) {
-			return
-		}
 		const nextCooldown = await handleRequestOtp(email)
 		if (nextCooldown !== null) {
 			setCodeSent(true)
@@ -61,9 +57,6 @@ export default function RegisterPage() {
 	}
 
 	async function resendCode() {
-		if (!selectedPortal) {
-			return
-		}
 		const nextCooldown = await handleResendOtp(email)
 		if (nextCooldown !== null) {
 			setCooldown(nextCooldown)
@@ -91,10 +84,10 @@ export default function RegisterPage() {
 								<ShieldCheck className='h-6 w-6' />
 							</div>
 							<h1 className='text-2xl font-semibold text-charcoal dark:text-cream'>
-								Create your account
+								Create your provider account
 							</h1>
 							<p className='text-sm leading-6 text-zinc-500 dark:text-zinc-400'>
-								Use your email to receive a secure one-time code.
+								Use your authorized email to receive a secure one-time code.
 							</p>
 						</div>
 
@@ -121,45 +114,6 @@ export default function RegisterPage() {
 
 						{!codeSent ? (
 							<form className='space-y-4' onSubmit={submitEmail}>
-								<label className='block text-sm font-medium text-zinc-700 dark:text-zinc-200'>
-									Select portal
-								</label>
-								<div className='grid grid-cols-2 gap-3'>
-									<label
-										className={`flex cursor-pointer items-center justify-center gap-2 rounded-lg border px-4 py-3 text-sm font-medium transition ${selectedPortal === 'admin'
-											? 'border-sage bg-sage text-white'
-											: 'border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100'
-											}`}
-									>
-										<input
-											type='radio'
-											name='portal'
-											value='admin'
-											checked={selectedPortal === 'admin'}
-											onChange={(e) => setSelectedPortal(e.target.value as 'admin' | 'provider')}
-											className='sr-only'
-										/>
-										<ShieldCheck className='h-4 w-4' />
-										Admin
-									</label>
-									<label
-										className={`flex cursor-pointer items-center justify-center gap-2 rounded-lg border px-4 py-3 text-sm font-medium transition ${selectedPortal === 'provider'
-											? 'border-sage bg-sage text-white'
-											: 'border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100'
-											}`}
-									>
-										<input
-											type='radio'
-											name='portal'
-											value='provider'
-											checked={selectedPortal === 'provider'}
-											onChange={(e) => setSelectedPortal(e.target.value as 'admin' | 'provider')}
-											className='sr-only'
-										/>
-										<UsersRound className='h-4 w-4' />
-										Provider
-									</label>
-								</div>
 								<label className='block text-sm font-medium text-zinc-700 dark:text-zinc-200' htmlFor='register-email'>
 									Email
 								</label>
@@ -178,7 +132,7 @@ export default function RegisterPage() {
 								</div>
 								<button
 									type='submit'
-									disabled={loading || !selectedPortal}
+									disabled={loading}
 									className='flex w-full items-center justify-center gap-3 rounded-lg bg-sage px-4 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-sage/90 disabled:cursor-not-allowed disabled:opacity-50'
 								>
 									{loading && <Loader2 className='h-5 w-5 animate-spin' />}

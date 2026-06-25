@@ -5,7 +5,7 @@ Provider portal for the CognizApp platform.
 ## Prerequisites
 
 - [Bun](https://bun.sh/) (JavaScript runtime and package manager)
-- CognizApp Users Service running on port 4040
+- CognizApp Backend API running on port 4040
 
 ## Quick Start
 
@@ -43,7 +43,7 @@ The backend API should start on port 4040.
 
 ### 4. Start the Provider Portal
 
-Once the users service is running, start the admin portal:
+Once the backend service is running, start the provider portal:
 
 ```bash
 bun run dev
@@ -90,10 +90,10 @@ If you see errors like:
 [fetchProviderData] Fetch failed: {}
 ```
 
-This means the backend users service is not running. Make sure:
+This means the backend service is not running. Make sure:
 
-1. The users service is running on port 4040
-2. Check with: `netstat -ano | findstr :4040` (Windows) or `lsof -i :4040` (Mac/Linux)
+1. The backend service is running on port 4040
+2. Check with: `lsof -i :4040` (Mac/Linux)
 3. Start the backend API: `cd ../cognizapp-backend-api && bun run dev`
 
 ### Port Already in Use
@@ -109,7 +109,7 @@ PORT=3002 bun run dev
 The provider portal uses token-based authentication with role checks:
 
 - Provider users can access `/provider/*` routes
-- Non-privileged users are redirected to login
+- Non-provider users are redirected to login
 
 ## Environment Variables
 

@@ -2,6 +2,8 @@ import { cookies } from 'next/headers'
 import { ACCESS_TOKEN_COOKIE } from '@/app/api/_lib/auth-session'
 import { BACKEND_URL } from '@/app/api/_lib/backend-url'
 
+// ── Provider dashboard types ────────────────────────────────────────────────
+
 export type ProviderDashboardStats = {
 	totalRequests?: number
 	openRequests?: number
@@ -17,6 +19,17 @@ export type ProviderDeadline = {
 	deadline: string
 	status: string
 }
+
+export type ProviderActivity = {
+	id: string
+	type: string
+	message: string
+	time: string
+	title?: string
+	requestId?: string
+}
+
+// ── Shared request type (used by inbox, dashboard, diagnostics) ─────────────
 
 export type ProviderRequest = {
 	id: string
@@ -34,22 +47,31 @@ export type ProviderRequest = {
 	subscriptionPlanId?: string
 	subscriptionPlanName?: string
 	subscriptionPriorityLevel?: number
+	fileCount?: number
+	messageCount?: number
+	messageThreadId?: string
+	taskId?: string
+	currency?: string
+	paymentAmount?: number
+	quotedAmount?: number
+	originalAmount?: number
 }
 
-export type ProviderActivity = {
-	id: string
-	type: string
-	message: string
-	time: string
-	title?: string
-	requestId?: string
-}
+// ── Server-side data fetching ───────────────────────────────────────────────
 
-async function getAccessToken() {
+async function getAccessToken(): Promise<string | null> {
 	const cookieStore = await cookies()
-	return cookieStore.get(ACCESS_TOKEN_COOKIE)?.value || null
+	return cookieStore.get(ACCESS_TOKEN_COOKIE)?.value ?? null
 }
 
+/**
+ * Fetch data from the backend API on the server side.
+ *
+ * Uses the provider's access token from cookies and caches the result
+ * for `revalidate` seconds (default 30).
+ *
+ * Returns `null` on any error — callers should handle gracefully.
+ */
 export async function fetchProviderData<T>(
 	path: string,
 	options: { revalidate?: number } = {},
@@ -60,10 +82,9 @@ export async function fetchProviderData<T>(
 		return null
 	}
 
-	try {
-		const url = `${BACKEND_URL}${path}`
-		console.log('[fetchProviderData] Fetching:', url)
+	const url = `${BACKEND_URL}${path}`
 
+	try {
 		const response = await fetch(url, {
 			headers: {
 				Authorization: `Bearer ${accessToken}`,
@@ -82,19 +103,10 @@ export async function fetchProviderData<T>(
 		const payload = await response.json().catch(() => null)
 		return (payload?.data ?? null) as T | null
 	} catch (error) {
-		// Enhanced error logging to capture fetch failures
-		const errorDetails = {
-			path,
+		console.error('[fetchProviderData] Fetch failed for', path, {
 			backendUrl: BACKEND_URL,
-			errorType: error?.constructor?.name || typeof error,
-			errorMessage: error instanceof Error ? error.message : String(error),
-			errorCause: error instanceof Error ? error.cause : undefined,
-			errorStack: error instanceof Error ? error.stack?.split('\n').slice(0, 3).join('\n') : undefined,
-		}
-		
-		console.error('[fetchProviderData] Fetch failed:', errorDetails)
-		console.error('[fetchProviderData] Is the backend server running at', BACKEND_URL, '?')
-		
+			error: error instanceof Error ? error.message : String(error),
+		})
 		return null
 	}
 }

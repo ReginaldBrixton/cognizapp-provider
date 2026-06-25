@@ -40,7 +40,7 @@ async function readJsonResponse(response: Response) {
 }
 
 export async function requestOtp(email: string): Promise<OtpRequestResponse> {
-	// Admin app only serves privileged accounts (admin + provider). The backend
+	// The provider portal only serves provider accounts. The backend
 	// resolves the exact role from the privileged-access allow-list, so we just
 	// require *some* privileged grant — no manual portal choice needed.
 	const response = await fetch('/api/auth/otp/request', {

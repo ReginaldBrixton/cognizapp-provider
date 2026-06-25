@@ -616,7 +616,7 @@ export function RequestWorkspace({
 				<Dialog onClose={() => setShowDiscountDialog(false)} title='Discount Decision' icon={Sparkles}>
 					<div className='space-y-2.5 p-3 sm:p-4'>
 						<div className='rounded-lg border border-emerald-100 bg-emerald-50 px-3 py-2 text-[12px] text-emerald-800'>
-							<p className='font-semibold'>Providers can approve 1-100% without admin approval.</p>
+							<p className='font-semibold'>Providers can approve 1-100% discounts directly.</p>
 							<p className='mt-0.5'>Current request value: {formatMoney(baseDiscountAmount, request.currency)}</p>
 						</div>
 						<Field label='Discount percent'>
@@ -1099,7 +1099,7 @@ function RequestConversation({
 			status: 'active',
 			participants: [
 				{ userId: request.userKeyId || request.clientId || 'client', name: request.fullName || request.email || 'Client', role: 'client' },
-				{ userId: 'cognizap-support', name: 'CognizApp Support', role: 'admin' },
+				{ userId: 'cognizap-support', name: 'CognizApp Support', role: 'provider' },
 			],
 			unreadCount: 0,
 			lastMessageAt: request.messageThreadLastMessageAt,
@@ -1124,7 +1124,7 @@ function RequestConversation({
 						? created.participants
 						: [
 							{ userId: request.userKeyId || request.clientId || 'client', name: request.fullName || request.email || 'Client', role: 'client' },
-							{ userId: 'cognizap-support', name: 'CognizApp Support', role: 'admin' },
+							{ userId: 'cognizap-support', name: 'CognizApp Support', role: 'provider' },
 						],
 				})
 				onRefresh?.()

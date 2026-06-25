@@ -10,24 +10,12 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select'
-
-interface Filters {
-	status: string
-	paymentStatus: string
-	service: string
-	search: string
-	deadline: string
-	subscription: string
-	priority: string
-}
+import { formatLabel } from '@/lib/format'
+import type { RequestFilters } from './types'
 
 interface RequestFiltersProps {
-	filters: Filters
-	onFiltersChange: (filters: Filters) => void
-}
-
-function formatFilterLabel(value: string) {
-	return value.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+	filters: RequestFilters
+	onFiltersChange: (filters: RequestFilters) => void
 }
 
 function FilterSelectControls({
@@ -161,7 +149,7 @@ export function RequestFilters({ filters, onFiltersChange }: RequestFiltersProps
 							filters.priority,
 						].filter(Boolean).slice(0, 3).map((filter) => (
 							<span key={filter} className='shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-600'>
-								{formatFilterLabel(filter)}
+								{formatLabel(filter)}
 							</span>
 						))}
 						<button type='button' onClick={clearAll} className='shrink-0 text-[10px] font-semibold text-slate-500'>

@@ -19,13 +19,11 @@ export default async function RequestDetailPage({ params, searchParams }: PagePr
 
 	if (!request) notFound()
 
-	// Build back URL with preserved filters
 	const backParams = new URLSearchParams()
 	Object.entries(resolvedSearchParams).forEach(([key, value]) => {
-		if (value && key !== 'request') {
-			if (Array.isArray(value)) value.forEach((v) => backParams.append(key, v))
-			else backParams.set(key, value)
-		}
+		if (!value || key === 'request') return
+		if (Array.isArray(value)) value.forEach((v) => backParams.append(key, v))
+		else backParams.set(key, value)
 	})
 	const backUrl = backParams.size ? `/provider/inbox?${backParams.toString()}` : '/provider/inbox'
 

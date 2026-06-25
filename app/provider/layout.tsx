@@ -18,22 +18,13 @@ function ContentFallback() {
 	)
 }
 
-export default function SupportLayout({
+export default function ProviderLayout({
 	children,
 }: {
 	children: React.ReactNode
 }) {
 	return (
-		<ProtectedRoleLayout
-			allow={(role) =>
-				role === 'provider' ||
-				role === 'support_provider' ||
-				role === 'developer'
-			}
-			redirectTo={(role) =>
-				role === 'admin' || role === 'master' ? '/login' : '/login'
-			}
-		>
+		<ProtectedRoleLayout>
 			<div className='flex h-dvh w-full overflow-hidden bg-background text-foreground'>
 				{/* Sidebar stays mounted across all provider routes. */}
 				<ProviderSupportSidebar />

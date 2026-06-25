@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
 
-export default function AdminRootPage() {
-	redirect('/dashboard')
+export default function ProviderRootPage() {
+	redirect('/provider/dashboard')
 }

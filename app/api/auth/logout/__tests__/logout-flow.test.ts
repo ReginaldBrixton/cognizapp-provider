@@ -44,10 +44,10 @@ describe('Logout Flow Integration Tests', () => {
 		// Default cookie mock with both tokens
 		cookies.mockResolvedValue({
 			get: jest.fn((name: string) => {
-				if (name === 'cognizap_access_token') {
+				if (name === 'cognizap_provider_access_token') {
 					return { value: mockAccessToken }
 				}
-				if (name === 'cognizap_refresh_token') {
+				if (name === 'cognizap_provider_refresh_token') {
 					return { value: mockRefreshToken }
 				}
 				return undefined
@@ -103,12 +103,12 @@ describe('Logout Flow Integration Tests', () => {
 			// Check that both cookies are being deleted
 			const hasAccessTokenDelete = setCookieHeaders.some(
 				(header: string) =>
-					header.includes('cognizap_access_token') &&
+					header.includes('cognizap_provider_access_token') &&
 					(header.includes('Max-Age=0') || header.includes('Expires=')),
 			)
 			const hasRefreshTokenDelete = setCookieHeaders.some(
 				(header: string) =>
-					header.includes('cognizap_refresh_token') &&
+					header.includes('cognizap_provider_refresh_token') &&
 					(header.includes('Max-Age=0') || header.includes('Expires=')),
 			)
 
@@ -270,8 +270,8 @@ describe('Logout Flow Integration Tests', () => {
 				return match ? match[1] : ''
 			})
 
-			expect(cookieNames).toContain('cognizap_access_token')
-			expect(cookieNames).toContain('cognizap_refresh_token')
+			expect(cookieNames).toContain('cognizap_provider_access_token')
+			expect(cookieNames).toContain('cognizap_provider_refresh_token')
 		})
 
 		it('should set cookies with proper deletion attributes', async () => {

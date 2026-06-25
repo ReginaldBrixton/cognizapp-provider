@@ -106,7 +106,7 @@ export function useSupportThreadRealtime(
 				})
 				onMessageRef.current?.(message)
 			}
-			
+
 			// Handle message updates (edit/delete)
 			if (payload.type === 'message.updated' && payload.message) {
 				const message = payload.message as SupportMessage
@@ -290,22 +290,6 @@ export function useSendSupportMessage(thread: SupportThread | null) {
 	return useMutation({
 		mutationFn: async (payload: SendMessagePayload) => {
 			if (!thread) throw new Error('Thread is required')
-
-			if ((thread as any).type === 'ai') {
-				const response = await fetch('/api/support/ai/chat', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({
-						threadId: thread.id,
-						prompt: payload.body,
-						mentions: payload.mentions || [],
-						fileReferences: payload.fileReferences || [],
-					}),
-				})
-				if (!response.ok) throw new Error('Failed to send AI message')
-				const json = await response.json()
-				return json.data
-			}
 
 			const response = await fetch(
 				`/api/support/messages/threads/${thread.id}/messages`,

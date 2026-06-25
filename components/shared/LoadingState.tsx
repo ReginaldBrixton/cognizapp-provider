@@ -10,7 +10,7 @@ interface LoadingStateProps {
 }
 
 /**
- * Standardized loading state component for consistent loading UI across the admin/provider portals.
+ * Standardized loading state component for consistent loading UI across the provider portal.
  *
  * @example
  * ```tsx

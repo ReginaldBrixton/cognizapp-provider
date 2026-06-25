@@ -5,24 +5,14 @@ import {
 	type UserRole,
 	ROLE_DASHBOARDS,
 	isValidRole,
-	isAdmin,
-	isDeveloper,
-	isSupport,
-	isPremium,
-	isMaster,
-	getRoleLevel,
+	isProvider,
 	normalizeUserRole,
-} from '@/lib/services/roles'
+} from '@/types/roles'
 
 interface RoleInfo {
 	role: UserRole
-	level: number
 	dashboard: string
-	isAdmin: boolean
-	isDeveloper: boolean
-	isSupport: boolean
-	isPremium: boolean
-	isMaster: boolean
+	isProvider: boolean
 }
 
 interface UseUserRoleReturn extends RoleInfo {
@@ -32,22 +22,15 @@ interface UseUserRoleReturn extends RoleInfo {
 }
 
 /**
- * Hook to get the current user's role and permissions
+ * Hook to get the current user's role and permissions.
  *
- * Role hierarchy (higher = more access):
- * Product roles: user < provider < admin. User tiers: free, pro, max.
- * Legacy aliases remain supported only for older sessions.
+ * The provider portal only serves support provider accounts.
  */
 export function useUserRole(): UseUserRoleReturn {
 	const [roleInfo, setRoleInfo] = useState<RoleInfo>({
-		role: 'user',
-		level: 1,
+		role: 'unauthorized',
 		dashboard: '/login',
-		isAdmin: false,
-		isDeveloper: false,
-		isSupport: false,
-		isPremium: false,
-		isMaster: false,
+		isProvider: false,
 	})
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState<string | null>(null)
@@ -57,7 +40,6 @@ export function useUserRole(): UseUserRoleReturn {
 		setError(null)
 
 		try {
-			// Fetch user info from backend API
 			const response = await fetch('/api/auth/me', {
 				method: 'GET',
 				credentials: 'include',
@@ -65,16 +47,10 @@ export function useUserRole(): UseUserRoleReturn {
 
 			if (!response.ok) {
 				if (response.status === 401) {
-					// Not authenticated - use default user role
 					setRoleInfo({
-						role: 'user',
-						level: 1,
+						role: 'unauthorized',
 						dashboard: '/login',
-						isAdmin: false,
-						isDeveloper: false,
-						isSupport: false,
-						isPremium: false,
-						isMaster: false,
+						isProvider: false,
 					})
 					return
 				}
@@ -89,13 +65,8 @@ export function useUserRole(): UseUserRoleReturn {
 
 			const info: RoleInfo = {
 				role,
-				level: getRoleLevel(role),
 				dashboard: ROLE_DASHBOARDS[role] || '/login',
-				isAdmin: isAdmin(role),
-				isDeveloper: isDeveloper(role),
-				isSupport: isSupport(role),
-				isPremium: isPremium(role),
-				isMaster: isMaster(role),
+				isProvider: isProvider(role),
 			}
 			setRoleInfo(info)
 		} catch (e) {

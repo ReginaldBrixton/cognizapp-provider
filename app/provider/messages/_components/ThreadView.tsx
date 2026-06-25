@@ -70,7 +70,7 @@ export function ThreadView({ thread, onRefresh, compact = false, onOpenMilestone
 	const [delivering, setDelivering] = useState(false)
 	const [showDeliveryTools, setShowDeliveryTools] = useState(false)
 	const [showCardTools, setShowCardTools] = useState(false)
-	const [replyingTo, setReplyingTo] = useState<{messageId: string; senderName: string; preview: string} | null>(null)
+	const [replyingTo, setReplyingTo] = useState<{ messageId: string; senderName: string; preview: string } | null>(null)
 	const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null)
 	const messagesEndRef = useRef<HTMLDivElement>(null)
 	const messagesContainerRef = useRef<HTMLDivElement>(null)
@@ -1061,7 +1061,7 @@ function CardDialog({ children, onClose }: { children: React.ReactNode; onClose:
 		<Drawer open onOpenChange={(open) => { if (!open) onClose() }}>
 			<DrawerContent className='mx-auto max-h-[88vh] w-full max-w-sm overflow-hidden rounded-t-2xl border-slate-200 bg-white p-0 shadow-mobile-sheet sm:left-1/2 sm:right-auto sm:top-1/2 sm:bottom-auto sm:max-h-[82vh] sm:translate-x-[-50%] sm:translate-y-[-50%] sm:rounded-2xl'>
 				<div className='overflow-y-auto'>
-				{children}
+					{children}
 				</div>
 			</DrawerContent>
 		</Drawer>
@@ -1086,7 +1086,7 @@ interface MessageBubbleProps {
 	isOwnMessage: boolean
 	handleEditMessage: (messageId: string, newContent: string) => Promise<void>
 	handleDeleteMessage: (messageId: string) => Promise<void>
-	setReplyingTo: (reply: {messageId: string; senderName: string; preview: string} | null) => void
+	setReplyingTo: (reply: { messageId: string; senderName: string; preview: string } | null) => void
 	onFilesChanged?: () => void
 	onReplacePackage?: () => void
 }
@@ -1095,7 +1095,7 @@ function MessageBubble({ message: msg, isOwnMessage, handleEditMessage, handleDe
 	const [isEditing, setIsEditing] = useState(false)
 	const [editContent, setEditContent] = useState(msg.content)
 	const isDeleted = Boolean(msg.deletedAt)
-	const isProvider = msg.senderRole === 'provider' || msg.senderRole === 'admin'
+	const isProvider = msg.senderRole === 'provider'
 	const attachments = msg.attachments || []
 	const hasDeliveryPackage = attachments.some((att) => att.kind === 'preview_pages_card')
 	const canEditText = isOwnMessage && !hasDeliveryPackage && !isDeleted
@@ -1173,7 +1173,7 @@ function MessageBubble({ message: msg, isOwnMessage, handleEditMessage, handleDe
 				) : (
 					<>
 						<p className='whitespace-pre-wrap break-words leading-relaxed'>{msg.content}</p>
-						
+
 						{msg.editedAt && (
 							<p className={cn('mt-1 text-[10px] italic', isProvider ? 'text-white/50' : 'text-slate-400')}>
 								(edited)
