@@ -9,6 +9,19 @@ interface RouteParams {
 	params: Promise<{ id: string; milestoneId: string }>
 }
 
+export async function GET(_request: NextRequest, { params }: RouteParams) {
+	try {
+		const { id, milestoneId } = await params
+		return proxyBackendWithCookieAuth(
+			_request,
+			`${BACKEND_URL}/api/support/provider/requests/${id}/milestones/${milestoneId}`,
+			{ method: 'GET' },
+		)
+	} catch (error) {
+		return handleApiError(error, 'support:provider:request:milestone:GET')
+	}
+}
+
 export async function PATCH(request: NextRequest, { params }: RouteParams) {
 	try {
 		const { id, milestoneId } = await params

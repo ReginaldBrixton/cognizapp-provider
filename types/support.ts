@@ -176,10 +176,50 @@ export interface SupportMilestone {
 	approvedAt?: string | null
 	autoApprovedAt?: string | null
 	cancelledAt?: string | null
+	submissionRound?: number
 	fileCount?: number
 	files?: Attachment[]
 	createdAt: string
 	updatedAt?: string
+}
+
+export interface MilestoneHistoryRound {
+	round: number
+	label: string
+	files: Array<{
+		id: string
+		name: string
+		fileName: string
+		type: string
+		size: number
+		purpose: string
+		round: number
+		createdAt: string
+		deletedAt: string | null
+		replacedAt: string | null
+		previousName: string | null
+		status: string
+	}>
+	revision: {
+		id: string
+		reason: string
+		message: string
+		status: string
+		round: number
+		createdAt: string
+	} | null
+	events: Array<{
+		id: string
+		eventType: string
+		fileName: string | null
+		previousFileName: string | null
+		actorKeyId: string
+		actorRole: string
+		round: number
+		metadata: Record<string, any>
+		createdAt: string
+	}>
+	submittedAt: string | null
 }
 
 export interface DriveFile {
@@ -456,6 +496,7 @@ export interface Attachment {
 	latestRevisionMessage?: string
 	latestRevisionStatus?: string
 	latestRevisionAt?: string | null
+	submissionRound?: number
 	amount?: number
 	currency?: string
 	note?: string

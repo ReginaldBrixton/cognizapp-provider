@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
+import Link from 'next/link'
 import { formatDistanceToNow } from 'date-fns'
 import {
 	ArrowDown,
@@ -906,9 +907,9 @@ function PaymentCardBtn({
 			const request = payload?.data || {}
 			const full = Number(
 				request.finalAmount ??
-					request.paymentAmount ??
-					request.quotedAmount ??
-					0,
+				request.paymentAmount ??
+				request.quotedAmount ??
+				0,
 			)
 			const balance = Number(request.balanceAmount ?? 0)
 			const amounts = {
@@ -1879,6 +1880,9 @@ function MilestoneChatCard({
 	const revisionMessage =
 		attachment.latestRevisionMessage || attachment.userFeedback
 	const files = Array.isArray(attachment.files) ? attachment.files : []
+	const milestoneHref = attachment.requestId && attachment.milestoneId
+		? `/provider/inbox/${attachment.requestId}/milestones/${attachment.milestoneId}`
+		: null
 
 	return (
 		<div
@@ -1893,6 +1897,11 @@ function MilestoneChatCard({
 				<div className='min-w-0'>
 					<p className='flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-blue-600'>
 						<FileText className='h-3 w-3' /> Milestone
+						{attachment.submissionRound ? (
+							<span className='ml-1 rounded-full bg-blue-100 px-1.5 py-0.5 text-[9px] dark:bg-blue-900/40'>
+								v{attachment.submissionRound}
+							</span>
+						) : null}
 					</p>
 					<p className='mt-0.5 truncate text-[13px] font-semibold'>
 						{attachment.title || 'Milestone'}
@@ -1908,7 +1917,9 @@ function MilestoneChatCard({
 						'shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold',
 						revisionPending
 							? 'bg-amber-50 text-amber-700'
-							: 'bg-blue-50 text-blue-700',
+							: status === 'approved' || status === 'auto_approved'
+								? 'bg-green-50 text-green-700'
+								: 'bg-blue-50 text-blue-700',
 					)}
 				>
 					{fmtStatus(status)}
@@ -1923,8 +1934,8 @@ function MilestoneChatCard({
 						warn: revisionPending,
 					},
 					{
-						label: status === 'approved' ? 'Approved' : 'Pending',
-						active: status === 'approved',
+						label: status === 'approved' || status === 'auto_approved' ? 'Approved' : 'Pending',
+						active: status === 'approved' || status === 'auto_approved',
 					},
 				].map((step) => (
 					<div key={step.label}>
@@ -1934,7 +1945,9 @@ function MilestoneChatCard({
 								step.active
 									? step.warn
 										? 'bg-amber-400'
-										: 'bg-blue-500'
+										: status === 'approved' || status === 'auto_approved'
+											? 'bg-green-500'
+											: 'bg-blue-500'
 									: 'bg-slate-200 dark:bg-muted',
 							)}
 						/>
@@ -2014,14 +2027,15 @@ function MilestoneChatCard({
 					<p className='mt-0.5 whitespace-pre-wrap'>{revisionMessage}</p>
 				</div>
 			)}
-			<div className='mt-2.5 grid grid-cols-2 gap-1.5 text-[11px]'>
-				<span className='flex h-7 items-center justify-center gap-1 rounded-lg bg-emerald-50 font-semibold text-emerald-700'>
-					<CheckCircle className='h-3 w-3' /> Client can accept
-				</span>
-				<span className='flex h-7 items-center justify-center gap-1 rounded-lg bg-amber-50 font-semibold text-amber-700'>
-					<RotateCcw className='h-3 w-3' /> Or revise
-				</span>
-			</div>
+			{milestoneHref && (
+				<Link
+					href={milestoneHref}
+					className='mt-2.5 flex h-8 items-center justify-center gap-1.5 rounded-lg bg-blue-50 text-[11px] font-semibold text-blue-700 transition-colors hover:bg-blue-100 dark:bg-blue-950/30 dark:text-blue-300 dark:hover:bg-blue-900/40'
+				>
+					<Eye className='h-3.5 w-3.5' />
+					Open milestone workspace
+				</Link>
+			)}
 		</div>
 	)
 }
@@ -2166,20 +2180,20 @@ function PreviewPagesChatCard({
 		Array.isArray(packageAttachment.files) && packageAttachment.files.length > 0
 			? packageAttachment.files
 			: [
-					{
-						name: 'Clean PDF file',
-						fileName: 'Clean PDF file',
-						fileType: 'application/pdf',
-						locked: true,
-					},
-					{
-						name: 'Editable DOCX file',
-						fileName: 'Editable DOCX file',
-						fileType:
-							'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-						locked: true,
-					},
-				]
+				{
+					name: 'Clean PDF file',
+					fileName: 'Clean PDF file',
+					fileType: 'application/pdf',
+					locked: true,
+				},
+				{
+					name: 'Editable DOCX file',
+					fileName: 'Editable DOCX file',
+					fileType:
+						'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+					locked: true,
+				},
+			]
 	return (
 		<div className='mt-1.5 overflow-hidden rounded-xl border border-emerald-200 bg-white dark:bg-card shadow-sm'>
 			<div className='bg-emerald-50 px-3 py-3 text-slate-900 dark:text-foreground'>
@@ -2202,9 +2216,9 @@ function PreviewPagesChatCard({
 					const item = file
 					const fileName = String(
 						item.fileName ??
-							item.name ??
-							item.label ??
-							(index === 0 ? 'Clean PDF file' : 'Editable DOCX file'),
+						item.name ??
+						item.label ??
+						(index === 0 ? 'Clean PDF file' : 'Editable DOCX file'),
 					)
 					const fileType = String(item.fileType ?? item.type ?? '')
 					const isPdf =

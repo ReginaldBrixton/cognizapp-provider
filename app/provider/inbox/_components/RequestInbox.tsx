@@ -466,9 +466,9 @@ export function RequestWorkspace({
 	})
 	const baseDiscountAmount = Number(
 		request.originalAmount ??
-			request.paymentAmount ??
-			request.quotedAmount ??
-			0,
+		request.paymentAmount ??
+		request.quotedAmount ??
+		0,
 	)
 	const [discount, setDiscount] = useState({
 		requestedAmount: '',
@@ -627,11 +627,11 @@ export function RequestWorkspace({
 			const percentApprovedAmount =
 				percentValue > 0
 					? Math.round(
-							Math.min(
-								baseDiscountAmount,
-								(baseDiscountAmount * percentValue) / 100,
-							) * 100,
-						) / 100
+						Math.min(
+							baseDiscountAmount,
+							(baseDiscountAmount * percentValue) / 100,
+						) * 100,
+					) / 100
 					: 0
 			const approvedAmount =
 				status === 'approved'
@@ -676,11 +676,11 @@ export function RequestWorkspace({
 	const discountPreviewAmount =
 		Number.isFinite(discountPercentValue) && discountPercentValue > 0
 			? Math.round(
-					Math.min(
-						baseDiscountAmount,
-						(baseDiscountAmount * discountPercentValue) / 100,
-					) * 100,
-				) / 100
+				Math.min(
+					baseDiscountAmount,
+					(baseDiscountAmount * discountPercentValue) / 100,
+				) * 100,
+			) / 100
 			: Number(discount.approvedAmount || 0)
 
 	const retryPreviewGeneration = async () => {
@@ -840,7 +840,7 @@ export function RequestWorkspace({
 							{Math.max(
 								0,
 								Number(request.revisionsAllowed ?? 2) -
-									Number(request.revisionsUsed ?? 0),
+								Number(request.revisionsUsed ?? 0),
 							)}
 						</Badge>
 						{request.previewStatus === 'failed' && (
@@ -1662,9 +1662,23 @@ function ProviderMilestoneRow({
 					{approved ? <Check className='h-3 w-3' /> : number}
 				</div>
 				<div className='min-w-0 flex-1'>
-					<p className='truncate text-[13px] font-semibold text-slate-900 dark:text-foreground'>
-						{milestone.title}
-					</p>
+					<div className='flex items-center gap-2'>
+						<p className='truncate text-[13px] font-semibold text-slate-900 dark:text-foreground'>
+							{milestone.title}
+						</p>
+						{milestone.submissionRound ? (
+							<span className='shrink-0 rounded-full bg-blue-100 px-1.5 py-0.5 text-[9px] font-semibold text-blue-700 dark:bg-blue-900/40 dark:text-blue-300'>
+								v{milestone.submissionRound}
+							</span>
+						) : null}
+						<Link
+							href={`/provider/inbox/${requestId}/milestones/${milestone.id}`}
+							className='ml-auto flex h-6 shrink-0 items-center gap-1 rounded-md border border-slate-200 px-2 text-[10px] font-medium text-slate-600 transition hover:bg-slate-50 dark:border-border dark:text-muted-foreground dark:hover:bg-muted'
+						>
+							<LayoutList className='h-3 w-3' />
+							Open
+						</Link>
+					</div>
 					{milestone.description && (
 						<p className='mt-0.5 line-clamp-1 text-[11px] text-slate-500 dark:text-muted-foreground'>
 							{milestone.description}
@@ -1869,17 +1883,17 @@ function RequestConversation({
 						participants: created.participants?.length
 							? created.participants
 							: [
-									{
-										userId: request.userKeyId || request.clientId || 'client',
-										name: request.fullName || request.email || 'Client',
-										role: 'client',
-									},
-									{
-										userId: 'cognizap-support',
-										name: 'CognizApp Support',
-										role: 'provider',
-									},
-								],
+								{
+									userId: request.userKeyId || request.clientId || 'client',
+									name: request.fullName || request.email || 'Client',
+									role: 'client',
+								},
+								{
+									userId: 'cognizap-support',
+									name: 'CognizApp Support',
+									role: 'provider',
+								},
+							],
 					})
 				onRefresh?.()
 			})
