@@ -1667,15 +1667,15 @@ function ProviderMilestoneRow({
 							{milestone.title}
 						</p>
 						{milestone.submissionRound ? (
-							<span className='shrink-0 rounded-full bg-blue-100 px-1.5 py-0.5 text-[9px] font-semibold text-blue-700 dark:bg-blue-900/40 dark:text-blue-300'>
+							<span className='shrink-0 rounded-full bg-blue-100 px-1.5 py-0.5 text-[10px] font-semibold text-blue-700 dark:bg-blue-900/40 dark:text-blue-300'>
 								v{milestone.submissionRound}
 							</span>
 						) : null}
 						<Link
 							href={`/provider/inbox/${requestId}/milestones/${milestone.id}`}
-							className='ml-auto flex h-6 shrink-0 items-center gap-1 rounded-md border border-slate-200 px-2 text-[10px] font-medium text-slate-600 transition hover:bg-slate-50 dark:border-border dark:text-muted-foreground dark:hover:bg-muted'
+							className='ml-auto flex h-7 shrink-0 items-center gap-1.5 rounded-lg bg-blue-50 px-3 text-[11px] font-semibold text-blue-700 transition hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50'
 						>
-							<LayoutList className='h-3 w-3' />
+							<LayoutList className='h-3.5 w-3.5' />
 							Open
 						</Link>
 					</div>

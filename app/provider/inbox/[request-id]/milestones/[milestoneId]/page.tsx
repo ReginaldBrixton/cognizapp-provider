@@ -10,23 +10,22 @@ interface PageProps {
 export default async function MilestoneDetailPage({ params }: PageProps) {
 	const { 'request-id': requestId, milestoneId } = await params
 
-	const request = await fetchProviderData<SupportRequest>(
-		`/api/support/provider/requests/${requestId}`,
-		{ revalidate: 5 },
-	)
-	if (!request) notFound()
-
-	const milestone = await fetchProviderData<SupportMilestone>(
-		`/api/support/provider/requests/${requestId}/milestones/${milestoneId}`,
-		{ revalidate: 5 },
-	)
-	if (!milestone) notFound()
-
-	const history =
-		(await fetchProviderData<MilestoneHistoryRound[]>(
+	const [request, milestone, history] = await Promise.all([
+		fetchProviderData<SupportRequest>(
+			`/api/support/provider/requests/${requestId}`,
+			{ revalidate: 5 },
+		),
+		fetchProviderData<SupportMilestone>(
+			`/api/support/provider/requests/${requestId}/milestones/${milestoneId}`,
+			{ revalidate: 5 },
+		),
+		fetchProviderData<MilestoneHistoryRound[]>(
 			`/api/support/provider/requests/${requestId}/milestones/${milestoneId}/history`,
 			{ revalidate: 5 },
-		)) ?? []
+		),
+	])
+
+	if (!request || !milestone) notFound()
 
 	const backHref = `/provider/inbox/${requestId}`
 
@@ -34,7 +33,7 @@ export default async function MilestoneDetailPage({ params }: PageProps) {
 		<MilestoneWorkspace
 			request={request}
 			milestone={milestone}
-			initialHistory={history}
+			initialHistory={history ?? []}
 			backHref={backHref}
 		/>
 	)
