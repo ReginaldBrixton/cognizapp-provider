@@ -113,6 +113,88 @@ export async function verifyOtp(email: string, code: string): Promise<ExchangeRe
 }
 
 /**
+ * PIN login (provider portal). Sends the username + PIN plus a stable device id
+ * so the backend can bind the session to this device and surface it in the
+ * activity log.
+ */
+export async function loginWithPin(
+	username: string,
+	pin: string,
+	deviceId: string,
+): Promise<ExchangeResponse> {
+	const response = await fetch('/api/auth/pin/login', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		credentials: 'include',
+		body: JSON.stringify({ username, pin, deviceId }),
+	})
+
+	const payload = await readJsonResponse(response)
+	const normalized = normalizeExchangeResponse(payload)
+
+	if (!response.ok && !normalized.error) {
+		return {
+			...normalized,
+			success: false,
+			error: `Request failed: ${response.status} ${response.statusText}`,
+		}
+	}
+
+	return normalized
+}
+
+export async function setPin(
+	username: string,
+	pin: string,
+	accessToken: string,
+): Promise<{ success: boolean; message?: string; error?: string; errorCode?: string }> {
+	const response = await fetch('/api/auth/pin/set', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${accessToken}`,
+		},
+		credentials: 'include',
+		body: JSON.stringify({ username, pin }),
+	})
+
+	const payload = await readJsonResponse(response)
+	return {
+		success: Boolean(payload?.success),
+		message: payload?.message,
+		error: payload?.error,
+		errorCode: payload?.errorCode ?? payload?.error_code,
+	}
+}
+
+export async function changePin(
+	currentPin: string,
+	newPin: string,
+	newUsername: string | undefined,
+	accessToken: string,
+): Promise<{ success: boolean; message?: string; error?: string; errorCode?: string }> {
+	const response = await fetch('/api/auth/pin/change', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${accessToken}`,
+		},
+		credentials: 'include',
+		body: JSON.stringify({ currentPin, newPin, newUsername }),
+	})
+
+	const payload = await readJsonResponse(response)
+	return {
+		success: Boolean(payload?.success),
+		message: payload?.message,
+		error: payload?.error,
+		errorCode: payload?.errorCode ?? payload?.error_code,
+	}
+}
+
+/**
  * Refresh access token using refresh token
  */
 export async function refreshAccessToken(

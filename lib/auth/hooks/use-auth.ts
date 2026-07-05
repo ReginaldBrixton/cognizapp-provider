@@ -4,7 +4,8 @@ import { useRouter } from 'next/navigation'
 import { useCallback, useState } from 'react'
 import { toast } from 'sonner'
 
-import { requestOtp, resendOtp, verifyOtp } from '@/lib/auth/api'
+import { requestOtp, resendOtp, verifyOtp, loginWithPin } from '@/lib/auth/api'
+import { getOrCreateDeviceId } from '@/lib/auth/device-id'
 import { useAuthStore } from '@/lib/store/auth'
 import { ROLE_DASHBOARDS, normalizeUserRole } from '@/types/roles'
 
@@ -26,6 +27,7 @@ export interface UseAuthReturn {
 	handleRequestOtp: (email: string) => Promise<number | null>
 	handleResendOtp: (email: string) => Promise<number | null>
 	handleVerifyOtp: (email: string, code: string) => Promise<boolean>
+	handlePinLogin: (username: string, pin: string) => Promise<boolean>
 	handleLogout: () => Promise<void>
 	clearError: () => void
 	clearSuccess: () => void
@@ -151,6 +153,56 @@ export function useAuth(): UseAuthReturn {
 		[handleRequestOtp],
 	)
 
+	const handlePinLogin = useCallback(async (username: string, pin: string): Promise<boolean> => {
+		setError(null)
+		setSuccess(null)
+		setLoading(true)
+
+		try {
+			const deviceId = getOrCreateDeviceId()
+			const response = await loginWithPin(username, pin, deviceId)
+			if (!response.success) {
+				const message =
+					response.errorCode === 'account_locked'
+						? 'Too many failed attempts. Your account is temporarily locked. Try again later.'
+						: response.errorCode === 'pin_rate_limited'
+							? 'Too many failed attempts from this device or network. Please try again later.'
+							: 'Invalid username or PIN.'
+				setError(message)
+				toast.error(message)
+				setLoading(false)
+				return false
+			}
+
+			useAuthStore.getState().setAuth({
+				user: response.user?.email
+					? {
+						id: response.user.id || '',
+						email: response.user.email,
+						displayName: response.user.displayName,
+						avatarUrl: response.user.avatarUrl,
+						role: response.user.role,
+					}
+					: null,
+				accessToken: response.accessToken || null,
+				refreshToken: response.refreshToken || null,
+				expiresAt: response.expiresAt || null,
+				status: 'authenticated',
+				authAction: response.authAction || 'login',
+			})
+
+			toast.success('Welcome back. Redirecting...')
+			window.location.href = getRedirectTarget(response.user?.role)
+			return true
+		} catch (err) {
+			const message = err instanceof Error ? err.message : 'Sign in failed. Please try again.'
+			setError(message)
+			toast.error(message)
+			setLoading(false)
+			return false
+		}
+	}, [])
+
 	const handleRegister = useCallback(
 		async (payload: RegisterPayload) => {
 			await handleRequestOtp(payload.email)
@@ -188,6 +240,7 @@ export function useAuth(): UseAuthReturn {
 		handleRequestOtp,
 		handleResendOtp,
 		handleVerifyOtp,
+		handlePinLogin,
 		handleLogout,
 		clearError,
 		clearSuccess,

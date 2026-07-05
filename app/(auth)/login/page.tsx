@@ -1,7 +1,7 @@
 'use client'
 
-import React, { Suspense, useEffect, useMemo, useRef, useState } from 'react'
-import { Mail, ShieldCheck, Sparkles } from 'lucide-react'
+import React, { Suspense, useEffect, useRef, useState } from 'react'
+import { Eye, EyeOff, KeyRound, ShieldCheck, Sparkles, User } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 import { useAuth } from '@/lib/auth/hooks/use-auth'
@@ -24,44 +24,21 @@ function Brand({ compact = false }: { compact?: boolean }) {
 }
 
 function LoginCard() {
-	const {
-		loading,
-		error,
-		success,
-		handleRequestOtp,
-		handleResendOtp,
-		handleVerifyOtp,
-	} = useAuth()
+	const { loading, error, handlePinLogin } = useAuth()
 	const router = useRouter()
 	const searchParams = useSearchParams()
 	const { data: session, status } = useSession()
 	const authUser = useAuthStore((state) => state.user)
-	const [email, setEmail] = useState('')
-	const [code, setCode] = useState('')
-	const [codeSent, setCodeSent] = useState(false)
-	const [cooldown, setCooldown] = useState(0)
+	const [username, setUsername] = useState('')
+	const [pin, setPin] = useState('')
+	const [showPin, setShowPin] = useState(false)
 	const [hasMounted, setHasMounted] = useState(false)
 	const [shake, setShake] = useState(false)
-	const codeInputRef = useRef<HTMLInputElement>(null)
+	const usernameInputRef = useRef<HTMLInputElement>(null)
 
 	useEffect(() => {
 		setHasMounted(true)
 	}, [])
-
-	useEffect(() => {
-		const step = searchParams.get('step')?.toLowerCase()
-		const emailParam = searchParams.get('email')?.trim().toLowerCase()
-		const shouldShowCode =
-			Boolean(emailParam) && (step === 'code' || step === 'otp')
-
-		if (!shouldShowCode || !emailParam) {
-			return
-		}
-
-		setEmail(emailParam)
-		setCodeSent(true)
-		window.setTimeout(() => codeInputRef.current?.focus(), 0)
-	}, [searchParams])
 
 	useEffect(() => {
 		if (status === 'authenticated' && session) {
@@ -70,10 +47,8 @@ function LoginCard() {
 				ROLE_DASHBOARDS[normalizeUserRole(authUser?.role)] ||
 				'/login'
 
-			// Prevent redirect loops: don't redirect to login page or current path
 			const currentPath = window.location.pathname
 			if (redirectTo === '/login' || redirectTo === currentPath) {
-				// Fallback to role-based dashboard
 				const roleDashboard = ROLE_DASHBOARDS[normalizeUserRole(authUser?.role)]
 				if (roleDashboard && roleDashboard !== '/login') {
 					router.replace(roleDashboard)
@@ -86,56 +61,17 @@ function LoginCard() {
 		}
 	}, [status, session, router, searchParams, authUser?.role])
 
-	useEffect(() => {
-		if (!cooldown) {
-			return
-		}
-		const timer = window.setInterval(() => {
-			setCooldown((value) => Math.max(value - 1, 0))
-		}, 1000)
-		return () => window.clearInterval(timer)
-	}, [cooldown])
+	const isLoading = loading || (hasMounted && status === 'authenticated')
 
-	const normalizedCode = useMemo(() => code.replace(/\D/g, '').slice(0, 6), [code])
-	const isLoading =
-		loading || (hasMounted && status === 'authenticated')
-
-	async function submitEmail(event: React.FormEvent<HTMLFormElement>) {
+	async function submitPin(event: React.FormEvent<HTMLFormElement>) {
 		event.preventDefault()
-		const nextCooldown = await handleRequestOtp(email)
-		if (nextCooldown !== null) {
-			setCodeSent(true)
-			setCooldown(nextCooldown)
-		}
-	}
-
-	async function submitCode(event: React.FormEvent<HTMLFormElement>) {
-		event.preventDefault()
-		const verified = await handleVerifyOtp(email, normalizedCode)
-		if (!verified) {
-			setCode('')
+		const ok = await handlePinLogin(username, pin)
+		if (!ok) {
+			setPin('')
 			setShake(true)
 			setTimeout(() => setShake(false), 500)
-			codeInputRef.current?.focus()
+			usernameInputRef.current?.focus()
 		}
-	}
-
-	async function resendCode() {
-		const nextCooldown = await handleResendOtp(email)
-		if (nextCooldown !== null) {
-			setCooldown(nextCooldown)
-		}
-	}
-
-	function useAnotherEmail() {
-		setCode('')
-		setCodeSent(false)
-		setCooldown(0)
-		const nextParams = new URLSearchParams(searchParams.toString())
-		nextParams.delete('step')
-		nextParams.delete('email')
-		const query = nextParams.toString()
-		router.replace(query ? `/login?${query}` : '/login')
 	}
 
 	if (!hasMounted) {
@@ -148,7 +84,7 @@ function LoginCard() {
 					<ShieldCheck className='h-7 w-7' />
 				</div>
 				<div className='text-center lg:mt-5'>
-					<p className='text-xs font-semibold uppercase text-emerald-700'>Email access</p>
+					<p className='text-xs font-semibold uppercase text-emerald-700'>Secure access</p>
 					<h2 className='mt-2 text-2xl font-semibold text-slate-950 sm:text-3xl'>
 						Welcome back
 					</h2>
@@ -174,14 +110,12 @@ function LoginCard() {
 			</div>
 
 			<div className='text-center lg:mt-5'>
-				<p className='text-xs font-semibold uppercase text-emerald-700'>Email access</p>
+				<p className='text-xs font-semibold uppercase text-emerald-700'>Secure access</p>
 				<h2 className='mt-2 text-2xl font-semibold text-slate-950 sm:text-3xl'>
-					{codeSent ? 'Enter your code' : 'Welcome back'}
+					Provider sign in
 				</h2>
 				<p className='mx-auto mt-2 max-w-full text-sm leading-6 text-slate-500'>
-					{codeSent && email
-						? `Use the secure code sent to ${email}.`
-						: 'Sign in with a secure code sent to your email.'}
+					Sign in with your username and PIN. Your device is tracked for security.
 				</p>
 			</div>
 
@@ -190,84 +124,77 @@ function LoginCard() {
 					{error}
 				</div>
 			)}
-			{success && (
-				<div className='mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700'>
-					{success}
-				</div>
-			)}
 
-			{!codeSent ? (
-				<form className='mt-5 space-y-4' onSubmit={submitEmail}>
-					<label className='block text-sm font-medium text-slate-700' htmlFor='login-email'>
-						Email
+			<form className='mt-5 space-y-4' onSubmit={submitPin}>
+				<div className='space-y-2'>
+					<label className='block text-sm font-medium text-slate-700' htmlFor='login-username'>
+						Username
 					</label>
 					<div className='flex h-12 items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 shadow-sm focus-within:border-slate-400'>
-						<Mail className='h-4 w-4 text-slate-400' />
+						<User className='h-4 w-4 text-slate-400' />
 						<input
-							id='login-email'
-							type='email'
-							value={email}
-							onChange={(event) => setEmail(event.target.value)}
-							placeholder='you@example.com'
-							autoComplete='email'
+							ref={usernameInputRef}
+							id='login-username'
+							type='text'
+							value={username}
+							onChange={(event) => setUsername(event.target.value)}
+							placeholder='your.username'
+							autoComplete='username'
+							autoCapitalize='none'
+							autoCorrect='off'
+							spellCheck={false}
 							required
+							maxLength={64}
 							className='h-full min-w-0 flex-1 bg-transparent text-base sm:text-sm text-slate-950 outline-none placeholder:text-slate-400'
 							style={{ fontSize: '16px' }}
 						/>
 					</div>
-					<button
-						type='submit'
-						disabled={isLoading}
-						className='flex h-12 w-full items-center justify-center rounded-2xl bg-slate-950 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70'
-					>
-						{isLoading ? 'Sending...' : 'Send code'}
-					</button>
-					<p className='text-center text-xs leading-5 text-slate-500'>
-						Sign in with your authorized email. We&apos;ll take you straight to
-						your portal.
-					</p>
-				</form>
-			) : (
-				<form className='mt-5 space-y-4' onSubmit={submitCode}>
-					<label className='block text-sm font-medium text-slate-700' htmlFor='login-code'>
-						Code
+				</div>
+
+				<div className='space-y-2'>
+					<label className='block text-sm font-medium text-slate-700' htmlFor='login-pin'>
+						PIN
 					</label>
-					<input
-						ref={codeInputRef}
-						id='login-code'
-						inputMode='numeric'
-						value={normalizedCode}
-						onChange={(event) => setCode(event.target.value)}
-						placeholder='000000'
-						autoComplete='one-time-code'
-						required
-						className={`h-14 w-full rounded-2xl border border-slate-200 bg-white px-4 text-center font-mono text-2xl tracking-[0.35em] text-slate-950 shadow-sm outline-none transition focus:border-slate-400 ${shake ? 'animate-shake' : ''}`}
-					/>
-					<button
-						type='submit'
-						disabled={isLoading || normalizedCode.length !== 6}
-						className='flex h-12 w-full items-center justify-center rounded-2xl bg-slate-950 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70'
+					<div
+						className={`flex h-12 items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 shadow-sm focus-within:border-slate-400 ${shake ? 'animate-shake' : ''}`}
 					>
-						{isLoading ? 'Verifying...' : 'Verify and sign in'}
-					</button>
-					<button
-						type='button'
-						onClick={resendCode}
-						disabled={isLoading || cooldown > 0 || !email}
-						className='h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60'
-					>
-						{cooldown > 0 ? `Resend in ${cooldown}s` : 'Resend code'}
-					</button>
-					<button
-						type='button'
-						onClick={useAnotherEmail}
-						disabled={isLoading}
-						className='h-10 w-full text-sm font-medium text-slate-500 transition hover:text-slate-800 disabled:cursor-not-allowed disabled:opacity-60'
-					>
-						Use another email
-					</button>
-				</form>
-			)}
+						<KeyRound className='h-4 w-4 text-slate-400' />
+						<input
+							id='login-pin'
+							type={showPin ? 'text' : 'password'}
+							value={pin}
+							onChange={(event) => setPin(event.target.value)}
+							placeholder='Enter your PIN'
+							autoComplete='current-password'
+							required
+							maxLength={32}
+							className='h-full min-w-0 flex-1 bg-transparent text-base sm:text-sm tracking-wider text-slate-950 outline-none placeholder:tracking-normal placeholder:text-slate-400'
+							style={{ fontSize: '16px' }}
+						/>
+						<button
+							type='button'
+							onClick={() => setShowPin((value) => !value)}
+							className='text-slate-400 transition hover:text-slate-700'
+							aria-label={showPin ? 'Hide PIN' : 'Show PIN'}
+							tabIndex={-1}
+						>
+							{showPin ? <EyeOff className='h-4 w-4' /> : <Eye className='h-4 w-4' />}
+						</button>
+					</div>
+				</div>
+
+				<button
+					type='submit'
+					disabled={isLoading || username.trim().length < 3 || pin.length < 6}
+					className='flex h-12 w-full items-center justify-center rounded-2xl bg-slate-950 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70'
+				>
+					{isLoading ? 'Signing in...' : 'Sign in'}
+				</button>
+				<p className='text-center text-xs leading-5 text-slate-500'>
+					Your PIN is hashed with argon2id and never stored in plain text. Each
+					sign-in is logged with your device, browser, and IP for your security.
+				</p>
+			</form>
 		</section>
 	)
 }
@@ -279,10 +206,10 @@ function DesktopHero() {
 			<div className='mt-10 max-w-xl'>
 				<div className='inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white/70 px-3 py-1.5 text-sm font-medium text-emerald-700 shadow-sm backdrop-blur-xl'>
 					<ShieldCheck className='h-4 w-4' />
-					Secure email sign in
+					Secure PIN sign in
 				</div>
 				<h2 className='mt-5 text-5xl font-semibold leading-[1.03] text-slate-950 xl:text-6xl'>
-					Your workspace, one code away.
+					Your workspace, one PIN away.
 				</h2>
 				<p className='mt-4 max-w-lg text-base leading-7 text-slate-600 xl:text-lg'>
 					Access citation checks, reference matching, and research support in a clean workspace.
