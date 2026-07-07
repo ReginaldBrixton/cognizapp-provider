@@ -26,14 +26,35 @@ node_modules
 **/kiro/*
 .npmrc.*
 
-# IDE and development tools
+# Agent / cloud / AI assistant / IDE configuration
 .agents
+.agents/
 .claude
-.codex
-.codex-logs
-.husky
-.swc
+.claude/
+.claude-*
+.devin
+.devin/
 .windsurf
+.windsurf/
+.codex
+.codex/
+.codex-logs
+.codex-logs/
+.cursor
+.cursor/
+.cursorrules
+.cursor-tutor
+.cursor-tutor/
+.codeium
+.codeium/
+.kiro
+.kiro/
+.playwright-mcp
+.playwright-mcp/
+.swc
+.swc/
+.husky
+.husky/
 
 # TypeScript build cache
 tsconfig.tsbuildinfo
