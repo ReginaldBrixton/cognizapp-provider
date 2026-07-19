@@ -105,6 +105,20 @@ module.exports = withPWA({
 	reactStrictMode: true,
 	allowedDevOrigins: ['127.0.0.1', 'localhost'],
 
+	// The mcp-server package (imported by app/api/mcp/route.ts) uses NodeNext
+	// ESM-style relative imports ending in `.js` that actually point at `.ts`
+	// source files (e.g. `../api-client.js` -> `api-client.ts`). TypeScript's
+	// "bundler" moduleResolution understands this, but webpack's resolver
+	// doesn't by default — teach it to also try `.ts`/`.tsx` for `.js`
+	// specifiers, same as Vite/esbuild do out of the box.
+	webpack: (config) => {
+		config.resolve.extensionAlias = {
+			...config.resolve.extensionAlias,
+			'.js': ['.ts', '.tsx', '.js'],
+		}
+		return config
+	},
+
 	images: {
 		remotePatterns: [
 			{
