@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  CognizApp Provider MCP Server — Evaluation QA pairs
+
+  10 read-only, realistic provider scenarios that test whether an AI agent
+  can effectively use the MCP server to answer questions a real provider
+  would care about. All questions are:
+    - Independent (no cross-question dependencies)
+    - Read-only (no destructive operations required)
+    - Complex (require one or more tool calls + reasoning)
+    - Realistic (based on real provider workflows)
+    - Verifiable (single, clear answer via string comparison)
+    - Stable (answers reflect current backend state, not time-sensitive)
+
+  Answers should be verified by running the tools against the local dev
+  backend (http://localhost:4040) with a valid COGNIZAPP_MCP_PASSKEY before
+  running an evaluation. Where the answer depends on live data, the answer
+  field documents the tool + field to read (the eval runner should compare
+  the agent's extracted value, not the raw JSON).
+-->
+<evaluation>
+  <qa_pair>
+    <question>How many total support requests are currently in the system? Use the dashboard stats tool and report the totalRequests value.</question>
+    <answer>provider_get_dashboard_stats -> totalRequests</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>What is the title of the support request with the earliest upcoming deadline? Use the upcoming deadlines tool with limit 1 and report the title.</question>
+    <answer>provider_get_upcoming_deadlines(limit=1) -> [0].title</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>How many support requests currently have the status "submitted" (awaiting provider review)? Use the list requests tool with status=submitted and count the results.</question>
+    <answer>provider_list_requests(status="submitted") -> length</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>What is the most recent entry in the provider activity log? Use the recent activity tool with limit 1 and report the event type.</question>
+    <answer>provider_get_recent_activity(limit=1) -> [0].eventType</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>How many discount codes are currently active? Use the list discount codes tool and count the codes with status "active".</question>
+    <answer>provider_list_discount_codes -> filter(status="active") -> length</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>How many quotes have been sent but not yet accepted or rejected? Use the list quotes tool with status=sent and count the results.</question>
+    <answer>provider_list_quotes(status="sent") -> length</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>How many message threads exist in the support system? Use the dashboard stats tool and report the messageThreads value.</question>
+    <answer>provider_get_dashboard_stats -> messageThreads</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>What is the provider's current availability status? Use the get settings tool and report the availabilityStatus field.</question>
+    <answer>provider_get_settings -> availabilityStatus</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>How many requests in the triage inbox are overdue? Use the triage inbox workflow tool and count the items in the overdue array.</question>
+    <answer>provider_triage_inbox -> overdue.length</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>How many referrals have been recorded in the support system? Use the dashboard stats tool and report the referrals value.</question>
+    <answer>provider_get_dashboard_stats -> referrals</answer>
+  </qa_pair>
+</evaluation>

@@ -72,6 +72,10 @@ async function getRequestCookieAuthHeaders(
 	extraHeaders?: HeadersInit,
 ) {
 	const accessToken = await getBestAccessToken(request)
+	const mcpPasskey =
+		request.headers.get('x-mcp-passkey')?.trim() ||
+		request.headers.get('X-MCP-Passkey')?.trim() ||
+		null
 	const outgoingHeaders: Record<string, string> = {
 		'Content-Type': 'application/json',
 		...normalizeHeaders(extraHeaders),
@@ -79,6 +83,12 @@ async function getRequestCookieAuthHeaders(
 
 	if (accessToken) {
 		outgoingHeaders.Authorization = `Bearer ${accessToken}`
+	}
+
+	// Forward MCP provider passkey so AI agents can authenticate without cookies/JWT.
+	// The backend resolves X-MCP-Passkey → cognizapp@gmail.com provider account.
+	if (mcpPasskey) {
+		outgoingHeaders['X-MCP-Passkey'] = mcpPasskey
 	}
 
 	return outgoingHeaders
@@ -98,7 +108,8 @@ export async function fetchWithCookieAuthRetry(
 		delete headers['Content-Type']
 		delete headers['content-type']
 	}
-	if (!headers.Authorization) {
+	// Allow either Bearer JWT/cookie auth OR MCP passkey auth.
+	if (!headers.Authorization && !headers['X-MCP-Passkey']) {
 		return { response: null, hasAuth: false, refreshed: null }
 	}
 

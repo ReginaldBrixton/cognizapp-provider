@@ -1,9 +1,11 @@
 # CognizApp Provider MCP Server — Installation Guide
 
 A complete guide to install, configure, and run the CognizApp Provider MCP Server.
-This MCP server exposes 26 tools that let AI assistants (Claude, Windsurf Cascade,
-Cursor, etc.) manage the CognizApp provider support system — dashboard, requests,
-messages, milestones, files, payments, delivery, and auth.
+This MCP server exposes 47 tools that let AI assistants (Claude, Windsurf Cascade,
+Cursor, etc.) act as a CognizApp provider — managing the full support-desk
+lifecycle: dashboard, requests, messages, milestones, files, payments, delivery,
+quotes, orders, clients, referrals, discount codes, provider settings, AI
+document analysis, and composite workflow tools.
 
 ---
 
@@ -32,14 +34,14 @@ messages, milestones, files, payments, delivery, and auth.
 |---|---|---|
 | **Node.js** | 18.18+ (20 LTS recommended) | `node --version` |
 | **npm** | 9+ (bundled with Node) | `npm --version` |
-| **CognizApp Backend API** | Running and accessible | `curl <BACKEND_URL>/health` |
+| **CognizApp Provider frontend** | Running and accessible | `curl <PROVIDER_URL>/api/auth/health` |
 
 ### Supported Backends
 
 | Environment | URL | Notes |
 |---|---|---|
-| Local dev | `http://localhost:4040` | Run `bun run src/server.ts` in the backend repo |
-| Production | `https://api.cognizapp.com` | Passkey works in production |
+| Local dev | `http://localhost:3001` | Run `bun dev` in the provider repo (port 3001). Backend must also be running for the provider proxy. |
+| Production | `https://provider.cognizapp.com` | Passkey works in production |
 
 ---
 
@@ -51,12 +53,18 @@ git clone https://github.com/ReginaldBrixton/cognizapp-provider.git
 cd cognizapp-provider/mcp-server
 npm install && npm run build
 
-# 2. Test it starts
+# 2a. Test stdio mode
 COGNIZAPP_MCP_PASSKEY=your_passkey npm start
-# Should see: "CognizApp Provider MCP Server running on stdio"
-# Ctrl+C to stop
+# Should see no errors; Ctrl+C to stop
 
-# 3. Add to your MCP client config (see Section 4)
+# 2b. Test HTTP mode (for Windsurf UI installation)
+COGNIZAPP_MCP_PASSKEY=your_passkey \
+COGNIZAPP_PROVIDER_URL=https://provider.cognizapp.com \
+MCP_TRANSPORT=http \
+node dist/index.js
+# Should see: "[mcp] cognizapp-provider-mcp v1.2.0 listening on http://127.0.0.1:8787/mcp"
+
+# 3. Add to your MCP client (see Section 4)
 ```
 
 ---
@@ -68,7 +76,11 @@ COGNIZAPP_MCP_PASSKEY=your_passkey npm start
 | Variable | Required | Default | Description |
 |---|---|---|---|
 | `COGNIZAPP_MCP_PASSKEY` | **Yes** | — | Static passkey for authentication (never expires) |
-| `COGNIZAPP_BACKEND_URL` | No | `http://localhost:4040` | Backend API base URL |
+| `COGNIZAPP_PROVIDER_URL` | No | `http://localhost:3001` | Provider frontend base URL |
+| `MCP_TRANSPORT` | No | `stdio` | Transport mode: `stdio` or `http` |
+| `MCP_PORT` | No | `8787` | HTTP server port (when `MCP_TRANSPORT=http`) |
+| `MCP_HOST` | No | `127.0.0.1` | HTTP server bind address |
+| `MCP_ENDPOINT` | No | `/mcp` | HTTP endpoint path |
 
 That's it. One passkey. No JWT tokens, no refresh tokens, no email.
 
@@ -92,6 +104,51 @@ The passkey:
 
 ### Windsurf / Cascade
 
+Windsurf supports two installation methods:
+
+#### Method A — UI with Server URL + Open Auth (recommended)
+
+This uses the HTTP transport so Windsurf connects via a Server URL with **Open**
+authentication. The passkey lives in the server's environment — Windsurf sends
+no auth headers.
+
+**Step 1 — Start the MCP HTTP server:**
+
+```bash
+cd cognizapp-provider/mcp-server
+export COGNIZAPP_MCP_PASSKEY=mcp_pk_cdf27611295b4ae9bd97affd597c0b1c498a212e7940b36daae46c3619fa5256
+export COGNIZAPP_PROVIDER_URL=https://provider.cognizapp.com   # or http://localhost:3001 for local dev
+export MCP_TRANSPORT=http
+node dist/index.js
+```
+
+Expected output:
+```
+[mcp] cognizapp-provider-mcp v1.2.0 listening on http://127.0.0.1:8787/mcp
+[mcp] Windsurf Server URL: http://127.0.0.1:8787/mcp
+[mcp] Authentication: Open (passkey is held in server env)
+```
+
+**Step 2 — Add to Windsurf UI:**
+
+Open Windsurf → Settings → MCP Servers → **Add Server**, and fill in:
+
+| Field | Value |
+|---|---|
+| **MCP Name** | `CognizApp Provider` |
+| **Description** | AI agent tools for managing the CognizApp provider support desk — dashboard, requests, messages, milestones, files, payments, quotes, orders, clients, referrals, discount codes, settings, AI document analysis, and workflow orchestration. |
+| **Connection** | `http://127.0.0.1:8787/mcp` |
+| **Authentication** | `Open` |
+
+Click **Add**. Windsurf connects immediately — no restart needed.
+
+**Step 3 — Verify:**
+
+Ask Cascade: "Use `provider_check_auth` to verify authentication."
+Expected: `{ "authenticated": true, "hasPasskey": true }`
+
+#### Method B — stdio config (traditional)
+
 Edit `~/.codeium/windsurf/mcp_config.json`:
 
 ```json
@@ -102,7 +159,7 @@ Edit `~/.codeium/windsurf/mcp_config.json`:
       "args": ["/absolute/path/to/cognizapp-provider/mcp-server/dist/index.js"],
       "disabled": false,
       "env": {
-        "COGNIZAPP_BACKEND_URL": "https://api.cognizapp.com",
+        "COGNIZAPP_PROVIDER_URL": "https://provider.cognizapp.com",
         "COGNIZAPP_MCP_PASSKEY": "your_passkey_here"
       }
     }
@@ -124,7 +181,7 @@ or `%APPDATA%\Claude\claude_desktop_config.json` (Windows):
       "command": "node",
       "args": ["/absolute/path/to/cognizapp-provider/mcp-server/dist/index.js"],
       "env": {
-        "COGNIZAPP_BACKEND_URL": "https://api.cognizapp.com",
+        "COGNIZAPP_PROVIDER_URL": "https://provider.cognizapp.com",
         "COGNIZAPP_MCP_PASSKEY": "your_passkey_here"
       }
     }
@@ -143,7 +200,7 @@ Edit `~/.cursor/mcp.json`:
       "command": "node",
       "args": ["/absolute/path/to/cognizapp-provider/mcp-server/dist/index.js"],
       "env": {
-        "COGNIZAPP_BACKEND_URL": "https://api.cognizapp.com",
+        "COGNIZAPP_PROVIDER_URL": "https://provider.cognizapp.com",
         "COGNIZAPP_MCP_PASSKEY": "your_passkey_here"
       }
     }
@@ -163,7 +220,7 @@ Add to `~/.continue/config.json`:
         "command": "node",
         "args": ["/absolute/path/to/cognizapp-provider/mcp-server/dist/index.js"],
         "env": {
-          "COGNIZAPP_BACKEND_URL": "https://api.cognizapp.com",
+          "COGNIZAPP_PROVIDER_URL": "https://provider.cognizapp.com",
           "COGNIZAPP_MCP_PASSKEY": "your_passkey_here"
         }
       }
@@ -174,14 +231,26 @@ Add to `~/.continue/config.json`:
 
 ### Generic MCP Client
 
-The server uses **stdio transport**. Start it with:
+The server supports two transports:
+
+**stdio** (default — for clients that launch the server as a child process):
 
 ```bash
 node /path/to/mcp-server/dist/index.js
 ```
 
-It reads JSON-RPC messages from stdin and writes responses to stdout.
-Logs go to stderr. MCP protocol version `2024-11-05`.
+Reads JSON-RPC from stdin, writes responses to stdout. Logs go to stderr.
+MCP protocol version `2024-11-05`.
+
+**HTTP / Streamable HTTP** (for clients that connect via Server URL):
+
+```bash
+MCP_TRANSPORT=http MCP_PORT=8787 node /path/to/mcp-server/dist/index.js
+```
+
+Endpoint: `http://127.0.0.1:8787/mcp` — supports POST (requests), GET (SSE
+stream), and DELETE (session close). Stateless sessions are not supported;
+each client must initialize a session first.
 
 ---
 
@@ -193,7 +262,7 @@ Your passkey is:
 mcp_pk_cdf27611295b4ae9bd97affd597c0b1c498a212e7940b36daae46c3619fa5256
 ```
 
-This passkey is already set on the production backend (`https://api.cognizapp.com`)
+This passkey is set on the production backend; MCP clients call the provider frontend (`https://provider.cognizapp.com`) which forwards the passkey
 as the `MCP_PROVIDER_PASSKEY` environment variable. It authenticates as the
 `cognizapp@gmail.com` provider account.
 
@@ -245,7 +314,7 @@ If you see stats (totalRequests, openRequests, etc.), everything works.
 
 ## 7. Tool Reference
 
-All 26 tools grouped by category:
+All 47 tools grouped by category:
 
 ### Dashboard (3)
 | Tool | Key Params |
@@ -254,59 +323,102 @@ All 26 tools grouped by category:
 | `provider_get_upcoming_deadlines` | `limit?` |
 | `provider_get_recent_activity` | `limit?` |
 
-### Requests (2)
+### Requests (3)
 | Tool | Key Params |
 |---|---|
-| `provider_list_requests` | `status?`, `paymentStatus?`, `priority?` |
+| `provider_list_requests` | `status?`, `paymentStatus?`, `deadline?`, `priority?`, `subscription?` |
 | `provider_get_request` | `requestId` |
+| `provider_update_request_status` | `requestId`, `status`, `note?` |
 
 ### Messages (6)
 | Tool | Key Params |
 |---|---|
 | `provider_list_threads` | — |
 | `provider_get_thread_messages` | `threadId` |
-| `provider_send_message` | `threadId`, `content` |
+| `provider_send_message` | `threadId`, `content`, `attachments?`, `replyToMessageId?` |
 | `provider_edit_message` | `threadId`, `messageId`, `content` |
 | `provider_delete_message` | `threadId`, `messageId` |
-| `provider_create_thread` | `requestId` |
+| `provider_create_thread` | `requestId`, `type?` |
 
 ### Milestones (6)
 | Tool | Key Params |
 |---|---|
 | `provider_list_milestones` | `requestId` |
 | `provider_get_milestone` | `requestId`, `milestoneId` |
-| `provider_create_milestone` | `requestId`, `title`, `dueAt?` |
+| `provider_create_milestone` | `requestId`, `title`, `description?`, `dueAt?`, `status?` |
 | `provider_update_milestone_status` | `requestId`, `milestoneId`, `status` |
-| `provider_send_milestone_card` | `requestId`, `milestoneId`, `status?` |
+| `provider_send_milestone_card` | `requestId`, `milestoneId`, `message?`, `status?`, `note?` |
 | `provider_get_milestone_history` | `requestId`, `milestoneId` |
 
 ### Files (3)
 | Tool | Key Params |
 |---|---|
-| `provider_upload_file` | `requestId`, `fileName`, `fileContentBase64` |
+| `provider_upload_file` | `requestId`, `fileName`, `fileContentBase64`, `contentType?`, `milestoneId?`, `purpose?` |
 | `provider_download_file` | `fileId` |
 | `provider_delete_file` | `fileId` |
 
 ### Payments (2)
 | Tool | Key Params |
 |---|---|
-| `provider_discount_decision` | `requestId`, `status`, `discountPercent?` |
-| `provider_override_payment_policy` | `requestId`, `depositPercent`, `previewUnlock`, `workStartRequirement`, `editableDocumentRequired`, `reason` (min 8 chars) |
+| `provider_discount_decision` | `requestId`, `status`, `approvedAmount?`, `discountPercent?`, `reason?` |
+| `provider_override_payment_policy` | `requestId`, `depositPercent`, `previewUnlock`, `workStartRequirement`, `editableDocumentRequired`, `reason` (min 8 chars), `revisionsAllowed?` |
 
-### Delivery (1)
+### Delivery (3)
 | Tool | Key Params |
 |---|---|
-| `provider_deliver_final_work` | `requestId`, `pdfFileName`, `pdfContentBase64`, `docxFileName`, `docxContentBase64`, `previewImages[]` |
-
-### Preview (1)
-| Tool | Key Params |
-|---|---|
+| `provider_deliver_final_work` | `requestId`, `pdfFileName`, `pdfContentBase64`, `docxFileName`, `docxContentBase64`, `previewImages[]`, `deliveryNote?` |
 | `provider_retry_preview` | `requestId` |
+| `provider_send_request_card` | `requestId`, `kind` (`payment_card` / `revision_card` / `delivery_card`), `message?`, `amount?`, `paymentType?`, `expectedAt?`, `locked?` |
 
-### Cards (1)
+### Quotes (2)
 | Tool | Key Params |
 |---|---|
-| `provider_send_request_card` | `requestId`, `kind` (`payment_card` / `revision_card` / `delivery_card`) |
+| `provider_list_quotes` | `status?` |
+| `provider_create_quote` | `requestId`, `quoteType?`, `lineItems?`, `deliverables?`, `turnaroundHours?`, `revisionPolicy?`, `terms?`, `totalAmount?`, `currency?`, `validUntil?` |
+
+### Orders (3)
+| Tool | Key Params |
+|---|---|
+| `provider_list_orders` | `status?` |
+| `provider_get_order` | `orderId` |
+| `provider_update_order_status` | `orderId`, `status`, `notes?` |
+
+### Clients & Referrals (2)
+| Tool | Key Params |
+|---|---|
+| `provider_list_clients` | — |
+| `provider_list_referrals` | — |
+
+### Discount Codes (4)
+| Tool | Key Params |
+|---|---|
+| `provider_list_discount_codes` | — |
+| `provider_create_discount_code` | `discountPercent`, `code?`, `label?`, `maxRedemptions?`, `minimumAmount?`, `eligibleServiceTags?`, `expiresAt?` |
+| `provider_update_discount_code` | `codeId`, `label?`, `discountPercent?`, `status?`, `expiresAt?`, … |
+| `provider_delete_discount_code` | `codeId` |
+
+### Provider Settings (2)
+| Tool | Key Params |
+|---|---|
+| `provider_get_settings` | — |
+| `provider_update_settings` | `displayName?`, `bio?`, `timezone?`, `availabilityStatus?`, `weeklyCapacity?`, `responseTargetHours?`, `notificationPreferences?`, `workloadPreferences?` |
+
+### AI Document Analysis (3)
+| Tool | Key Params |
+|---|---|
+| `provider_ai_extract_comments` | `fileName`, `fileContentBase64`, `contentType?` |
+| `provider_ai_extract_structure` | `fileName`, `fileContentBase64`, `contentType?` |
+| `provider_ai_suggest_analysis` | `fileName`, `fileContentBase64`, `contentType?` |
+
+> Rate-limited per hour. The passkey is a shared account, so concurrent agent sessions may hit the limit.
+
+### Workflows (4) — composite, read-only
+| Tool | Key Params |
+|---|---|
+| `provider_triage_inbox` | — |
+| `provider_request_summary` | `requestId`, `messageLimit?` |
+| `provider_draft_quote` | `requestId` |
+| `provider_follow_up_overdue` | `deadlineFilter?` (`overdue` / `24h` / `both`) |
 
 ### Auth (1)
 | Tool | Key Params |
@@ -329,7 +441,7 @@ The passkey environment variable is missing from your MCP client config. Check:
 The backend didn't receive the passkey. Check:
 - `MCP_PROVIDER_PASSKEY` is set on the backend (Vercel env var for production)
 - The passkey in your MCP config matches the backend's passkey
-- `COGNIZAPP_BACKEND_URL` points to the correct backend
+- `COGNIZAPP_PROVIDER_URL` points to the correct backend
 
 ### "mcp_passkey_user_not_found"
 
@@ -343,10 +455,10 @@ VALUES ('cognizapp@gmail.com', 'SUPPORT_PROVIDER_USER', 'active', '[]'::jsonb);
 
 ### "Cannot connect to backend" / Connection refused
 
-- Verify `COGNIZAPP_BACKEND_URL` is correct
-- For local dev: start the backend with `bun run src/server.ts` (port 4040)
-- For production: use `https://api.cognizapp.com`
-- Test: `curl <BACKEND_URL>/health` should return `{"status":"ok"}`
+- Verify `COGNIZAPP_PROVIDER_URL` is correct
+- For local dev: start the provider with `bun dev` (port 3001); ensure backend is reachable via BACKEND_URL
+- For production: use `https://provider.cognizapp.com`
+- Test: `curl <PROVIDER_URL>/api/auth/health` should return healthy JSON
 
 ### "fileContentBase64 is not valid base64 data"
 
@@ -376,19 +488,72 @@ npm install
 npm run build
 ```
 
+### HTTP mode: "No valid session" error
+
+The MCP HTTP server uses stateful sessions. The client must send an `initialize`
+request first (POST without `Mcp-Session-Id` header), then include the returned
+`Mcp-Session-Id` header on all subsequent requests. If you see this error:
+- The client skipped the initialize step
+- The session expired (server was restarted)
+- The session ID header is missing or malformed
+
+### HTTP mode: Windsurf can't connect
+
+- Ensure the MCP HTTP server is running: `curl -s http://127.0.0.1:8787/mcp` should return 404 (wrong method) not connection refused
+- Check the Server URL in Windsurf matches exactly: `http://127.0.0.1:8787/mcp`
+- Ensure Authentication is set to **Open** (not Mixed or OAuth)
+- Check the server's stderr output for errors
+- Verify the passkey is set in the server's environment
+
+---
+
+## 10. Auto-Start on Login (systemd user service)
+
+To have the MCP HTTP server running whenever you're logged in, create a systemd
+user service:
+
+```bash
+mkdir -p ~/.config/systemd/user
+cat > ~/.config/systemd/user/cognizapp-mcp.service << 'EOF'
+[Unit]
+Description=CognizApp Provider MCP Server (HTTP)
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/reginaldbrixton/Documents/GitHub/cognizapp-provider/mcp-server
+Environment=COGNIZAPP_MCP_PASSKEY=mcp_pk_cdf27611295b4ae9bd97affd597c0b1c498a212e7940b36daae46c3619fa5256
+Environment=COGNIZAPP_PROVIDER_URL=https://provider.cognizapp.com
+Environment=MCP_TRANSPORT=http
+Environment=MCP_PORT=8787
+ExecStart=/usr/bin/node dist/index.js
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target
+EOF
+
+systemctl --user daemon-reload
+systemctl --user enable cognizapp-mcp
+systemctl --user start cognizapp-mcp
+systemctl --user status cognizapp-mcp
+```
+
+The MCP server will now start automatically on login and restart on failure.
+Windsurf can connect to `http://127.0.0.1:8787/mcp` at any time.
+
 ---
 
 ## 9. Architecture
 
 ```
-┌──────────────┐     stdio (JSON-RPC)     ┌─────────────────┐     HTTP/HTTPS     ┌──────────────────┐
-│  MCP Client  │ ◄──────────────────────► │   MCP Server    │ ◄────────────────► │  CognizApp API   │
-│  (Claude,    │                          │  (Node.js)      │                    │  (Elysia/Bun)    │
-│   Windsurf,  │                          │                 │  X-MCP-Passkey     │                  │
-│   Cursor)    │                          │  26 tools       │  ──────────────►   │  /api/support/   │
-│              │                          │  passkey auth   │                    │  /api/support-   │
-└──────────────┘                          └─────────────────┘                    │    inbox/        │
-                                                                                 └──────────────────┘
+┌──────────────┐  stdio or HTTP/SSE  ┌─────────────────┐     HTTP/HTTPS     ┌──────────────────┐
+│  MCP Client  │ ◄─────────────────► │   MCP Server    │ ◄────────────────► │  Provider API    │
+│  (Windsurf,  │                     │  (Node.js)      │                    │  (Next.js proxy  │
+│   Claude,    │  stdio: stdin/stdout │  48 tools       │  X-MCP-Passkey     │   → Elysia/Bun   │
+│   Cursor)    │  http: :8787/mcp    │  passkey auth   │  ──────────────►   │   backend)       │
+└──────────────┘                     └─────────────────┘                    └──────────────────┘
 ```
 
 ### File Structure
@@ -399,10 +564,31 @@ mcp-server/
 ├── tsconfig.json         # TypeScript config (ES2022, Node16 modules)
 ├── README.md             # Quick reference
 ├── INSTALL.md            # This file
+├── evals/
+│   └── qa.xml            # 10 evaluation QA pairs
 ├── .gitignore            # Ignores node_modules/ and dist/
 └── src/
-    ├── index.ts          # MCP server + 26 tool definitions + handlers
-    └── api-client.ts     # Backend HTTP client (passkey auth, no JWT)
+    ├── index.ts          # MCP server bootstrap (stdio + HTTP transport)
+    ├── api-client.ts     # Provider API client (passkey auth, no JWT)
+    ├── constants.ts      # Shared enums (statuses, kinds, types)
+    ├── schemas.ts        # Shared Zod schemas/shapes
+    ├── utils.ts          # decodeBase64, formatApiError, truncate
+    └── tools/            # One file per domain (15 files)
+        ├── dashboard.ts
+        ├── requests.ts
+        ├── messages.ts
+        ├── milestones.ts
+        ├── files.ts
+        ├── payments.ts
+        ├── delivery.ts
+        ├── quotes.ts
+        ├── orders.ts
+        ├── clients.ts
+        ├── discount-codes.ts
+        ├── settings.ts
+        ├── ai.ts
+        ├── workflows.ts
+        └── auth.ts
 ```
 
 ### Development Scripts
