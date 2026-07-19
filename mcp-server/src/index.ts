@@ -22,7 +22,7 @@ import {
 	ListToolsRequestSchema,
 	type Tool,
 } from '@modelcontextprotocol/sdk/types.js'
-import { apiCall, apiCallRaw, setAccessToken, setRefreshToken, getAccessToken } from './api-client.js'
+import { apiCall, apiCallRaw, apiDownloadBinary, setAccessToken, setRefreshToken, getAccessToken } from './api-client.js'
 
 // ─── Tool Definitions ───────────────────────────────────────────────────────
 
@@ -325,7 +325,7 @@ const tools: Tool[] = [
 				workStartRequirement: { type: 'string', description: 'Requirement to start work: "none", "deposit", or "full_payment"', enum: ['none', 'deposit', 'full_payment'] },
 				editableDocumentRequired: { type: 'boolean', description: 'Whether an editable document (DOCX) is required for delivery' },
 				revisionsAllowed: { type: 'number', description: 'Number of revisions allowed (0-10, optional)', minimum: 0, maximum: 10 },
-				reason: { type: 'string', description: 'Reason for the override (shown in audit log)' },
+				reason: { type: 'string', description: 'Reason for the override (shown in audit log, minimum 8 characters)', minLength: 8 },
 			},
 			required: ['requestId', 'depositPercent', 'previewUnlock', 'workStartRequirement', 'editableDocumentRequired', 'reason'],
 		},
@@ -418,6 +418,24 @@ const tools: Tool[] = [
 ]
 
 // ─── Tool Handlers ──────────────────────────────────────────────────────────
+
+/** Safely decode a base64 string to a Buffer, throwing a clear error on invalid input. */
+function decodeBase64(input: string, fieldName: string): Buffer {
+	if (!input || typeof input !== 'string') {
+		throw new Error(`${fieldName} is required and must be a base64 string`)
+	}
+	const trimmed = input.trim()
+	// Basic base64 format check (allows optional data URI prefix)
+	const b64Content = trimmed.startsWith('data:') ? trimmed.split(',')[1] ?? '' : trimmed
+	if (!/^[A-Za-z0-9+/]+={0,2}$/.test(b64Content) || b64Content.length % 4 !== 0) {
+		throw new Error(`${fieldName} is not valid base64 data`)
+	}
+	try {
+		return Buffer.from(b64Content, 'base64')
+	} catch {
+		throw new Error(`Failed to decode ${fieldName} as base64`)
+	}
+}
 
 async function handleToolCall(name: string, args: Record<string, any>): Promise<any> {
 	switch (name) {
@@ -542,8 +560,8 @@ async function handleToolCall(name: string, args: Record<string, any>): Promise<
 
 		// ── Files ──
 		case 'provider_upload_file': {
-			const fileBuffer = Buffer.from(args.fileContentBase64, 'base64')
-			const blob = new Blob([fileBuffer], { type: args.contentType || 'application/octet-stream' })
+			const fileBuffer = decodeBase64(args.fileContentBase64, 'fileContentBase64')
+			const blob = new Blob([new Uint8Array(fileBuffer)], { type: args.contentType || 'application/octet-stream' })
 			const formData = new FormData()
 			formData.append('requestId', args.requestId)
 			if (args.milestoneId) formData.append('milestoneId', args.milestoneId)
@@ -556,19 +574,15 @@ async function handleToolCall(name: string, args: Record<string, any>): Promise<
 		}
 
 		case 'provider_download_file': {
-			const result = await apiCallRaw(`/api/support/files/${args.fileId}/download`)
-			// If the response is a blob (file), convert to base64
-			if (result.data instanceof Blob) {
-				const arrayBuffer = await result.data.arrayBuffer()
-				const base64 = Buffer.from(arrayBuffer).toString('base64')
-				return {
-					fileId: args.fileId,
-					contentType: result.data.type,
-					size: result.data.size,
-					contentBase64: base64,
-				}
+			const result = await apiDownloadBinary(`/api/support/files/${args.fileId}/download`)
+			const base64 = result.buffer.toString('base64')
+			return {
+				fileId: args.fileId,
+				contentType: result.contentType,
+				size: result.buffer.length,
+				filename: result.filename,
+				contentBase64: base64,
 			}
-			return result.data
 		}
 
 		case 'provider_delete_file':
@@ -593,12 +607,26 @@ async function handleToolCall(name: string, args: Record<string, any>): Promise<
 
 		// ── Payment Policy ──
 		case 'provider_override_payment_policy': {
+			const reason = String(args.reason ?? '').trim()
+			if (reason.length < 8) {
+				throw new Error('reason must be at least 8 characters long (backend requirement)')
+			}
+			const depositPercent = Number(args.depositPercent)
+			if (!Number.isFinite(depositPercent) || depositPercent < 0 || depositPercent > 100) {
+				throw new Error('depositPercent must be a number between 0 and 100')
+			}
+			if (!['deposit', 'full_payment'].includes(args.previewUnlock)) {
+				throw new Error('previewUnlock must be "deposit" or "full_payment"')
+			}
+			if (!['none', 'deposit', 'full_payment'].includes(args.workStartRequirement)) {
+				throw new Error('workStartRequirement must be "none", "deposit", or "full_payment"')
+			}
 			const policyData: Record<string, any> = {
-				depositPercent: args.depositPercent,
+				depositPercent,
 				previewUnlock: args.previewUnlock,
 				workStartRequirement: args.workStartRequirement,
-				editableDocumentRequired: args.editableDocumentRequired,
-				reason: args.reason,
+				editableDocumentRequired: Boolean(args.editableDocumentRequired),
+				reason,
 			}
 			if (args.revisionsAllowed !== undefined) policyData.revisionsAllowed = args.revisionsAllowed
 			return await apiCall(`/api/support/provider/requests/${args.requestId}/payment-policy-override`, {
@@ -611,17 +639,17 @@ async function handleToolCall(name: string, args: Record<string, any>): Promise<
 		case 'provider_deliver_final_work': {
 			const formData = new FormData()
 
-			const pdfBuffer = Buffer.from(args.pdfContentBase64, 'base64')
-			const pdfBlob = new Blob([pdfBuffer], { type: 'application/pdf' })
+			const pdfBuffer = decodeBase64(args.pdfContentBase64, 'pdfContentBase64')
+			const pdfBlob = new Blob([new Uint8Array(pdfBuffer)], { type: 'application/pdf' })
 			formData.append('pdfFile', pdfBlob, args.pdfFileName)
 
-			const docxBuffer = Buffer.from(args.docxContentBase64, 'base64')
-			const docxBlob = new Blob([docxBuffer], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' })
+			const docxBuffer = decodeBase64(args.docxContentBase64, 'docxContentBase64')
+			const docxBlob = new Blob([new Uint8Array(docxBuffer)], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' })
 			formData.append('docxFile', docxBlob, args.docxFileName)
 
 			for (const img of args.previewImages as Array<{ fileName: string; contentBase64: string; contentType?: string }>) {
-				const imgBuffer = Buffer.from(img.contentBase64, 'base64')
-				const imgBlob = new Blob([imgBuffer], { type: img.contentType || 'image/png' })
+				const imgBuffer = decodeBase64(img.contentBase64, 'previewImages[].contentBase64')
+				const imgBlob = new Blob([new Uint8Array(imgBuffer)], { type: img.contentType || 'image/png' })
 				formData.append('previewImages', imgBlob, img.fileName)
 			}
 

@@ -169,4 +169,69 @@ export async function apiCallRaw(path: string, options: ApiOptions = {}): Promis
 	return { status: response.status, data }
 }
 
+/**
+ * Download a binary file from the backend.
+ * Returns the raw bytes as a Buffer along with content-type and filename.
+ * Handles 401 auto-refresh the same way as apiCallRaw.
+ */
+export async function apiDownloadBinary(
+	path: string,
+	options: ApiOptions = {},
+): Promise<{ status: number; buffer: Buffer; contentType: string; filename: string | null }> {
+	const url = new URL(`${BACKEND_URL}${path}`)
+	if (options.query) {
+		for (const [key, value] of Object.entries(options.query)) {
+			if (value !== undefined && value !== '') {
+				url.searchParams.set(key, value)
+			}
+		}
+	}
+
+	const headers: Record<string, string> = {
+		Authorization: `Bearer ${accessToken}`,
+		...options.headers,
+	}
+
+	const fetchOptions: RequestInit = {
+		method: options.method || 'GET',
+		headers,
+	}
+
+	let response = await fetch(url.toString(), fetchOptions)
+
+	// Auto-refresh on 401
+	if (response.status === 401 && refreshToken) {
+		const refreshed = await refreshSession()
+		if (refreshed) {
+			headers.Authorization = `Bearer ${accessToken}`
+			response = await fetch(url.toString(), { ...fetchOptions, headers })
+		}
+	}
+
+	if (!response.ok) {
+		const text = await response.text().catch(() => '')
+		let errorMsg = `HTTP ${response.status}`
+		try {
+			const json = JSON.parse(text)
+			errorMsg = json.error || json.message || errorMsg
+		} catch {
+			if (text) errorMsg = text
+		}
+		throw new Error(`${errorMsg} (path: ${path})`)
+	}
+
+	const contentType = response.headers.get('content-type') || 'application/octet-stream'
+	const disposition = response.headers.get('content-disposition') || ''
+	const filenameMatch = disposition.match(/filename="?([^"]+)"?/)
+	const filename = filenameMatch ? filenameMatch[1] : null
+	const arrayBuffer = await response.arrayBuffer()
+
+	return {
+		status: response.status,
+		buffer: Buffer.from(arrayBuffer),
+		contentType,
+		filename,
+	}
+}
+
 export { BACKEND_URL }

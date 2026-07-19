@@ -38,7 +38,7 @@ Add to `~/.codeium/windsurf/mcp_config.json`:
 }
 ```
 
-## Available Tools (22)
+## Available Tools (27)
 
 ### Dashboard
 - **`provider_get_dashboard_stats`** — Get provider dashboard statistics
@@ -67,12 +67,12 @@ Add to `~/.codeium/windsurf/mcp_config.json`:
 
 ### Files
 - **`provider_upload_file`** — Upload a file (requestId, fileName, fileContentBase64, contentType?, milestoneId?, purpose?)
-- **`provider_download_file`** — Download a file (fileId) → returns base64 content
+- **`provider_download_file`** — Download a file (fileId) → returns base64 content, contentType, size, filename
 - **`provider_delete_file`** — Delete a file (fileId)
 
 ### Payments & Discounts
 - **`provider_discount_decision`** — Approve/reject discount (requestId, status, approvedAmount?, discountPercent?, reason?)
-- **`provider_override_payment_policy`** — Override payment policy (requestId, reason, depositPercent?, previewUnlock?, workStartRequirement?, editableDocumentRequired?, revisionsAllowed?)
+- **`provider_override_payment_policy`** — Override payment policy (requestId, depositPercent, previewUnlock, workStartRequirement, editableDocumentRequired, reason [min 8 chars], revisionsAllowed?)
 
 ### Delivery
 - **`provider_deliver_final_work`** — Upload final delivery (requestId, pdfFileName, pdfContentBase64, docxFileName, docxContentBase64, previewImages[], deliveryNote?)
@@ -81,7 +81,7 @@ Add to `~/.codeium/windsurf/mcp_config.json`:
 - **`provider_retry_preview`** — Retry failed preview generation (requestId)
 
 ### Cards
-- **`provider_send_request_card`** — Send generic card to chat (requestId, cardType, message)
+- **`provider_send_request_card`** — Send structured card to chat (requestId, kind, message?, note?, title?, amount?, paymentType?, expectedAt?, locked?). kind: "payment_card", "revision_card", or "delivery_card"
 
 ### Auth
 - **`provider_set_auth_token`** — Update auth tokens at runtime (accessToken, refreshToken?)
