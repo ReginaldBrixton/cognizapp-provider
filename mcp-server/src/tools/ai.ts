@@ -38,7 +38,7 @@ Rate limit: Per-hour extraction limit applies. If you get a 429, wait before ret
 					.default('application/octet-stream')
 					.describe('MIME type (e.g. application/pdf, application/vnd.openxmlformats-officedocument.wordprocessingml.document)'),
 			},
-			annotations: { readOnlyHint: true },
+			annotations: { readOnlyHint: true, openWorldHint: false, destructiveHint: false },
 		},
 		async ({ fileName, fileContentBase64, contentType }) => {
 			const blob = blobFromBase64(fileContentBase64, 'fileContentBase64', contentType || 'application/octet-stream')
@@ -73,7 +73,7 @@ Rate limit: Per-hour extraction limit applies.`,
 					.default('application/octet-stream')
 					.describe('MIME type (e.g. application/pdf, application/vnd.openxmlformats-officedocument.wordprocessingml.document)'),
 			},
-			annotations: { readOnlyHint: true },
+			annotations: { readOnlyHint: true, openWorldHint: false, destructiveHint: false },
 		},
 		async ({ fileName, fileContentBase64, contentType }) => {
 			const blob = blobFromBase64(fileContentBase64, 'fileContentBase64', contentType || 'application/octet-stream')
@@ -108,7 +108,7 @@ Rate limit: Per-hour extraction limit applies.`,
 					.default('application/octet-stream')
 					.describe('MIME type (e.g. text/csv, application/vnd.ms-excel)'),
 			},
-			annotations: { readOnlyHint: true },
+			annotations: { readOnlyHint: true, openWorldHint: false, destructiveHint: false },
 		},
 		async ({ fileName, fileContentBase64, contentType }) => {
 			const blob = blobFromBase64(fileContentBase64, 'fileContentBase64', contentType || 'application/octet-stream')

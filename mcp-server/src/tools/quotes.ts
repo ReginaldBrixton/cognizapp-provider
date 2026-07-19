@@ -25,7 +25,7 @@ Returns: Array of quote objects with id, requestId, requestTitle, taskId, quoteT
 					.optional()
 					.describe('Filter by quote status: draft, sent, accepted, rejected, expired'),
 			},
-			annotations: { readOnlyHint: true },
+			annotations: { readOnlyHint: true, openWorldHint: false, destructiveHint: false },
 		},
 		async ({ status }) => {
 			const result = await apiCall('/api/provider/quotes', {
@@ -101,6 +101,7 @@ Tip: Use provider_draft_quote to generate a suggested quote skeleton first, then
 					.optional()
 					.describe('Quote validity date (ISO 8601)'),
 			},
+			annotations: { readOnlyHint: false, openWorldHint: false, destructiveHint: false },
 		},
 		async ({
 			requestId,

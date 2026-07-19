@@ -16,7 +16,7 @@ export function registerClientTools(server: McpServer): void {
 When to use: To see your client base — who has spent the most, who has the most requests, who was active recently. Useful for relationship management and identifying VIP clients.
 Returns: Array of client objects with clientId, email, fullName, institution, requestCount, totalSpent, lastActivityAt, tags. Note: PII (email, whatsapp) is redacted for non-admin callers — the passkey account sees the redacted view unless it has admin role.`,
 			inputSchema: {},
-			annotations: { readOnlyHint: true },
+			annotations: { readOnlyHint: true, openWorldHint: false, destructiveHint: false },
 		},
 		async () => {
 			const result = await apiCall('/api/provider/clients')
@@ -33,7 +33,7 @@ Returns: Array of client objects with clientId, email, fullName, institution, re
 When to use: To see referral activity — who is referring whom, and which requests came from referrals. Useful for tracking referral program impact.
 Returns: Array of referral objects with id, requestId, taskId, requestStatus, requestCreatedAt, and referral details.`,
 			inputSchema: {},
-			annotations: { readOnlyHint: true },
+			annotations: { readOnlyHint: true, openWorldHint: false, destructiveHint: false },
 		},
 		async () => {
 			const result = await apiCall('/api/provider/referrals')

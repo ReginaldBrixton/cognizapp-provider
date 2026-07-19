@@ -18,7 +18,7 @@ export function registerSettingsTools(server: McpServer): void {
 When to use: At the start of a session to understand the provider's current configuration, or before updating settings.
 Returns: The provider settings object.`,
 			inputSchema: {},
-			annotations: { readOnlyHint: true },
+			annotations: { readOnlyHint: true, openWorldHint: false, destructiveHint: false },
 		},
 		async () => {
 			const result = await apiCallJson<{ data: unknown }>('/api/provider/settings')
@@ -74,7 +74,12 @@ Returns: The updated provider settings object.`,
 					.optional()
 					.describe('Workload preferences (key/value map)'),
 			},
-			annotations: { idempotentHint: true },
+			annotations: {
+				readOnlyHint: false,
+				openWorldHint: false,
+				destructiveHint: false,
+				idempotentHint: true,
+			},
 		},
 		async (args) => {
 			const data: Record<string, unknown> = {}

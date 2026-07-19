@@ -20,7 +20,7 @@ Returns:
   - { authenticated: false, hasPasskey: false, error: "..." } if passkey not set
   - { authenticated: false, hasPasskey: true, error: "..." } if passkey set but provider rejected it`,
 			inputSchema: {},
-			annotations: { readOnlyHint: true },
+			annotations: { readOnlyHint: true, openWorldHint: false, destructiveHint: false },
 		},
 		async () => {
 			const passkeyConfigured = hasPasskey()

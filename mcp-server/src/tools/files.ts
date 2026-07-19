@@ -46,6 +46,7 @@ Returns: The uploaded file metadata (file ID, URL, etc.).`,
 						'File purpose: request_attachment, milestone_upload, delivery, preview, revision',
 					),
 			},
+			annotations: { readOnlyHint: false, openWorldHint: false, destructiveHint: false },
 		},
 		async ({ requestId, fileName, fileContentBase64, contentType, milestoneId, purpose }) => {
 			const blob = blobFromBase64(fileContentBase64, 'fileContentBase64', contentType || 'application/octet-stream')
@@ -73,7 +74,7 @@ Note: Large files produce large base64 strings. The response is truncated at ${2
 			inputSchema: {
 				fileId: z.string().min(1).describe('The file ID (UUID)'),
 			},
-			annotations: { readOnlyHint: true },
+			annotations: { readOnlyHint: true, openWorldHint: false, destructiveHint: false },
 		},
 		async ({ fileId }) => {
 			const result = await apiDownloadBinary(`/api/files/${fileId}/download`)
@@ -102,7 +103,7 @@ Returns: Raw response (typically a confirmation object).`,
 			inputSchema: {
 				fileId: z.string().min(1).describe('The file ID (UUID)'),
 			},
-			annotations: { destructiveHint: true },
+			annotations: { readOnlyHint: false, openWorldHint: false, destructiveHint: true },
 		},
 		async ({ fileId }) => {
 			const result = await apiCallRaw(`/api/files/${fileId}`, { method: 'DELETE' })

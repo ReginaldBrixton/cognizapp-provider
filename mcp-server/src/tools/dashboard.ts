@@ -18,7 +18,7 @@ When to use: At the start of a session to get a quick overview of the provider w
 Returns: { totalRequests, openRequests, convertedRequests, messageThreads, referrals }
 Don't use when: You need detailed request lists — use provider_list_requests instead.`,
 			inputSchema: {},
-			annotations: { readOnlyHint: true },
+			annotations: { readOnlyHint: true, openWorldHint: false, destructiveHint: false },
 		},
 		async () => {
 			const result = await apiCall('/api/provider/dashboard/stats')
@@ -46,7 +46,7 @@ Don't use when: You want all requests regardless of deadline — use provider_li
 					.default(5)
 					.describe('Max number of deadlines to return (1-50, default 5)'),
 			},
-			annotations: { readOnlyHint: true },
+			annotations: { readOnlyHint: true, openWorldHint: false, destructiveHint: false },
 		},
 		async ({ limit }) => {
 			const result = await apiCall('/api/provider/dashboard/deadlines', {
@@ -75,7 +75,7 @@ Returns: Array of activity log entries with timestamp, actor, event type, and de
 					.default(8)
 					.describe('Max number of activities to return (1-50, default 8)'),
 			},
-			annotations: { readOnlyHint: true },
+			annotations: { readOnlyHint: true, openWorldHint: false, destructiveHint: false },
 		},
 		async ({ limit }) => {
 			const result = await apiCall('/api/provider/dashboard/activity', {

@@ -25,7 +25,7 @@ Returns: Array of order objects with id, requestId, requestTitle, taskId, status
 					.optional()
 					.describe('Filter by order status: pending, confirmed, in_progress, completed, cancelled, refunded'),
 			},
-			annotations: { readOnlyHint: true },
+			annotations: { readOnlyHint: true, openWorldHint: false, destructiveHint: false },
 		},
 		async ({ status }) => {
 			const result = await apiCall('/api/provider/orders', {
@@ -48,7 +48,7 @@ Returns: The order object with all fields.`,
 			inputSchema: {
 				orderId: z.string().min(1).describe('The order ID (UUID)'),
 			},
-			annotations: { readOnlyHint: true },
+			annotations: { readOnlyHint: true, openWorldHint: false, destructiveHint: false },
 		},
 		async ({ orderId }) => {
 			const result = await apiCall(`/api/provider/orders/${orderId}`)
@@ -75,7 +75,12 @@ Returns: The updated order object.`,
 					.describe('New status: pending, confirmed, in_progress, completed, cancelled, refunded'),
 				notes: z.string().optional().describe('Optional notes for the status change'),
 			},
-			annotations: { idempotentHint: false },
+			annotations: {
+				readOnlyHint: false,
+				openWorldHint: false,
+				destructiveHint: false,
+				idempotentHint: false,
+			},
 		},
 		async ({ orderId, status, notes }) => {
 			const data: Record<string, unknown> = { status }

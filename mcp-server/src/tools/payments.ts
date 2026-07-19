@@ -47,6 +47,7 @@ Returns: The updated request with the discount applied.`,
 					.describe('Discount percentage 1-100 (optional if approvedAmount is set)'),
 				reason: z.string().optional().describe('Reason or note for the user'),
 			},
+			annotations: { readOnlyHint: false, openWorldHint: false, destructiveHint: false },
 		},
 		async ({ requestId, status, requestedAmount, approvedAmount, discountPercent, reason }) => {
 			const data: Record<string, unknown> = { status }
@@ -106,6 +107,7 @@ Returns: The updated request with the new payment policy.`,
 					.min(8)
 					.describe('Reason for the override (shown in audit log, minimum 8 characters)'),
 			},
+			annotations: { readOnlyHint: false, openWorldHint: false, destructiveHint: false },
 		},
 		async ({
 			requestId,

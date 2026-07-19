@@ -41,7 +41,7 @@ Returns: {
 }
 This is read-only — no state changes. Use the individual tools (provider_send_message, provider_create_quote, etc.) to act on the items.`,
 			inputSchema: {},
-			annotations: { readOnlyHint: true },
+			annotations: { readOnlyHint: true, openWorldHint: false, destructiveHint: false },
 		},
 		async () => {
 			const [stats, statsErr] = await safe(
@@ -106,7 +106,7 @@ Returns: {
 					.default(20)
 					.describe('Max recent messages to include (1-100, default 20)'),
 			},
-			annotations: { readOnlyHint: true },
+			annotations: { readOnlyHint: true, openWorldHint: false, destructiveHint: false },
 		},
 		async ({ requestId, messageLimit }) => {
 			const [request, requestErr] = await safe(
@@ -186,7 +186,7 @@ Note: The suggested amounts are conservative defaults — the agent MUST review 
 			inputSchema: {
 				requestId: z.string().min(1).describe('The support request ID (UUID)'),
 			},
-			annotations: { readOnlyHint: true },
+			annotations: { readOnlyHint: true, openWorldHint: false, destructiveHint: false },
 		},
 		async ({ requestId }) => {
 			const [request, requestErr] = await safe(
@@ -276,7 +276,7 @@ The draftMessage is a starting point — review and personalise before sending w
 					.default('overdue')
 					.describe('Which deadlines to include: "overdue" (default), "24h", or "both"'),
 			},
-			annotations: { readOnlyHint: true },
+			annotations: { readOnlyHint: true, openWorldHint: false, destructiveHint: false },
 		},
 		async ({ deadlineFilter }) => {
 			const filters: Array<'overdue' | '24h'> =

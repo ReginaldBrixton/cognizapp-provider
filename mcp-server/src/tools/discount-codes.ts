@@ -19,7 +19,7 @@ export function registerDiscountCodeTools(server: McpServer): void {
 When to use: To see active/promo codes, their redemption counts, and which clients have used them.
 Returns: Array of discount code objects with id, code, label, discountPercent, maxRedemptions, minimumAmount, eligibleServiceTags, status, expiresAt, redemptions[].`,
 			inputSchema: {},
-			annotations: { readOnlyHint: true },
+			annotations: { readOnlyHint: true, openWorldHint: false, destructiveHint: false },
 		},
 		async () => {
 			const result = await apiCall('/api/provider/discount-codes')
@@ -72,6 +72,7 @@ Returns: The created discount code object.`,
 					.describe('Service tags the code is valid for (empty = all)'),
 				expiresAt: z.string().optional().describe('Expiry date (ISO 8601)'),
 			},
+			annotations: { readOnlyHint: false, openWorldHint: false, destructiveHint: false },
 		},
 		async ({
 			discountPercent,
@@ -150,7 +151,12 @@ Returns: The updated discount code object.`,
 					.optional()
 					.describe('New expiry date (ISO 8601) — pass null to clear'),
 			},
-			annotations: { idempotentHint: true },
+			annotations: {
+				readOnlyHint: false,
+				openWorldHint: false,
+				destructiveHint: false,
+				idempotentHint: true,
+			},
 		},
 		async ({
 			codeId,
@@ -191,7 +197,12 @@ Returns: Raw response (typically a confirmation object).`,
 			inputSchema: {
 				codeId: z.string().min(1).describe('The discount code ID (UUID)'),
 			},
-			annotations: { destructiveHint: true, idempotentHint: true },
+			annotations: {
+				readOnlyHint: false,
+				openWorldHint: false,
+				destructiveHint: true,
+				idempotentHint: true,
+			},
 		},
 		async ({ codeId }) => {
 			const result = await apiCallRaw(`/api/provider/discount-codes/${codeId}`, {

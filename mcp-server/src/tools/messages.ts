@@ -18,7 +18,7 @@ export function registerMessageTools(server: McpServer): void {
 When to use: To see all active conversations. Pair with provider_get_thread_messages to read a specific thread.
 Returns: Array of thread objects with id, requestId, participants, lastMessage, lastMessageAt, unreadCount.`,
 			inputSchema: {},
-			annotations: { readOnlyHint: true },
+			annotations: { readOnlyHint: true, openWorldHint: false, destructiveHint: false },
 		},
 		async () => {
 			const result = await apiCall('/api/messages/threads')
@@ -39,7 +39,7 @@ Returns: Array of message objects.`,
 			inputSchema: {
 				threadId: z.string().min(1).describe('The support message thread ID (UUID)'),
 			},
-			annotations: { readOnlyHint: true },
+			annotations: { readOnlyHint: true, openWorldHint: false, destructiveHint: false },
 		},
 		async ({ threadId }) => {
 			const result = await apiCall(`/api/messages/threads/${threadId}/messages`)
@@ -78,6 +78,7 @@ Returns: The created message object.`,
 					.optional()
 					.describe('ID of message to reply to (for threaded replies)'),
 			},
+			annotations: { readOnlyHint: false, openWorldHint: false, destructiveHint: false },
 		},
 		async ({ threadId, content, attachments, replyToMessageId }) => {
 			const payload: Record<string, unknown> = { content }
@@ -108,6 +109,7 @@ Returns: The updated message object (raw response).`,
 				messageId: z.string().min(1).describe('The message ID to edit'),
 				content: z.string().min(1).describe('The new message content'),
 			},
+			annotations: { readOnlyHint: false, openWorldHint: false, destructiveHint: false },
 		},
 		async ({ threadId, messageId, content }) => {
 			const result = await apiCallRaw(
@@ -133,7 +135,7 @@ Returns: Raw response (typically a confirmation object).`,
 				threadId: z.string().min(1).describe('The thread ID'),
 				messageId: z.string().min(1).describe('The message ID to delete'),
 			},
-			annotations: { destructiveHint: true },
+			annotations: { readOnlyHint: false, openWorldHint: false, destructiveHint: true },
 		},
 		async ({ threadId, messageId }) => {
 			const result = await apiCallRaw(
@@ -159,6 +161,7 @@ Returns: The created thread object.`,
 				requestId: z.string().min(1).describe('The request ID to create a thread for'),
 				type: z.string().default('request').describe('Thread type (default "request")'),
 			},
+			annotations: { readOnlyHint: false, openWorldHint: false, destructiveHint: false },
 		},
 		async ({ requestId, type }) => {
 			const result = await apiCall('/api/messages/threads', {

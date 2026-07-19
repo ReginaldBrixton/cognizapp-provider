@@ -53,6 +53,7 @@ Returns: The delivery result (preview pages published, final files locked).`,
 					.describe('Ordered preview page images (at least one)'),
 				deliveryNote: z.string().optional().describe('Optional delivery note for the client'),
 			},
+			annotations: { readOnlyHint: false, openWorldHint: false, destructiveHint: false },
 		},
 		async ({
 			requestId,
@@ -91,7 +92,7 @@ Returns: The delivery result (preview pages published, final files locked).`,
 			formData.append(
 				'deliveryNote',
 				deliveryNote ||
-					'Preview page images are available in chat; clean final files stay locked until full payment.',
+				'Preview page images are available in chat; clean final files stay locked until full payment.',
 			)
 			const result = await apiFormUpload(
 				`/api/provider/requests/${requestId}/deliver`,
@@ -114,7 +115,12 @@ Returns: Raw response (typically a job status object).`,
 			inputSchema: {
 				requestId: z.string().min(1).describe('The support request ID (UUID)'),
 			},
-			annotations: { idempotentHint: true },
+			annotations: {
+				readOnlyHint: false,
+				openWorldHint: false,
+				destructiveHint: false,
+				idempotentHint: true,
+			},
 		},
 		async ({ requestId }) => {
 			const result = await apiCallRaw(
@@ -162,6 +168,7 @@ Returns: The result of sending the card.`,
 					.describe('Expected delivery/payment date (ISO 8601)'),
 				locked: z.boolean().optional().describe('Whether the card is locked (default false)'),
 			},
+			annotations: { readOnlyHint: false, openWorldHint: false, destructiveHint: false },
 		},
 		async ({
 			requestId,

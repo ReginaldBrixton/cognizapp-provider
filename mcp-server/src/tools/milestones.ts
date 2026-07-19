@@ -22,7 +22,7 @@ Returns: Array of milestone objects.`,
 			inputSchema: {
 				requestId: z.string().min(1).describe('The support request ID (UUID)'),
 			},
-			annotations: { readOnlyHint: true },
+			annotations: { readOnlyHint: true, openWorldHint: false, destructiveHint: false },
 		},
 		async ({ requestId }) => {
 			const result = await apiCall(`/api/provider/requests/${requestId}/milestones`)
@@ -45,7 +45,7 @@ Returns: Full milestone object with files and revisions.`,
 				requestId: z.string().min(1).describe('The support request ID (UUID)'),
 				milestoneId: z.string().min(1).describe('The milestone ID (UUID)'),
 			},
-			annotations: { readOnlyHint: true },
+			annotations: { readOnlyHint: true, openWorldHint: false, destructiveHint: false },
 		},
 		async ({ requestId, milestoneId }) => {
 			const result = await apiCall(
@@ -82,6 +82,7 @@ Returns: The created milestone object.`,
 					.default('pending')
 					.describe('Initial status (default "pending")'),
 			},
+			annotations: { readOnlyHint: false, openWorldHint: false, destructiveHint: false },
 		},
 		async ({ requestId, title, description, dueAt, status }) => {
 			const data: Record<string, unknown> = { title, status: status ?? 'pending' }
@@ -114,6 +115,7 @@ Returns: The updated milestone object (raw response).`,
 					'New status: pending, active, submitted, revision_requested, approved, cancelled',
 				),
 			},
+			annotations: { readOnlyHint: false, openWorldHint: false, destructiveHint: false },
 		},
 		async ({ requestId, milestoneId, status }) => {
 			const result = await apiCallRaw(
@@ -151,6 +153,7 @@ Returns: The result of sending the card (typically the updated milestone + card 
 					.describe('Status to set when sending card (default "submitted")'),
 				note: z.string().optional().describe('Optional internal note (not shown to client)'),
 			},
+			annotations: { readOnlyHint: false, openWorldHint: false, destructiveHint: false },
 		},
 		async ({ requestId, milestoneId, message, status, note }) => {
 			const data: Record<string, unknown> = {
@@ -181,7 +184,7 @@ Returns: Array of submission rounds with files, events, and revision feedback.`,
 				requestId: z.string().min(1).describe('The support request ID (UUID)'),
 				milestoneId: z.string().min(1).describe('The milestone ID (UUID)'),
 			},
-			annotations: { readOnlyHint: true },
+			annotations: { readOnlyHint: true, openWorldHint: false, destructiveHint: false },
 		},
 		async ({ requestId, milestoneId }) => {
 			const result = await apiCall(

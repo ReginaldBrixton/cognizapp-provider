@@ -39,7 +39,7 @@ Tip: Use provider_triage_inbox for a pre-prioritised summary instead of calling 
 					.optional()
 					.describe('Filter by subscription plan id (e.g. "free", "pro")'),
 			},
-			annotations: { readOnlyHint: true },
+			annotations: { readOnlyHint: true, openWorldHint: false, destructiveHint: false },
 		},
 		async (args) => {
 			const result = await apiCall('/api/provider/requests', {
@@ -69,7 +69,7 @@ Don't use when: You want a holistic view including milestones + messages + files
 			inputSchema: {
 				requestId: z.string().min(1).describe('The support request ID (UUID)'),
 			},
-			annotations: { readOnlyHint: true },
+			annotations: { readOnlyHint: true, openWorldHint: false, destructiveHint: false },
 		},
 		async ({ requestId }) => {
 			const result = await apiCall(`/api/provider/requests/${requestId}`)
@@ -98,7 +98,12 @@ Note: This calls POST /api/provider/requests/:id/timeline. For starting work spe
 					.describe('New status (e.g. "in_progress", "under_review", "completed")'),
 				note: z.string().optional().describe('Optional internal note for the timeline'),
 			},
-			annotations: { idempotentHint: false },
+			annotations: {
+				readOnlyHint: false,
+				openWorldHint: false,
+				destructiveHint: false,
+				idempotentHint: false,
+			},
 		},
 		async ({ requestId, status, note }) => {
 			const body: Record<string, unknown> = { status }
