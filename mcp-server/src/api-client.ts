@@ -2,8 +2,9 @@
  * CognizApp Provider MCP Server
  *
  * API client that talks directly to the CognizApp backend API.
- * Auth is via COGNIZAPP_ACCESS_TOKEN env var (JWT access token).
- * Optionally COGNIZAPP_REFRESH_TOKEN for auto-refresh on 401.
+ * Auth is via a single static passkey (COGNIZAPP_MCP_PASSKEY env var).
+ * No JWT tokens, no refresh tokens, no email — just the passkey.
+ * The passkey is sent via the X-MCP-Passkey header on every request.
  */
 
 const BACKEND_URL =
@@ -11,42 +12,10 @@ const BACKEND_URL =
 	process.env.BACKEND_URL ||
 	'http://localhost:4040'
 
-let accessToken = process.env.COGNIZAPP_ACCESS_TOKEN || ''
-let refreshToken = process.env.COGNIZAPP_REFRESH_TOKEN || ''
+const MCP_PASSKEY = process.env.COGNIZAPP_MCP_PASSKEY || ''
 
-export function setAccessToken(token: string) {
-	accessToken = token
-}
-export function setRefreshToken(token: string) {
-	refreshToken = token
-}
-export function getAccessToken() {
-	return accessToken
-}
-
-async function refreshSession(): Promise<boolean> {
-	if (!refreshToken) return false
-	try {
-		const res = await fetch(`${BACKEND_URL}/api/auth/refresh`, {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({
-				refreshToken,
-				refresh_token: refreshToken,
-			}),
-		})
-		if (!res.ok) return false
-		const json = await res.json()
-		const data = json.data || json
-		if (data.accessToken) {
-			accessToken = data.accessToken
-			if (data.refreshToken) refreshToken = data.refreshToken
-			return true
-		}
-		return false
-	} catch {
-		return false
-	}
+export function hasPasskey(): boolean {
+	return MCP_PASSKEY.length > 0
 }
 
 export interface ApiOptions {
@@ -54,6 +23,15 @@ export interface ApiOptions {
 	body?: string | FormData
 	headers?: Record<string, string>
 	query?: Record<string, string | undefined>
+}
+
+/** Build auth headers — just the passkey, nothing else. */
+function authHeaders(extra?: Record<string, string>): Record<string, string> {
+	const headers: Record<string, string> = {}
+	if (MCP_PASSKEY) {
+		headers['X-MCP-Passkey'] = MCP_PASSKEY
+	}
+	return { ...headers, ...extra }
 }
 
 export async function apiCall<T = any>(
@@ -69,35 +47,16 @@ export async function apiCall<T = any>(
 		}
 	}
 
-	const headers: Record<string, string> = {
-		Authorization: `Bearer ${accessToken}`,
-		...options.headers,
-	}
+	const headers = authHeaders(options.headers)
 	if (options.body && !(options.body instanceof FormData)) {
 		headers['Content-Type'] = 'application/json'
 	}
 
-	const fetchOptions: RequestInit = {
+	const response = await fetch(url.toString(), {
 		method: options.method || 'GET',
 		headers,
-	}
-	if (options.body !== undefined) {
-		fetchOptions.body = options.body
-	}
-
-	let response = await fetch(url.toString(), fetchOptions)
-
-	// Auto-refresh on 401
-	if (response.status === 401 && refreshToken) {
-		const refreshed = await refreshSession()
-		if (refreshed) {
-			headers.Authorization = `Bearer ${accessToken}`
-			response = await fetch(url.toString(), {
-				...fetchOptions,
-				headers,
-			})
-		}
-	}
+		body: options.body,
+	})
 
 	if (!response.ok) {
 		const text = await response.text().catch(() => '')
@@ -117,7 +76,6 @@ export async function apiCall<T = any>(
 		return (json.data ?? json) as T
 	}
 
-	// Non-JSON response (e.g., file download)
 	const blob = await response.blob()
 	return blob as unknown as T
 }
@@ -132,31 +90,16 @@ export async function apiCallRaw(path: string, options: ApiOptions = {}): Promis
 		}
 	}
 
-	const headers: Record<string, string> = {
-		Authorization: `Bearer ${accessToken}`,
-		...options.headers,
-	}
+	const headers = authHeaders(options.headers)
 	if (options.body && !(options.body instanceof FormData)) {
 		headers['Content-Type'] = 'application/json'
 	}
 
-	const fetchOptions: RequestInit = {
+	const response = await fetch(url.toString(), {
 		method: options.method || 'GET',
 		headers,
-	}
-	if (options.body !== undefined) {
-		fetchOptions.body = options.body
-	}
-
-	let response = await fetch(url.toString(), fetchOptions)
-
-	if (response.status === 401 && refreshToken) {
-		const refreshed = await refreshSession()
-		if (refreshed) {
-			headers.Authorization = `Bearer ${accessToken}`
-			response = await fetch(url.toString(), { ...fetchOptions, headers })
-		}
-	}
+		body: options.body,
+	})
 
 	const contentType = response.headers.get('content-type') || ''
 	let data: any
@@ -172,7 +115,6 @@ export async function apiCallRaw(path: string, options: ApiOptions = {}): Promis
 /**
  * Download a binary file from the backend.
  * Returns the raw bytes as a Buffer along with content-type and filename.
- * Handles 401 auto-refresh the same way as apiCallRaw.
  */
 export async function apiDownloadBinary(
 	path: string,
@@ -187,26 +129,12 @@ export async function apiDownloadBinary(
 		}
 	}
 
-	const headers: Record<string, string> = {
-		Authorization: `Bearer ${accessToken}`,
-		...options.headers,
-	}
+	const headers = authHeaders(options.headers)
 
-	const fetchOptions: RequestInit = {
+	const response = await fetch(url.toString(), {
 		method: options.method || 'GET',
 		headers,
-	}
-
-	let response = await fetch(url.toString(), fetchOptions)
-
-	// Auto-refresh on 401
-	if (response.status === 401 && refreshToken) {
-		const refreshed = await refreshSession()
-		if (refreshed) {
-			headers.Authorization = `Bearer ${accessToken}`
-			response = await fetch(url.toString(), { ...fetchOptions, headers })
-		}
-	}
+	})
 
 	if (!response.ok) {
 		const text = await response.text().catch(() => '')

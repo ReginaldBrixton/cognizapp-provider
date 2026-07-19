@@ -13,6 +13,9 @@
  * - Deliver final work (PDF, DOCX, preview images)
  * - View dashboard stats and activity
  * - Retry preview generation
+ *
+ * Auth: Single static passkey via COGNIZAPP_MCP_PASSKEY env var.
+ * No JWT tokens needed. The passkey is sent via the X-MCP-Passkey header.
  */
 
 import { Server } from '@modelcontextprotocol/sdk/server/index.js'
@@ -22,7 +25,7 @@ import {
 	ListToolsRequestSchema,
 	type Tool,
 } from '@modelcontextprotocol/sdk/types.js'
-import { apiCall, apiCallRaw, apiDownloadBinary, setAccessToken, setRefreshToken, getAccessToken } from './api-client.js'
+import { apiCall, apiCallRaw, apiDownloadBinary, hasPasskey } from './api-client.js'
 
 // ─── Tool Definitions ───────────────────────────────────────────────────────
 
@@ -398,20 +401,8 @@ const tools: Tool[] = [
 
 	// ── Auth ──
 	{
-		name: 'provider_set_auth_token',
-		description: 'Set or update the access token and refresh token for API authentication. Use this if the current token has expired and you have new credentials.',
-		inputSchema: {
-			type: 'object',
-			properties: {
-				accessToken: { type: 'string', description: 'The JWT access token' },
-				refreshToken: { type: 'string', description: 'Optional: the refresh token for auto-renewal' },
-			},
-			required: ['accessToken'],
-		},
-	},
-	{
 		name: 'provider_check_auth',
-		description: 'Check if the current access token is valid by making a simple API call. Returns the authentication status.',
+		description: 'Check if the MCP passkey is configured and the backend is reachable. Returns authentication status.',
 		inputSchema: { type: 'object', properties: {} },
 		annotations: { readOnlyHint: true },
 	},
@@ -689,18 +680,18 @@ async function handleToolCall(name: string, args: Record<string, any>): Promise<
 		}
 
 		// ── Auth ──
-		case 'provider_set_auth_token':
-			setAccessToken(args.accessToken)
-			if (args.refreshToken) setRefreshToken(args.refreshToken)
-			return { success: true, message: 'Auth tokens updated' }
-
-		case 'provider_check_auth':
+		case 'provider_check_auth': {
+			const passkeyConfigured = hasPasskey()
+			if (!passkeyConfigured) {
+				return { authenticated: false, hasPasskey: false, error: 'COGNIZAPP_MCP_PASSKEY env var is not set' }
+			}
 			try {
 				await apiCall('/api/support/provider/dashboard/stats')
-				return { authenticated: true, hasToken: !!getAccessToken() }
-			} catch {
-				return { authenticated: false, hasToken: !!getAccessToken() }
+				return { authenticated: true, hasPasskey: true }
+			} catch (e) {
+				return { authenticated: false, hasPasskey: true, error: e instanceof Error ? e.message : String(e) }
 			}
+		}
 
 		default:
 			throw new Error(`Unknown tool: ${name}`)

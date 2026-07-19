@@ -1,7 +1,7 @@
 # CognizApp Provider MCP Server — Installation Guide
 
 A complete guide to install, configure, and run the CognizApp Provider MCP Server.
-This MCP server exposes 27 tools that let AI assistants (Claude, Windsurf Cascade,
+This MCP server exposes 26 tools that let AI assistants (Claude, Windsurf Cascade,
 Cursor, etc.) manage the CognizApp provider support system — dashboard, requests,
 messages, milestones, files, payments, delivery, and auth.
 
@@ -10,20 +10,19 @@ messages, milestones, files, payments, delivery, and auth.
 ## Table of Contents
 
 1. [Prerequisites](#1-prerequisites)
-2. [Quick Start (5 Minutes)](#2-quick-start-5-minutes)
-3. [Detailed Installation](#3-detailed-installation)
-4. [Configuration Reference](#4-configuration-reference)
-5. [Client Setup](#5-client-setup)
+2. [Quick Start (3 Minutes)](#2-quick-start-3-minutes)
+3. [Configuration](#3-configuration)
+4. [Client Setup](#4-client-setup)
    - [Windsurf / Cascade](#windsurf--cascade)
    - [Claude Desktop](#claude-desktop)
    - [Cursor](#cursor)
    - [VS Code (Continue.dev)](#vs-code-continuedev)
    - [Generic MCP Client](#generic-mcp-client)
-6. [Getting Your Auth Tokens](#6-getting-your-auth-tokens)
-7. [Verifying the Installation](#7-verifying-the-installation)
-8. [Tool Reference](#8-tool-reference)
-9. [Troubleshooting](#9-troubleshooting)
-10. [Architecture & Development](#10-architecture--development)
+5. [Your Passkey](#5-your-passkey)
+6. [Verifying the Installation](#6-verifying-the-installation)
+7. [Tool Reference](#7-tool-reference)
+8. [Troubleshooting](#8-troubleshooting)
+9. [Architecture](#9-architecture)
 
 ---
 
@@ -33,119 +32,63 @@ messages, milestones, files, payments, delivery, and auth.
 |---|---|---|
 | **Node.js** | 18.18+ (20 LTS recommended) | `node --version` |
 | **npm** | 9+ (bundled with Node) | `npm --version` |
-| **TypeScript** | 5.7+ (installed automatically) | — |
 | **CognizApp Backend API** | Running and accessible | `curl <BACKEND_URL>/health` |
-
-You do **not** need Bun, Docker, or a database — the MCP server is a standalone
-Node.js process that talks to the backend API over HTTP.
 
 ### Supported Backends
 
 | Environment | URL | Notes |
 |---|---|---|
 | Local dev | `http://localhost:4040` | Run `bun run src/server.ts` in the backend repo |
-| Production | `https://api.cognizapp.com` | Requires real JWT tokens (test bypass won't work) |
+| Production | `https://api.cognizapp.com` | Passkey works in production |
 
 ---
 
-## 2. Quick Start (5 Minutes)
+## 2. Quick Start (3 Minutes)
 
 ```bash
-# 1. Clone the provider repo (if you haven't already)
+# 1. Clone and build
 git clone https://github.com/ReginaldBrixton/cognizapp-provider.git
 cd cognizapp-provider/mcp-server
-
-# 2. Install dependencies and build
 npm install && npm run build
 
-# 3. Verify it starts
-COGNIZAPP_ACCESS_TOKEN=your_token_here npm start
-# You should see: "CognizApp Provider MCP Server running on stdio"
-# Press Ctrl+C to stop
+# 2. Test it starts
+COGNIZAPP_MCP_PASSKEY=your_passkey npm start
+# Should see: "CognizApp Provider MCP Server running on stdio"
+# Ctrl+C to stop
 
-# 4. Add to your MCP client config (see Section 5)
+# 3. Add to your MCP client config (see Section 4)
 ```
 
 ---
 
-## 3. Detailed Installation
-
-### Step 1: Clone the Repository
-
-```bash
-git clone https://github.com/ReginaldBrixton/cognizapp-provider.git
-cd cognizapp-provider/mcp-server
-```
-
-### Step 2: Install Dependencies
-
-```bash
-npm install
-```
-
-This installs:
-- `@modelcontextprotocol/sdk` — the MCP protocol library
-- `typescript` — compiler (dev dependency)
-- `@types/node` — Node.js type definitions (dev dependency)
-
-### Step 3: Build the TypeScript Source
-
-```bash
-npm run build
-```
-
-This runs `tsc` and compiles `src/*.ts` → `dist/*.js`. The output is plain
-JavaScript (ES2022 modules) that Node.js can run directly.
-
-Verify the build succeeded:
-
-```bash
-ls dist/
-# Should show: index.js, index.d.ts, api-client.js, api-client.d.ts
-```
-
-### Step 4: Get Your Auth Tokens
-
-You need a CognizApp provider JWT access token. See [Section 6](#6-getting-your-auth-tokens)
-for instructions on how to obtain one.
-
-### Step 5: Configure Your MCP Client
-
-Add the server to your MCP client's configuration file. See [Section 5](#5-client-setup)
-for client-specific instructions.
-
----
-
-## 4. Configuration Reference
+## 3. Configuration
 
 ### Environment Variables
 
 | Variable | Required | Default | Description |
 |---|---|---|---|
-| `COGNIZAPP_ACCESS_TOKEN` | **Yes** | — | JWT access token for a provider account |
-| `COGNIZAPP_REFRESH_TOKEN` | No | — | JWT refresh token for auto-renewal on 401 |
+| `COGNIZAPP_MCP_PASSKEY` | **Yes** | — | Static passkey for authentication (never expires) |
 | `COGNIZAPP_BACKEND_URL` | No | `http://localhost:4040` | Backend API base URL |
 
-### Token Requirements
+That's it. One passkey. No JWT tokens, no refresh tokens, no email.
 
-The access token must belong to a user with one of:
-- `SUPPORT_PROVIDER_USER` role, OR
-- `ADMIN_USER` role, OR
-- The `support.tickets.respond` permission
+### How the Passkey Works
 
-Without the correct role/permissions, provider tools will return
-`"Insufficient permissions"` errors.
+The passkey is a static string sent via the `X-MCP-Passkey` HTTP header on every
+request to the backend. The backend's auth middleware checks the passkey against
+the `MCP_PROVIDER_PASSKEY` environment variable (set on the backend side). If it
+matches, the request is authenticated as the `cognizapp@gmail.com` provider
+account with `SUPPORT_PROVIDER_USER` role.
 
-### Token Refresh
-
-If you provide a `COGNIZAPP_REFRESH_TOKEN`, the server automatically refreshes
-the access token when the backend returns a 401. The new tokens are used for
-all subsequent requests. You can also update tokens at runtime using the
-`provider_set_auth_token` tool.
+The passkey:
+- **Never expires** — no token refresh needed
+- **Works in production** — unlike the old test bypass token
+- **Is account-agnostic** — you don't need to know any user's email or password
+- **Uses constant-time comparison** — immune to timing attacks
 
 ---
 
-## 5. Client Setup
+## 4. Client Setup
 
 ### Windsurf / Cascade
 
@@ -159,16 +102,15 @@ Edit `~/.codeium/windsurf/mcp_config.json`:
       "args": ["/absolute/path/to/cognizapp-provider/mcp-server/dist/index.js"],
       "disabled": false,
       "env": {
-        "COGNIZAPP_BACKEND_URL": "http://localhost:4040",
-        "COGNIZAPP_ACCESS_TOKEN": "your_jwt_access_token",
-        "COGNIZAPP_REFRESH_TOKEN": "your_jwt_refresh_token"
+        "COGNIZAPP_BACKEND_URL": "https://api.cognizapp.com",
+        "COGNIZAPP_MCP_PASSKEY": "your_passkey_here"
       }
     }
   }
 }
 ```
 
-Restart Windsurf after saving. The server appears in **Settings → MCP Servers**.
+Restart Windsurf after saving.
 
 ### Claude Desktop
 
@@ -183,15 +125,12 @@ or `%APPDATA%\Claude\claude_desktop_config.json` (Windows):
       "args": ["/absolute/path/to/cognizapp-provider/mcp-server/dist/index.js"],
       "env": {
         "COGNIZAPP_BACKEND_URL": "https://api.cognizapp.com",
-        "COGNIZAPP_ACCESS_TOKEN": "your_jwt_access_token",
-        "COGNIZAPP_REFRESH_TOKEN": "your_jwt_refresh_token"
+        "COGNIZAPP_MCP_PASSKEY": "your_passkey_here"
       }
     }
   }
 }
 ```
-
-Restart Claude Desktop. Tools will appear as `mcp__cognizapp-provider__*`.
 
 ### Cursor
 
@@ -205,8 +144,7 @@ Edit `~/.cursor/mcp.json`:
       "args": ["/absolute/path/to/cognizapp-provider/mcp-server/dist/index.js"],
       "env": {
         "COGNIZAPP_BACKEND_URL": "https://api.cognizapp.com",
-        "COGNIZAPP_ACCESS_TOKEN": "your_jwt_access_token",
-        "COGNIZAPP_REFRESH_TOKEN": "your_jwt_refresh_token"
+        "COGNIZAPP_MCP_PASSKEY": "your_passkey_here"
       }
     }
   }
@@ -215,7 +153,7 @@ Edit `~/.cursor/mcp.json`:
 
 ### VS Code (Continue.dev)
 
-Add to `~/.continue/config.json` under `experimental.mcpServers`:
+Add to `~/.continue/config.json`:
 
 ```json
 {
@@ -226,7 +164,7 @@ Add to `~/.continue/config.json` under `experimental.mcpServers`:
         "args": ["/absolute/path/to/cognizapp-provider/mcp-server/dist/index.js"],
         "env": {
           "COGNIZAPP_BACKEND_URL": "https://api.cognizapp.com",
-          "COGNIZAPP_ACCESS_TOKEN": "your_jwt_access_token"
+          "COGNIZAPP_MCP_PASSKEY": "your_passkey_here"
         }
       }
     }
@@ -243,87 +181,45 @@ node /path/to/mcp-server/dist/index.js
 ```
 
 It reads JSON-RPC messages from stdin and writes responses to stdout.
-Logs go to stderr. The server implements the MCP protocol version `2024-11-05`.
+Logs go to stderr. MCP protocol version `2024-11-05`.
 
 ---
 
-## 6. Getting Your Auth Tokens
+## 5. Your Passkey
 
-### Option A: From the Provider Portal (Production)
+Your passkey is:
 
-1. Log in to `https://provider.cognizapp.com`
-2. Open browser DevTools → Application → Local Storage
-3. Find `cognizapp_access_token` and `cognizapp_refresh_token`
-4. Copy both values into your MCP config
-
-### Option B: From the API Directly
-
-```bash
-# Exchange Firebase token for CognizApp JWT
-curl -X POST https://api.cognizapp.com/api/auth/firebase-exchange \
-  -H "Content-Type: application/json" \
-  -d '{"firebaseToken": "your_firebase_id_token"}'
+```
+mcp_pk_cdf27611295b4ae9bd97affd597c0b1c498a212e7940b36daae46c3619fa5256
 ```
 
-Response:
-```json
-{
-  "success": true,
-  "data": {
-    "accessToken": "eyJhbGci...",
-    "refreshToken": "eyJhbGci..."
-  }
-}
-```
+This passkey is already set on the production backend (`https://api.cognizapp.com`)
+as the `MCP_PROVIDER_PASSKEY` environment variable. It authenticates as the
+`cognizapp@gmail.com` provider account.
 
-### Option C: Dev/Test Bypass Token (Local Development Only)
-
-For local testing, the backend supports a test bypass token when
-`TEST_AUTH_BYPASS_ENABLED=true` and `TEST_AUTH_BYPASS_EMAIL` is set in the
-backend's `.env`:
-
-```json
-{
-  "COGNIZAPP_ACCESS_TOKEN": "cognizap_test_bypass_token_sAmb0RYDpPcJSkpm4NJB"
-}
-```
-
-> **Warning:** The test bypass token is **blocked in production**. It only works
-> against a local or staging backend with the bypass enabled. Never use it in
-> a production MCP configuration.
+**Keep this passkey private.** Anyone with this passkey can access the provider
+support system. If it's compromised, rotate it by:
+1. Generate a new one: `node -e "console.log('mcp_pk_' + require('crypto').randomBytes(32).toString('hex'))"`
+2. Update `MCP_PROVIDER_PASSKEY` on Vercel: `echo "new_passkey" | vercel env add MCP_PROVIDER_PASSKEY production`
+3. Update `COGNIZAPP_MCP_PASSKEY` in your MCP client config
+4. Redeploy the backend
 
 ---
 
-## 7. Verifying the Installation
+## 6. Verifying the Installation
 
-### Method 1: Using the MCP Inspector
+### Method 1: MCP Inspector
 
 ```bash
 cd cognizapp-provider/mcp-server
-COGNIZAPP_ACCESS_TOKEN=your_token npm run inspector
+COGNIZAPP_MCP_PASSKEY=your_passkey npm run inspector
 ```
 
-This opens the MCP Inspector UI in your browser where you can:
-- See all 27 tools and their schemas
-- Call tools interactively
-- View raw JSON-RPC traffic
+Opens a UI in your browser to browse tools and call them interactively.
 
-### Method 2: Manual JSON-RPC Test
+### Method 2: Check Auth
 
-```bash
-echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"1.0.0"}}}
-{"jsonrpc":"2.0","method":"notifications/initialized"}
-{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}' | \
-COGNIZAPP_ACCESS_TOKEN=your_token \
-COGNIZAPP_BACKEND_URL=http://localhost:4040 \
-node dist/index.js
-```
-
-You should see JSON responses with the server info and tool list.
-
-### Method 3: Check Auth
-
-Once configured in your client, ask the AI to call:
+Once configured in your client, ask the AI:
 
 ```
 Use the provider_check_auth tool to verify authentication.
@@ -333,11 +229,11 @@ Expected response:
 ```json
 {
   "authenticated": true,
-  "hasToken": true
+  "hasPasskey": true
 }
 ```
 
-### Method 4: Test Dashboard Stats
+### Method 3: Dashboard Stats
 
 ```
 Use provider_get_dashboard_stats to show me the provider dashboard.
@@ -347,109 +243,106 @@ If you see stats (totalRequests, openRequests, etc.), everything works.
 
 ---
 
-## 8. Tool Reference
+## 7. Tool Reference
 
-All 27 tools are listed below grouped by category. See the [README.md](README.md)
-for full parameter details.
+All 26 tools grouped by category:
 
-### Dashboard (3 tools)
-| Tool | Description | Key Params |
-|---|---|---|
-| `provider_get_dashboard_stats` | Provider dashboard statistics | — |
-| `provider_get_upcoming_deadlines` | Upcoming deadline list | `limit?` |
-| `provider_get_recent_activity` | Recent activity feed | `limit?` |
+### Dashboard (3)
+| Tool | Key Params |
+|---|---|
+| `provider_get_dashboard_stats` | — |
+| `provider_get_upcoming_deadlines` | `limit?` |
+| `provider_get_recent_activity` | `limit?` |
 
-### Requests (2 tools)
-| Tool | Description | Key Params |
-|---|---|---|
-| `provider_list_requests` | List requests with filters | `status?`, `paymentStatus?`, `priority?` |
-| `provider_get_request` | Get single request details | `requestId` |
+### Requests (2)
+| Tool | Key Params |
+|---|---|
+| `provider_list_requests` | `status?`, `paymentStatus?`, `priority?` |
+| `provider_get_request` | `requestId` |
 
-### Messages (6 tools)
-| Tool | Description | Key Params |
-|---|---|---|
-| `provider_list_threads` | List message threads | — |
-| `provider_get_thread_messages` | Get messages in a thread | `threadId` |
-| `provider_send_message` | Send a chat message | `threadId`, `content` |
-| `provider_edit_message` | Edit a message | `threadId`, `messageId`, `content` |
-| `provider_delete_message` | Delete a message | `threadId`, `messageId` |
-| `provider_create_thread` | Create a thread for a request | `requestId` |
+### Messages (6)
+| Tool | Key Params |
+|---|---|
+| `provider_list_threads` | — |
+| `provider_get_thread_messages` | `threadId` |
+| `provider_send_message` | `threadId`, `content` |
+| `provider_edit_message` | `threadId`, `messageId`, `content` |
+| `provider_delete_message` | `threadId`, `messageId` |
+| `provider_create_thread` | `requestId` |
 
-### Milestones (6 tools)
-| Tool | Description | Key Params |
-|---|---|---|
-| `provider_list_milestones` | List milestones for a request | `requestId` |
-| `provider_get_milestone` | Get milestone details | `requestId`, `milestoneId` |
-| `provider_create_milestone` | Create a milestone | `requestId`, `title`, `dueAt?` |
-| `provider_update_milestone_status` | Update milestone status | `requestId`, `milestoneId`, `status` |
-| `provider_send_milestone_card` | Send milestone card to chat | `requestId`, `milestoneId`, `status?` |
-| `provider_get_milestone_history` | Get milestone version history | `requestId`, `milestoneId` |
+### Milestones (6)
+| Tool | Key Params |
+|---|---|
+| `provider_list_milestones` | `requestId` |
+| `provider_get_milestone` | `requestId`, `milestoneId` |
+| `provider_create_milestone` | `requestId`, `title`, `dueAt?` |
+| `provider_update_milestone_status` | `requestId`, `milestoneId`, `status` |
+| `provider_send_milestone_card` | `requestId`, `milestoneId`, `status?` |
+| `provider_get_milestone_history` | `requestId`, `milestoneId` |
 
-### Files (3 tools)
-| Tool | Description | Key Params |
-|---|---|---|
-| `provider_upload_file` | Upload a file (base64) | `requestId`, `fileName`, `fileContentBase64` |
-| `provider_download_file` | Download a file (returns base64) | `fileId` |
-| `provider_delete_file` | Delete a file | `fileId` |
+### Files (3)
+| Tool | Key Params |
+|---|---|
+| `provider_upload_file` | `requestId`, `fileName`, `fileContentBase64` |
+| `provider_download_file` | `fileId` |
+| `provider_delete_file` | `fileId` |
 
-### Payments (2 tools)
-| Tool | Description | Key Params |
-|---|---|---|
-| `provider_discount_decision` | Approve/reject discount | `requestId`, `status`, `discountPercent?` |
-| `provider_override_payment_policy` | Override payment policy | `requestId`, `depositPercent`, `previewUnlock`, `workStartRequirement`, `editableDocumentRequired`, `reason` (min 8 chars) |
+### Payments (2)
+| Tool | Key Params |
+|---|---|
+| `provider_discount_decision` | `requestId`, `status`, `discountPercent?` |
+| `provider_override_payment_policy` | `requestId`, `depositPercent`, `previewUnlock`, `workStartRequirement`, `editableDocumentRequired`, `reason` (min 8 chars) |
 
-### Delivery (1 tool)
-| Tool | Description | Key Params |
-|---|---|---|
-| `provider_deliver_final_work` | Upload final delivery | `requestId`, `pdfFileName`, `pdfContentBase64`, `docxFileName`, `docxContentBase64`, `previewImages[]` |
+### Delivery (1)
+| Tool | Key Params |
+|---|---|
+| `provider_deliver_final_work` | `requestId`, `pdfFileName`, `pdfContentBase64`, `docxFileName`, `docxContentBase64`, `previewImages[]` |
 
-### Preview (1 tool)
-| Tool | Description | Key Params |
-|---|---|---|
-| `provider_retry_preview` | Retry failed preview generation | `requestId` |
+### Preview (1)
+| Tool | Key Params |
+|---|---|
+| `provider_retry_preview` | `requestId` |
 
-### Cards (1 tool)
-| Tool | Description | Key Params |
-|---|---|---|
-| `provider_send_request_card` | Send structured card | `requestId`, `kind` (`payment_card` / `revision_card` / `delivery_card`) |
+### Cards (1)
+| Tool | Key Params |
+|---|---|
+| `provider_send_request_card` | `requestId`, `kind` (`payment_card` / `revision_card` / `delivery_card`) |
 
-### Auth (2 tools)
-| Tool | Description | Key Params |
-|---|---|---|
-| `provider_set_auth_token` | Update tokens at runtime | `accessToken`, `refreshToken?` |
-| `provider_check_auth` | Check if token is valid | — |
+### Auth (1)
+| Tool | Key Params |
+|---|---|
+| `provider_check_auth` | — |
 
 ---
 
-## 9. Troubleshooting
+## 8. Troubleshooting
+
+### "COGNIZAPP_MCP_PASSKEY env var is not set"
+
+The passkey environment variable is missing from your MCP client config. Check:
+- `COGNIZAPP_MCP_PASSKEY` is set in the `env` block
+- The value has no extra quotes or whitespace
+- The env block is properly nested under the server entry
 
 ### "Missing or invalid Authorization header"
 
-The backend can't find your token. Check:
-- `COGNIZAPP_ACCESS_TOKEN` is set in the env block of your MCP config
-- The token value doesn't have extra quotes or whitespace
-- The env block is properly nested under the server entry
+The backend didn't receive the passkey. Check:
+- `MCP_PROVIDER_PASSKEY` is set on the backend (Vercel env var for production)
+- The passkey in your MCP config matches the backend's passkey
+- `COGNIZAPP_BACKEND_URL` points to the correct backend
 
-### "Access token is invalid or expired"
+### "mcp_passkey_user_not_found"
 
-Your JWT has expired. Either:
-- Set `COGNIZAPP_REFRESH_TOKEN` so the server auto-refreshes on 401
-- Get a new token (see [Section 6](#6-getting-your-auth-tokens))
-- Use `provider_set_auth_token` to update the token at runtime
+The `cognizapp@gmail.com` user doesn't exist in the database. This user must
+exist with `SUPPORT_PROVIDER_USER` role. Create it in the database:
 
-### "Insufficient permissions"
-
-Your user account doesn't have provider access. The user needs one of:
-- `SUPPORT_PROVIDER_USER` role
-- `ADMIN_USER` role
-- The `support.tickets.respond` permission
-
-Contact an admin to upgrade your account, or use the provider portal to log in
-with a provider account.
+```sql
+INSERT INTO auth.users (email, role, status, permissions)
+VALUES ('cognizapp@gmail.com', 'SUPPORT_PROVIDER_USER', 'active', '[]'::jsonb);
+```
 
 ### "Cannot connect to backend" / Connection refused
 
-The backend isn't running or the URL is wrong:
 - Verify `COGNIZAPP_BACKEND_URL` is correct
 - For local dev: start the backend with `bun run src/server.ts` (port 4040)
 - For production: use `https://api.cognizapp.com`
@@ -457,23 +350,22 @@ The backend isn't running or the URL is wrong:
 
 ### "fileContentBase64 is not valid base64 data"
 
-The base64 string you passed to `provider_upload_file` or
-`provider_deliver_final_work` is malformed. Ensure:
-- The string is pure base64 (no `data:` URI prefix, though that is accepted)
-- The string length is a multiple of 4
-- The string only contains `A-Za-z0-9+/` and optional `=` padding
+The base64 string passed to `provider_upload_file` or `provider_deliver_final_work`
+is malformed. Ensure it's pure base64 (no `data:` URI prefix, though that is
+accepted), length is a multiple of 4, and only contains `A-Za-z0-9+/` with
+optional `=` padding.
 
 ### "reason must be at least 8 characters long"
 
-The `provider_override_payment_policy` tool requires a `reason` field with at
-least 8 characters. This is a backend validation requirement for audit logging.
+`provider_override_payment_policy` requires a `reason` field with at least 8
+characters (backend audit logging requirement).
 
 ### Server doesn't appear in my client
 
-- Restart your MCP client after editing the config file
-- Check the config file path is correct for your client (see [Section 5](#5-client-setup))
+- Restart your MCP client after editing the config
+- Check the config file path is correct for your client
 - Check the `args` path is an **absolute** path to `dist/index.js`
-- Check Node.js is installed and on your PATH: `node --version`
+- Check Node.js is installed: `node --version`
 
 ### Build fails with TypeScript errors
 
@@ -484,22 +376,20 @@ npm install
 npm run build
 ```
 
-If errors persist, check your Node.js version (must be 18.18+):
-
-```bash
-node --version
-# Should be v18.18.0 or higher
-```
-
-### Tools work but return empty results
-
-This is normal if there's no data. For example, `provider_list_milestones`
-returns `[]` if the request has no milestones. Try `provider_get_dashboard_stats`
-first — if it returns zeros, the connection works but there's just no data yet.
-
 ---
 
-## 10. Architecture & Development
+## 9. Architecture
+
+```
+┌──────────────┐     stdio (JSON-RPC)     ┌─────────────────┐     HTTP/HTTPS     ┌──────────────────┐
+│  MCP Client  │ ◄──────────────────────► │   MCP Server    │ ◄────────────────► │  CognizApp API   │
+│  (Claude,    │                          │  (Node.js)      │                    │  (Elysia/Bun)    │
+│   Windsurf,  │                          │                 │  X-MCP-Passkey     │                  │
+│   Cursor)    │                          │  26 tools       │  ──────────────►   │  /api/support/   │
+│              │                          │  passkey auth   │                    │  /api/support-   │
+└──────────────┘                          └─────────────────┘                    │    inbox/        │
+                                                                                 └──────────────────┘
+```
 
 ### File Structure
 
@@ -511,40 +401,9 @@ mcp-server/
 ├── INSTALL.md            # This file
 ├── .gitignore            # Ignores node_modules/ and dist/
 └── src/
-    ├── index.ts          # MCP server + 27 tool definitions + handlers
-    └── api-client.ts     # Backend HTTP client with auth & auto-refresh
+    ├── index.ts          # MCP server + 26 tool definitions + handlers
+    └── api-client.ts     # Backend HTTP client (passkey auth, no JWT)
 ```
-
-### How It Works
-
-```
-┌──────────────┐     stdio (JSON-RPC)     ┌─────────────────┐     HTTP/HTTPS     ┌──────────────────┐
-│  MCP Client  │ ◄──────────────────────► │   MCP Server    │ ◄────────────────► │  CognizApp API   │
-│  (Claude,    │                          │  (Node.js)      │                    │  (Elysia/Bun)    │
-│   Windsurf,  │                          │                 │                    │                  │
-│   Cursor)    │                          │  27 tool        │                    │  /api/support/   │
-│              │                          │  handlers       │                    │  /api/support-   │
-│              │                          │  + auth refresh │                    │    inbox/        │
-└──────────────┘                          └─────────────────┘                    └──────────────────┘
-```
-
-1. The MCP client sends a `tools/call` JSON-RPC message over stdio
-2. The server dispatches to the appropriate handler in `index.ts`
-3. The handler calls the backend API via `api-client.ts`
-4. The backend validates permissions, processes the request, and returns JSON
-5. The server unwraps the response and returns it to the client
-
-### API Client
-
-The `api-client.ts` module handles:
-- **Authentication:** Sends `Authorization: Bearer <token>` on every request
-- **Auto-refresh:** On 401, calls `/api/auth/refresh` with the refresh token,
-  then retries the original request with the new token
-- **Response unwrapping:** The backend wraps responses in `{ success, data, message }`.
-  The client unwraps to just `data`.
-- **Binary downloads:** Uses `apiDownloadBinary()` for file downloads, which
-  preserves raw bytes via `response.arrayBuffer()` (avoids text corruption)
-- **Error handling:** Throws `Error` with the backend's error message and path
 
 ### Development Scripts
 
@@ -554,26 +413,3 @@ The `api-client.ts` module handles:
 | `start` | `node dist/index.js` | Run the built server |
 | `dev` | `tsc && node dist/index.js` | Build and run in one step |
 | `inspector` | `npx @modelcontextprotocol/inspector dist/index.js` | Launch MCP Inspector UI |
-
-### Building from Source
-
-```bash
-git clone https://github.com/ReginaldBrixton/cognizapp-provider.git
-cd cognizapp-provider/mcp-server
-npm install
-npm run build
-```
-
-### Running Tests
-
-The MCP server doesn't have its own test suite. To verify it works end-to-end:
-
-1. Start the backend: `cd cognizapp-backend-api && bun run src/server.ts`
-2. Start the MCP Inspector: `npm run inspector`
-3. Call `provider_check_auth` and `provider_get_dashboard_stats` in the inspector
-
----
-
-## License
-
-Proprietary. See the repository for license details.

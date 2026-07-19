@@ -8,9 +8,10 @@ An MCP (Model Context Protocol) server that enables AI to control the CognizApp 
 
 | Variable | Required | Description |
 |---|---|---|
-| `COGNIZAPP_ACCESS_TOKEN` | Yes | JWT access token for the provider |
-| `COGNIZAPP_REFRESH_TOKEN` | No | Refresh token for auto-renewal on 401 |
+| `COGNIZAPP_MCP_PASSKEY` | **Yes** | Static passkey for authentication (never expires) |
 | `COGNIZAPP_BACKEND_URL` | No | Backend URL (default: `http://localhost:4040`) |
+
+That's it. One passkey. No JWT tokens, no refresh tokens, no email.
 
 ### Build
 
@@ -31,14 +32,14 @@ Add to `~/.codeium/windsurf/mcp_config.json`:
     "args": ["/path/to/mcp-server/dist/index.js"],
     "disabled": false,
     "env": {
-      "COGNIZAPP_BACKEND_URL": "http://localhost:4040",
-      "COGNIZAPP_ACCESS_TOKEN": "your_jwt_token_here"
+      "COGNIZAPP_BACKEND_URL": "https://api.cognizapp.com",
+      "COGNIZAPP_MCP_PASSKEY": "your_passkey_here"
     }
   }
 }
 ```
 
-## Available Tools (27)
+## Available Tools (26)
 
 ### Dashboard
 - **`provider_get_dashboard_stats`** — Get provider dashboard statistics
@@ -84,8 +85,7 @@ Add to `~/.codeium/windsurf/mcp_config.json`:
 - **`provider_send_request_card`** — Send structured card to chat (requestId, kind, message?, note?, title?, amount?, paymentType?, expectedAt?, locked?). kind: "payment_card", "revision_card", or "delivery_card"
 
 ### Auth
-- **`provider_set_auth_token`** — Update auth tokens at runtime (accessToken, refreshToken?)
-- **`provider_check_auth`** — Check if current token is valid
+- **`provider_check_auth`** — Check if the passkey is configured and the backend is reachable
 
 ## Architecture
 
@@ -93,9 +93,10 @@ Add to `~/.codeium/windsurf/mcp_config.json`:
 mcp-server/
 ├── package.json
 ├── tsconfig.json
+├── INSTALL.md       # Full installation guide
 └── src/
     ├── index.ts       # MCP server + tool definitions + handlers
-    └── api-client.ts  # Backend API client with auth & auto-refresh
+    └── api-client.ts  # Backend API client (passkey auth)
 ```
 
-The server uses stdio transport and talks directly to the CognizApp backend API at `COGNIZAPP_BACKEND_URL`. Authentication uses JWT Bearer tokens with automatic refresh on 401 responses.
+The server uses stdio transport and talks directly to the CognizApp backend API at `COGNIZAPP_BACKEND_URL`. Authentication uses a single static passkey sent via the `X-MCP-Passkey` header. No JWT tokens, no refresh logic, no token expiry.
