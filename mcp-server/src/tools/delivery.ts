@@ -9,6 +9,46 @@ import { apiCall, apiCallRaw, apiFormUpload } from '../api-client.js'
 import { REQUEST_CARD_KINDS } from '../constants.js'
 import { blobFromBase64, serializeResult } from '../utils.js'
 
+const DOCX_MIME =
+	'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+
+/**
+ * Build the multipart FormData for the final-delivery endpoint
+ * (`POST /api/provider/requests/:id/deliver`). Shared by
+ * provider_deliver_final_work and provider_deliver_final_work_from_file_ids so
+ * both use the exact same backend contract (pdfFile, docxFile, previewImages,
+ * deliveryNote).
+ */
+export function buildDeliveryFormData(input: {
+	requestId: string
+	pdfFileName: string
+	pdfContentBase64: string
+	docxFileName: string
+	docxContentBase64: string
+	previewImages: Array<{ fileName: string; contentBase64: string; contentType?: string }>
+	deliveryNote?: string
+}): FormData {
+	const formData = new FormData()
+	const pdfBlob = blobFromBase64(input.pdfContentBase64, 'pdfContentBase64', 'application/pdf')
+	formData.append('pdfFile', pdfBlob, input.pdfFileName)
+	const docxBlob = blobFromBase64(input.docxContentBase64, 'docxContentBase64', DOCX_MIME)
+	formData.append('docxFile', docxBlob, input.docxFileName)
+	for (const img of input.previewImages) {
+		const imgBlob = blobFromBase64(
+			img.contentBase64,
+			'previewImages[].contentBase64',
+			img.contentType || 'image/png',
+		)
+		formData.append('previewImages', imgBlob, img.fileName)
+	}
+	formData.append(
+		'deliveryNote',
+		input.deliveryNote ||
+			'Preview page images are available in chat; clean final files stay locked until full payment.',
+	)
+	return formData
+}
+
 export function registerDeliveryTools(server: McpServer): void {
 	server.registerTool(
 		'provider_deliver_final_work',
@@ -17,6 +57,7 @@ export function registerDeliveryTools(server: McpServer): void {
 			description: `Upload and publish final delivery for a support request. Requires a clean PDF, a clean DOCX, and ordered preview page images. Preview images are published to chat; clean final files remain locked until full payment.
 
 When to use: When the work is complete and ready for the client to preview. The client sees the preview images in chat and can request the clean files after paying the final balance.
+IMPORTANT: Run provider_preflight_delivery first. Prefer provider_deliver_final_work_from_file_ids for large files (it avoids oversized Base64 arguments by downloading already-uploaded files inside the MCP process).
 Args:
   - requestId (string, required): The request ID (UUID)
   - pdfFileName (string, required): Filename for the clean PDF
@@ -64,36 +105,19 @@ Returns: The delivery result (preview pages published, final files locked).`,
 			previewImages,
 			deliveryNote,
 		}) => {
-			const formData = new FormData()
-			const pdfBlob = blobFromBase64(
+			const formData = buildDeliveryFormData({
+				requestId,
+				pdfFileName,
 				pdfContentBase64,
-				'pdfContentBase64',
-				'application/pdf',
-			)
-			formData.append('pdfFile', pdfBlob, pdfFileName)
-			const docxBlob = blobFromBase64(
+				docxFileName,
 				docxContentBase64,
-				'docxContentBase64',
-				'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-			)
-			formData.append('docxFile', docxBlob, docxFileName)
-			for (const img of previewImages as Array<{
-				fileName: string
-				contentBase64: string
-				contentType?: string
-			}>) {
-				const imgBlob = blobFromBase64(
-					img.contentBase64,
-					'previewImages[].contentBase64',
-					img.contentType || 'image/png',
-				)
-				formData.append('previewImages', imgBlob, img.fileName)
-			}
-			formData.append(
-				'deliveryNote',
-				deliveryNote ||
-				'Preview page images are available in chat; clean final files stay locked until full payment.',
-			)
+				previewImages: previewImages as Array<{
+					fileName: string
+					contentBase64: string
+					contentType?: string
+				}>,
+				deliveryNote,
+			})
 			const result = await apiFormUpload(
 				`/api/provider/requests/${requestId}/deliver`,
 				formData,
@@ -138,6 +162,7 @@ Returns: Raw response (typically a job status object).`,
 			description: `Send a structured card (payment, revision, or delivery) to the chat thread for a request. Use provider_send_milestone_card for milestone cards instead.
 
 When to use: To send a payment request, a revision update, or a delivery notification to the client via a structured card in chat.
+IMPORTANT: Send only after the relevant delivery/payment state has been verified (re-read the request first). Never claim work was delivered, paid, or unlocked unless a tool result confirms it.
 Args:
   - requestId (string, required): The request ID (UUID)
   - kind (string, required): Card kind — "payment_card", "revision_card", or "delivery_card"

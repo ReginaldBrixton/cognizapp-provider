@@ -42,15 +42,61 @@ import { registerQuoteTools } from './tools/quotes.js'
 import { registerRequestTools } from './tools/requests.js'
 import { registerSettingsTools } from './tools/settings.js'
 import { registerWorkflowTools } from './tools/workflows.js'
+import { apiDownloadBinary, apiFormUpload } from './api-client.js'
+import { buildDeliveryFormData } from './tools/delivery.js'
+import {
+	PROVIDER_SERVER_INSTRUCTIONS,
+	registerProviderPrompts,
+	registerProviderEnhancementTools,
+	type EnhancementDeps,
+} from './enhancements/index.js'
+import { blobFromBase64 } from './utils.js'
 
 const SERVER_NAME = 'cognizapp-provider-mcp'
-const SERVER_VERSION = '1.2.0'
+const SERVER_VERSION = '1.3.0'
+
+/**
+ * Build the enhancement dependency adapter from the existing standalone API
+ * client functions. Auth/refresh logic stays inside api-client.ts; these are
+ * thin wrappers that normalize the shapes the enhancement handlers expect.
+ */
+function createEnhancementDeps(): EnhancementDeps {
+	return {
+		downloadFile: async (fileId) => {
+			const r = await apiDownloadBinary(`/api/files/${fileId}/download`)
+			return {
+				fileId,
+				filename: r.filename || fileId,
+				contentType: r.contentType,
+				size: r.buffer.length,
+				contentBase64: r.buffer.toString('base64'),
+			}
+		},
+		uploadFile: async (input) => {
+			// Same upload contract as provider_upload_file.
+			const formData = new FormData()
+			formData.append('requestId', input.requestId)
+			if (input.milestoneId) formData.append('milestoneId', input.milestoneId)
+			formData.append('purpose', input.purpose || 'request_attachment')
+			const blob = blobFromBase64(input.contentBase64, 'contentBase64', input.contentType)
+			formData.append('files', blob, input.fileName)
+			return apiFormUpload('/api/files/upload', formData)
+		},
+		deliverFinalWork: async (input) => {
+			const formData = buildDeliveryFormData(input)
+			return apiFormUpload(`/api/provider/requests/${input.requestId}/deliver`, formData)
+		},
+	}
+}
 
 /** Factory: create a fresh McpServer with all tools registered. */
 function createServer(): McpServer {
 	const server = new McpServer(
 		{ name: SERVER_NAME, version: SERVER_VERSION },
-		{ capabilities: { tools: {} } },
+		{
+			capabilities: { tools: {}, prompts: {} },
+			instructions: PROVIDER_SERVER_INSTRUCTIONS,
+		},
 	)
 
 	registerDashboardTools(server)
@@ -68,6 +114,10 @@ function createServer(): McpServer {
 	registerAiTools(server)
 	registerWorkflowTools(server)
 	registerAuthTools(server)
+
+	// Image-safe provider enhancement tools + prompts.
+	registerProviderPrompts(server)
+	registerProviderEnhancementTools(server, createEnhancementDeps())
 
 	return server
 }

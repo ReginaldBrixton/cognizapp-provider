@@ -33,6 +33,7 @@ Returns: Array of thread objects with id, requestId, participants, lastMessage, 
 			description: `Get all messages in a support chat thread, oldest first.
 
 When to use: To read a conversation before replying. Returns sender info, content, attachments, reply threading, and edit/delete metadata.
+IMPORTANT: Always read the thread before replying.
 Args:
   - threadId (string, required): The thread ID (UUID)
 Returns: Array of message objects.`,
@@ -54,6 +55,7 @@ Returns: Array of message objects.`,
 			description: `Send a message in a support chat thread. This is how the AI replies to users through the support system.
 
 When to use: To respond to a client. Always read the thread first (provider_get_thread_messages) so your reply is grounded in context.
+IMPORTANT: Never claim work was uploaded, delivered, paid, or unlocked unless a tool result confirms it.
 Args:
   - threadId (string, required): The thread ID to send to
   - content (string, required): The message text

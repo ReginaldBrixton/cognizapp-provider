@@ -85,6 +85,7 @@ This is read-only — no state changes. Use the individual tools (provider_send_
 			description: `Get a holistic, consolidated summary of a single request in one call — request details, milestones, and recent chat messages.
 
 When to use: When you have a request ID and need the full picture before acting (quoting, messaging, delivering). Replaces calling provider_get_request + provider_list_milestones + provider_list_threads + provider_get_thread_messages separately.
+IMPORTANT: Call before quoting, messaging, status changes, or delivery.
 Args:
   - requestId (string, required): The request ID (UUID)
   - messageLimit (number, optional): Max recent messages to include (default 20)

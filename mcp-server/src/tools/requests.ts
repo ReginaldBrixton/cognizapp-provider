@@ -62,6 +62,7 @@ Tip: Use provider_triage_inbox for a pre-prioritised summary instead of calling 
 			description: `Get detailed information about a single support request by ID.
 
 When to use: When you have a request ID and need the full picture — description, attachments, payment policy, milestones, AI review, client info.
+IMPORTANT: Call before quoting, messaging, status changes, or delivery.
 Args:
   - requestId (string, required): The request ID (UUID)
 Returns: Full request object.

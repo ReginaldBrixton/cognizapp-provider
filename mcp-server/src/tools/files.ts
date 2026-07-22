@@ -16,6 +16,7 @@ export function registerFileTools(server: McpServer): void {
 			description: `Upload a file to a support request or milestone. File content is provided as base64-encoded data. Supports any file type (PDF, DOCX, images, etc.).
 
 When to use: To attach a deliverable, supporting document, or milestone upload to a request.
+Note: Uploading a file does not constitute final delivery — use provider_deliver_final_work or provider_deliver_final_work_from_file_ids to publish final work.
 Args:
   - requestId (string, required): The request ID (UUID)
   - fileName (string, required): Name of the file (e.g. "chapter1.pdf")
@@ -67,6 +68,7 @@ Returns: The uploaded file metadata (file ID, URL, etc.).`,
 			description: `Download a file by its file ID. Returns base64-encoded file content with content type, size, and filename.
 
 When to use: To read a file's contents — e.g. to review a client's uploaded document before quoting, or to inspect a milestone deliverable.
+For DOCX/PPTX/XLSX/PDF/image work, follow with provider_inspect_document_assets to extract ordered image assets.
 Args:
   - fileId (string, required): The file ID (UUID)
 Returns: { fileId, contentType, size, filename, contentBase64 }
